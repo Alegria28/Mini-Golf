@@ -7,7 +7,9 @@
     - Física (facilita la integración de bibliotecas de física populares como Jbox2d)
     - UI 
     - Red
-- **Jbox2d**: Motor de física popular donde se pueden definir objetos con propiedades físicas (tamaño, forma, masa, densidad...). Luego el motor de física se encarga de calcular como interactúan estos objetos entre si bajo la influencia de fuerzas y colisiones
+    - Documentación: [https://libgdx.com/wiki/](https://libgdx.com/wiki/)
+- **Jbox2d (Box2D)**: Motor de física popular donde se pueden definir objetos con propiedades físicas (tamaño, forma, masa, densidad...). Luego el motor de física se encarga de calcular como interactúan estos objetos entre si bajo la influencia de fuerzas y colisiones
+    - Documentación: [https://box2d.org/documentation/](https://box2d.org/documentation/)
 
 ## Tareas a realizar
 1. Creación del menu principal
