@@ -6,10 +6,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -27,6 +33,7 @@ public class MiniGolfMain extends ApplicationAdapter {
     private Texture textureFondo;
     private Texture textureImagenJuego;
     Stack stack;
+    BitmapFont font;
 
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
@@ -65,6 +72,58 @@ public class MiniGolfMain extends ApplicationAdapter {
 
         // Agregamos esta imagen a nuestro table en la parte superior, regresa un objeto de tipo Cell donde agregamos un padding en la parte de arriba
         table.add(imagenMiniGolf).padTop(30);
+
+        /* Configuración de los botones */
+
+        // Cargamos la tipografía que se utilizara
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Inter-Variable.ttf"));
+
+        // Creamos el objeto para poder modificar sus características
+        FreeTypeFontParameter fontParameter = new FreeTypeFontParameter();
+        fontParameter.size = 40;
+        fontParameter.padLeft = 10;
+        fontParameter.padRight= 10;
+
+        // Generamos el font que vamos a usar
+        font = fontGenerator.generateFont(fontParameter);
+
+        // Creamos una instancia para el style del botón y le asignamos el font
+        TextButtonStyle buttonStyle = new TextButtonStyle();
+        buttonStyle.font = font;
+
+        // Skin para el botón
+        Skin buttonSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        // Agregamos los drawable al botón a partir del uskin.json
+        buttonStyle.up = buttonSkin.getDrawable("buttonUp");
+        buttonStyle.down = buttonSkin.getDrawable("buttonDown");
+
+        /* Creación de los botones */
+
+        TextButton botonIniciar = new TextButton("Iniciar", buttonStyle);
+
+        TextButton botonInstrucciones = new TextButton("Instrucciones", buttonStyle);
+
+        TextButton botonCreditos = new TextButton("Creditos", buttonStyle);
+
+        TextButton botonSalir = new TextButton("Salir", buttonStyle);
+
+        // Indicamos que lo siguiente que se va a agregar va a estar en otra row
+        table.row();
+
+        // Lo agregamos a nuestro table
+        table.add(botonIniciar).center().height(70).padTop(60);
+
+        table.row();
+
+        table.add(botonInstrucciones).center().height(70).padTop(40);
+
+        table.row();
+
+        table.add(botonCreditos).center().height(70).padTop(40);
+
+        table.row();
+
+        table.add(botonSalir).center().height(70).padTop(40);
 
         /* Configuración capas y fondo*/
 
@@ -125,5 +184,6 @@ public class MiniGolfMain extends ApplicationAdapter {
         stage.dispose();
         textureFondo.dispose();
         textureImagenJuego.dispose();
+        font.dispose();
     }
 }
