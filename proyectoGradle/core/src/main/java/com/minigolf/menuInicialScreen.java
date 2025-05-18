@@ -72,7 +72,7 @@ public class menuInicialScreen implements Screen {
         // Nos alineamos en la parte superior
         table.top();
 
-        // Agrega la imagen a la tabla y le aplica un espacio superior de 30 píxeles (para estar separado del viewport)
+        // Agregamos la imagen a la tabla y le aplica un espacio superior  (para estar separado del viewport)
         table.add(imagenMiniGolf).padTop(30);
 
         /* --------- Configuración de los botones --------- */
@@ -102,10 +102,10 @@ public class menuInicialScreen implements Screen {
             // Called when a mouse button or a finger touch goes up anywhere, but only if touchDown previously returned true for the mouse
             // button or touch
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Entrando a la pantalla de seleccion de jugadores desde menuInicialScreen");
+                System.out.println("Entrando a la pantalla de seleccion de jugadores");
 
                 // Usando la referencia del juego principal, actualizamos screen creando una screen
-                game.setScreen(new seleccionJugadorScreen(game, font, imagenFondo));
+                game.setScreen(new seleccionJugadorScreen(game, font, imagenFondo, buttonStyle));
             }
         });
 
@@ -132,6 +132,7 @@ public class menuInicialScreen implements Screen {
 
         // Indicamos que lo siguiente que se va a agregar va a estar en otra row
         table.row();
+        // Agregamos los botones con una altura y espaciado
         table.add(botonIniciar).center().height(70).padTop(60);
 
         table.row();

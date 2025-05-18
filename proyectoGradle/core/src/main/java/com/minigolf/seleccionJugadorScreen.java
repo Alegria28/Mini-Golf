@@ -3,13 +3,18 @@ package com.minigolf;
 // Importamos los recursos necesarios para la clase
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -25,16 +30,18 @@ public class seleccionJugadorScreen implements Screen {
     private final MiniGolfMain game;
     private BitmapFont font;
     Image imagenFondo;
+    TextButtonStyle buttonStyle;
 
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
 
     // Constructor de la clase
-    public seleccionJugadorScreen(MiniGolfMain game, BitmapFont font, Image imagenFondo) {
+    public seleccionJugadorScreen(MiniGolfMain game, BitmapFont font, Image imagenFondo, TextButtonStyle buttonStyle) {
         this.game = game;
         this.font = font;
         this.imagenFondo = imagenFondo;
+        this.buttonStyle = buttonStyle;
     }
 
     @Override
@@ -54,6 +61,41 @@ public class seleccionJugadorScreen implements Screen {
 
         // Creamos nuestro table (actor)
         table = new Table();
+
+        table.setDebug(true);
+
+        /* --------- Creación label principal --------- */
+
+        // Creamos el estilo para nuestro label
+        LabelStyle labelPrincipalStyle = new LabelStyle();
+        // Cambiamos su font
+        labelPrincipalStyle.font = font;
+        // El color va a ser blanco
+        labelPrincipalStyle.fontColor = Color.WHITE;
+
+        // Creamos nuestro label
+        Label labelPrincipal = new Label("Numero de jugadores", labelPrincipalStyle);
+
+        // Agregamos este label al table con .colspan() para que el ancho de este label
+        // ocupe el de 3 columnas, ya que tenemos 3 botones abajo, cada uno en su propia columna
+        // y para .center() puede centrar este label correctamente arriba de los 3 botones
+        table.add(labelPrincipal).colspan(3).center();
+
+        /* --------- Creación opciones numero de jugadores --------- */
+
+        // Indicamos que lo siguiente que se va a agregar va a estar en otra row
+        table.row();
+
+        TextButton boton1Jugador = new TextButton("1 jugador", buttonStyle);
+
+        TextButton boton2Jugador = new TextButton("2 jugadores", buttonStyle);
+
+        TextButton boton3Jugador = new TextButton("3 jugadores", buttonStyle);
+
+        // Agregamos los botones para que se van de forma horizontal con espaciado
+        table.add(boton1Jugador).height(70).pad(50);
+        table.add(boton2Jugador).height(70).pad(50);
+        table.add(boton3Jugador).height(70).pad(50);
 
         /* --------- Configuración capas y fondo --------- */
 
