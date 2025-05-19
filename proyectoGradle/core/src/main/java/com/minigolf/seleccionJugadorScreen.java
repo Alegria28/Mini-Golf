@@ -7,12 +7,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -25,12 +29,16 @@ public class seleccionJugadorScreen implements Screen {
 
     // Atributos
     private Stage stage;
-    private Table table;
+    private Table tablePrincipal;
     private Stack stack;
     private final MiniGolfMain game;
     private BitmapFont font;
     Image imagenFondo;
     TextButtonStyle buttonStyle;
+    private Table tableTextField;
+
+    // Variable para almacenar la selección del usuario
+    private int numeroJugadores = 0;
 
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
@@ -47,7 +55,7 @@ public class seleccionJugadorScreen implements Screen {
     @Override
     public void show() {
 
-        /* --------- Configuración inicial stage y table --------- */
+        /* --------- Configuración inicial stage y tablePrincipal --------- */
 
         // Creamos una cámara, que actúa como el "ojo" del juego, definiendo qué parte del mundo se mostrará en pantalla
         OrthographicCamera camera = new OrthographicCamera();
@@ -59,12 +67,18 @@ public class seleccionJugadorScreen implements Screen {
         stage = new Stage(viewport);
         Gdx.input.setInputProcessor(stage);
 
-        // Creamos nuestro table (actor)
-        table = new Table();
+        // Creamos nuestro table principal (actor)
+        tablePrincipal = new Table();
+        // Llenara por completo a stage
+        tablePrincipal.setFillParent(true);
 
-        table.setDebug(true);
+        /* --------- Table 1 --------- */
 
-        /* --------- Creación label principal --------- */
+        // Creamos el table para el label y los 3 botones
+        Table tableArriba = new Table();
+        tableArriba.center();
+        tableArriba.setDebug(true);
+        
 
         // Creamos el estilo para nuestro label
         LabelStyle labelPrincipalStyle = new LabelStyle();
@@ -79,23 +93,114 @@ public class seleccionJugadorScreen implements Screen {
         // Agregamos este label al table con .colspan() para que el ancho de este label
         // ocupe el de 3 columnas, ya que tenemos 3 botones abajo, cada uno en su propia columna
         // y para .center() puede centrar este label correctamente arriba de los 3 botones
-        table.add(labelPrincipal).colspan(3).center();
+        tableArriba.add(labelPrincipal).colspan(3).center();
 
-        /* --------- Creación opciones numero de jugadores --------- */
+        /* --------- Creación botones opciones numero de jugadores --------- */
 
         // Indicamos que lo siguiente que se va a agregar va a estar en otra row
-        table.row();
+        tableArriba.row();
 
         TextButton boton1Jugador = new TextButton("1 jugador", buttonStyle);
+        boton1Jugador.addListener(new InputListener() {
+            @Override
+            // Called when a mouse button or a finger touch goes down on the actor
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            // Called when a mouse button or a finger touch goes up anywhere, but only if touchDown previously returned true for the mouse
+            // button or touch
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
+                // Guardamos la selección del usuario
+                numeroJugadores = 1;
+
+                System.out.println("Opcion 1 jugador, la variable tiene: " + numeroJugadores);
+            }
+        });
 
         TextButton boton2Jugador = new TextButton("2 jugadores", buttonStyle);
+        boton2Jugador.addListener(new InputListener() {
+            @Override
+            // Called when a mouse button or a finger touch goes down on the actor
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            // Called when a mouse button or a finger touch goes up anywhere, but only if touchDown previously returned true for the mouse
+            // button or touch
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
+                // Guardamos la selección del usuario
+                numeroJugadores = 2;
+
+                System.out.println("Opcion 2 jugadores, la variable tiene: " + numeroJugadores);
+            }
+        });
 
         TextButton boton3Jugador = new TextButton("3 jugadores", buttonStyle);
+        boton3Jugador.addListener(new InputListener() {
+            @Override
+            // Called when a mouse button or a finger touch goes down on the actor
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            // Called when a mouse button or a finger touch goes up anywhere, but only if touchDown previously returned true for the mouse
+            // button or touch
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
+                // Guardamos la selección del usuario
+                numeroJugadores = 3;
+
+                System.out.println("Opcion 3 jugador, la variable tiene: " + numeroJugadores);
+            }
+        });
 
         // Agregamos los botones para que se van de forma horizontal con espaciado
-        table.add(boton1Jugador).height(70).pad(50);
-        table.add(boton2Jugador).height(70).pad(50);
-        table.add(boton3Jugador).height(70).pad(50);
+        tableArriba.add(boton1Jugador).height(70);
+        tableArriba.add(boton2Jugador).height(70).pad(50);
+        tableArriba.add(boton3Jugador).height(70);
+
+        // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
+        tablePrincipal.add(tableArriba).height(VIRTUAL_HEIGHT / 3).width(VIRTUAL_WIDTH).fillX().fillY().bottom();
+
+        /* ---------  Table 2 --------- */
+
+        // Creamos el table para los 3 textFields's
+        tableTextField = new Table();
+        tableTextField.center();
+
+        // Cargamos el skin para los textField
+        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+
+        // Creamos el textField
+        TextField textField1 = new TextField("", skin);
+        // Agregamos este textField a la tabla dedicada
+        tableTextField.add(textField1).center().width(300).height(40).pad(50);
+
+        // Cambiamos de fila
+        tableTextField.row();
+
+        // Creamos el textField
+        TextField textField2 = new TextField("", skin);
+        // Agregamos este textField a la tabla dedicada
+        tableTextField.add(textField2).center().width(300).height(40).pad(50);
+
+        // Cambiamos de fila
+        tableTextField.row();
+
+        // Creamos el textField
+        TextField textField3 = new TextField("", skin);
+        // Agregamos este textField a la tabla dedicada
+        tableTextField.add(textField3).center().width(300).height(40).pad(50);
+
+        // Creamos una nueva fila en el tablePrincipal para agregar esa otra con todas sus cosas
+        tablePrincipal.row();
+        tablePrincipal.add(tableTextField).height(VIRTUAL_HEIGHT / 2).width(VIRTUAL_WIDTH).fillX().fillY().top();
 
         /* --------- Configuración capas y fondo --------- */
 
@@ -108,7 +213,7 @@ public class seleccionJugadorScreen implements Screen {
         stack.add(imagenFondo);
 
         // Añadimos el table que va a estar encima de la imagen de fondo 
-        stack.add(table);
+        stack.add(tablePrincipal);
 
         /* --------- Actores --------- */
 
