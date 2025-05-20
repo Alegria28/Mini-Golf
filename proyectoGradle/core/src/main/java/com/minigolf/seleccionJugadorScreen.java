@@ -6,7 +6,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -32,8 +36,6 @@ public class seleccionJugadorScreen implements Screen {
     private Table tablePrincipal;
     private Stack stack;
     private final MiniGolfMain game;
-    private BitmapFont font;
-    Image imagenFondo;
     TextButtonStyle buttonStyle;
     private Table tableTextField;
 
@@ -45,10 +47,8 @@ public class seleccionJugadorScreen implements Screen {
     private final float VIRTUAL_HEIGHT = 900;
 
     // Constructor de la clase
-    public seleccionJugadorScreen(MiniGolfMain game, BitmapFont font, Image imagenFondo, TextButtonStyle buttonStyle) {
+    public seleccionJugadorScreen(MiniGolfMain game, TextButtonStyle buttonStyle) {
         this.game = game;
-        this.font = font;
-        this.imagenFondo = imagenFondo;
         this.buttonStyle = buttonStyle;
     }
 
@@ -72,13 +72,35 @@ public class seleccionJugadorScreen implements Screen {
         // Llenara por completo a stage
         tablePrincipal.setFillParent(true);
 
+        /* --------- Configuración font --------- */
+
+        // Cargamos la tipografía que se utilizara
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Inter-Variable.ttf"));
+        // Creamos un objeto para modificar las características de esta tipografía
+        FreeTypeFontParameter fontParameter = new FreeTypeFontParameter();
+        fontParameter.size = 40;
+        fontParameter.padLeft = 10;
+        fontParameter.padRight = 10;
+        // Creamos el font con las características nuevas
+        BitmapFont font = fontGenerator.generateFont(fontParameter);
+        // Ya que ya no lo vamos a ocupar, podemos liberarlo
+        fontGenerator.dispose();
+
+        /* --------- Configuración imagen fondo --------- */
+
+        // Creamos la textura a partir de la imagen
+        Texture textureFondo = new Texture(Gdx.files.internal("fondoInicio.png"));
+        // Creamos la imagen
+        Image imagenFondo = new Image(textureFondo);
+        // Aplicamos la opacidad a nuestra imagen de fondo
+        imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
+
         /* --------- Table 1 --------- */
 
         // Creamos el table para el label y los 3 botones
         Table tableArriba = new Table();
         tableArriba.center();
         tableArriba.setDebug(true);
-        
 
         // Creamos el estilo para nuestro label
         LabelStyle labelPrincipalStyle = new LabelStyle();
@@ -174,11 +196,21 @@ public class seleccionJugadorScreen implements Screen {
         tableTextField = new Table();
         tableTextField.center();
 
-        // Cargamos el skin para los textField
-        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        // Creamos el estilo para nuestros textField's
+        TextFieldStyle textFieldStyle = new TextFieldStyle();
+        // Cambiamos su font y color
+        textFieldStyle.font = font;
+        textFieldStyle.fontColor = Color.WHITE;
+
+        // Utilizamos la skin para obtener el diseño de los textField (fondos para los estados up y down)
+        Skin textFieldSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        // Declaraciones dentro del .json
+        textFieldStyle.background = textFieldSkin.getDrawable("textField");
+        textFieldStyle.cursor = textFieldSkin.getDrawable("textFieldCursor");
+        textFieldStyle.selection = textFieldSkin.getDrawable("selection");
 
         // Creamos el textField
-        TextField textField1 = new TextField("", skin);
+        TextField textField1 = new TextField("", textFieldStyle);
         // Agregamos este textField a la tabla dedicada
         tableTextField.add(textField1).center().width(300).height(40).pad(50);
 
@@ -186,7 +218,7 @@ public class seleccionJugadorScreen implements Screen {
         tableTextField.row();
 
         // Creamos el textField
-        TextField textField2 = new TextField("", skin);
+        TextField textField2 = new TextField("", textFieldStyle);
         // Agregamos este textField a la tabla dedicada
         tableTextField.add(textField2).center().width(300).height(40).pad(50);
 
@@ -194,7 +226,7 @@ public class seleccionJugadorScreen implements Screen {
         tableTextField.row();
 
         // Creamos el textField
-        TextField textField3 = new TextField("", skin);
+        TextField textField3 = new TextField("", textFieldStyle);
         // Agregamos este textField a la tabla dedicada
         tableTextField.add(textField3).center().width(300).height(40).pad(50);
 

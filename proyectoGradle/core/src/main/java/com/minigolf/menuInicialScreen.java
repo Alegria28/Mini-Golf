@@ -3,10 +3,13 @@ package com.minigolf;
 // Importamos los recursos necesarios para la clase
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -29,18 +32,14 @@ public class menuInicialScreen implements Screen {
     private Table table;
     private Stack stack;
     private final MiniGolfMain game;
-    private BitmapFont font;
-    private Image imagenFondo;
 
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
 
     // Constructor de la clase
-    public menuInicialScreen(final MiniGolfMain game, BitmapFont font, Image imagenFondo) {
+    public menuInicialScreen(final MiniGolfMain game) {
         this.game = game;
-        this.font = font;
-        this.imagenFondo = imagenFondo;
     }
 
     @Override
@@ -60,6 +59,29 @@ public class menuInicialScreen implements Screen {
 
         // Creamos nuestro table (actor)
         table = new Table();
+
+        /* --------- Configuración font --------- */
+
+        // Cargamos la tipografía que se utilizara
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Inter-Variable.ttf"));
+        // Creamos un objeto para modificar las características de esta tipografía
+        FreeTypeFontParameter fontParameter = new FreeTypeFontParameter();
+        fontParameter.size = 40;
+        fontParameter.padLeft = 10;
+        fontParameter.padRight = 10;
+        // Creamos el font con las características nuevas
+        BitmapFont font = fontGenerator.generateFont(fontParameter);
+        // Ya que ya no lo vamos a ocupar, podemos liberarlo
+        fontGenerator.dispose();
+
+        /* --------- Configuración imagen fondo --------- */
+
+        // Creamos la textura a partir de la imagen
+        Texture textureFondo = new Texture(Gdx.files.internal("fondoInicio.png"));
+        // Creamos la imagen
+        Image imagenFondo = new Image(textureFondo);
+        // Aplicamos la opacidad a nuestra imagen de fondo
+        imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
 
         /* --------- Agregar imagen del juego --------- */
 
@@ -81,11 +103,12 @@ public class menuInicialScreen implements Screen {
         TextButtonStyle buttonStyle = new TextButtonStyle();
         buttonStyle.font = font;
 
-        // Utilizamos la skin para obtener los estilos visuales de los botones (fondos para los estados up y down)
+        // Utilizamos la skin para obtener el diseño de los botones (fondos para los estados up y down)
         Skin buttonSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         // Declaraciones dentro del .json
         buttonStyle.up = buttonSkin.getDrawable("buttonUp");
         buttonStyle.down = buttonSkin.getDrawable("buttonDown");
+        buttonStyle.over = buttonSkin.getDrawable("buttonOver");
 
         /* --------- Creación de los botones --------- */
 
@@ -105,7 +128,7 @@ public class menuInicialScreen implements Screen {
                 System.out.println("Entrando a la pantalla de seleccion de jugadores");
 
                 // Usando la referencia del juego principal, actualizamos screen creando una screen
-                game.setScreen(new seleccionJugadorScreen(game, font, imagenFondo, buttonStyle));
+                game.setScreen(new seleccionJugadorScreen(game, buttonStyle));
             }
         });
 
