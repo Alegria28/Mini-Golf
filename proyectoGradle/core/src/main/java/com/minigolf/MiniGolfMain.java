@@ -1,5 +1,3 @@
-// cspell: ignore minigolf, Creditos, boton
-
 package com.minigolf;
 
 // En lugar de ApplicationListener para tener un manejo mas sencillo de las pantallas
@@ -37,7 +35,6 @@ public class MiniGolfMain extends Game {
     // Called when the application is destroyed.
     @Override
     public void dispose() {
-        screen.dispose();
         // Llama al dispose de la clase Game
         super.dispose();
     }

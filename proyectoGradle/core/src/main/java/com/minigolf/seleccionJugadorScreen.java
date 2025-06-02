@@ -39,10 +39,11 @@ public class seleccionJugadorScreen implements Screen {
     // Atributos
     private Stage stage;
     private Table tablePrincipal;
+    private Table tableTextField;
     private Stack stack;
+
     private final MiniGolfMain game;
     TextButtonStyle buttonStyle;
-    private Table tableTextField;
 
     // Variable para almacenar la selección del usuario
     private int numeroJugadores = 0;
@@ -55,6 +56,9 @@ public class seleccionJugadorScreen implements Screen {
     private TextField textField1;
     private TextField textField2;
     private TextField textField3;
+
+    // Creamos un vector para almacenar los nombres de los jugadores
+    String[] nombresVector;
 
     // Constructor de la clase
     public seleccionJugadorScreen(MiniGolfMain game, TextButtonStyle buttonStyle) {
@@ -109,7 +113,6 @@ public class seleccionJugadorScreen implements Screen {
 
         // Creamos el table para el label y los 3 botones
         Table tableArriba = new Table();
-        tableArriba.center();
 
         // Creamos el estilo para nuestro label
         LabelStyle labelPrincipalStyle = new LabelStyle();
@@ -147,7 +150,13 @@ public class seleccionJugadorScreen implements Screen {
                 // Guardamos la selección del usuario
                 numeroJugadores = 1;
 
+                // Cada vez que se seleccione el botón, se limpiaran todos los textField's
+                textField1.setText("");
+                textField2.setText("");
+                textField3.setText("");
+
                 System.out.println("Opcion 1 jugador, la variable tiene: " + numeroJugadores);
+
             }
         });
 
@@ -166,6 +175,11 @@ public class seleccionJugadorScreen implements Screen {
 
                 // Guardamos la selección del usuario
                 numeroJugadores = 2;
+
+                // Cada vez que se seleccione el botón, se limpiaran todos los textField's
+                textField1.setText("");
+                textField2.setText("");
+                textField3.setText("");
 
                 System.out.println("Opcion 2 jugadores, la variable tiene: " + numeroJugadores);
             }
@@ -187,29 +201,34 @@ public class seleccionJugadorScreen implements Screen {
                 // Guardamos la selección del usuario
                 numeroJugadores = 3;
 
+                // Cada vez que se seleccione el botón, se limpiaran todos los textField's
+                textField1.setText("");
+                textField2.setText("");
+                textField3.setText("");
+
                 System.out.println("Opcion 3 jugador, la variable tiene: " + numeroJugadores);
             }
         });
 
         // Agregamos los botones para que se van de forma horizontal con espaciado
-        tableArriba.add(boton1Jugador).height(70);
-        tableArriba.add(boton2Jugador).height(70).pad(50);
-        tableArriba.add(boton3Jugador).height(70);
+        tableArriba.add(boton1Jugador).height(70).pad(30);
+        tableArriba.add(boton2Jugador).height(70).pad(30);
+        tableArriba.add(boton3Jugador).height(70).pad(30);
+        tableArriba.center();
 
         // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
-        tablePrincipal.add(tableArriba).height(VIRTUAL_HEIGHT / 5).width(VIRTUAL_WIDTH).fillX().fillY().bottom();
+        tablePrincipal.add(tableArriba).height(VIRTUAL_HEIGHT / 5).width(VIRTUAL_WIDTH).center();
 
         /* ---------  Table 2 --------- */
 
-        /*  Configuración font para los text fields */
+        /* Configuración font para los text fields */
 
         // Cargamos la tipografía que se utilizara
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Inter-Variable.ttf"));
         // Creamos un objeto para modificar las características de esta tipografía
         fontParameter = new FreeTypeFontParameter();
         fontParameter.size = 25;
-        fontParameter.padLeft = 10;
-        fontParameter.padRight = 10;
+
         // Creamos el font con las características nuevas
         BitmapFont fontTextFields = fontGenerator.generateFont(fontParameter);
         // Ya que ya no lo vamos a ocupar, podemos liberarlo
@@ -217,7 +236,7 @@ public class seleccionJugadorScreen implements Screen {
 
         // Creamos el table para los 3 textFields's
         tableTextField = new Table();
-        tableTextField.center();
+
 
         // Creamos el estilo para nuestros textField's
         TextFieldStyle textFieldStyle = new TextFieldStyle();
@@ -280,16 +299,37 @@ public class seleccionJugadorScreen implements Screen {
             // button or touch
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 
+                /*  Configuración font para el Dialog */
+
+                // Cargamos la tipografía que se utilizara
+                FreeTypeFontGenerator temporalGenerator = new FreeTypeFontGenerator(
+                        Gdx.files.internal("fonts/Inter-Variable.ttf"));
+                // Creamos un objeto para modificar las características de esta tipografía
+                FreeTypeFontParameter temporalParameter = new FreeTypeFontParameter();
+                temporalParameter.size = 15;
+                temporalParameter.padLeft = 8;
+                temporalParameter.padRight = 8;
+                // Creamos el font con las características nuevas
+                BitmapFont temporalFont = temporalGenerator.generateFont(temporalParameter);
+                // Ya que ya no lo vamos a ocupar, podemos liberarlo
+                temporalGenerator.dispose();
+
+                // Creamos el estilo para nuestro label
+                LabelStyle temporalLabelStyle = new LabelStyle();
+                // Cambiamos su font
+                temporalLabelStyle.font = temporalFont;
+
                 // Cargamos la skin para el Dialog que vamos a usar
                 Skin errorDialogSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
                 // Creamos un Dialog
-                
-                Dialog errorDialog = new Dialog("¡Todos los campos deben de estar llenos!", errorDialogSkin);
+                Dialog errorDialog = new Dialog("", errorDialogSkin);
+                // Creamos un Label para el mensaje que se va a mostrar
+                Label labelDialog = new Label("¡Todos los campos deben de estar llenos!", temporalLabelStyle);
 
                 // Creamos una instancia de acciones
                 SequenceAction acciones = new SequenceAction();
                 // Creamos y agregamos las acciones que se van a ejecutar
-                acciones.addAction(Actions.delay(5));
+                acciones.addAction(Actions.delay(1.5f));
                 acciones.addAction(new Action() {
                     @Override
                     public boolean act(float delta) {
@@ -304,24 +344,82 @@ public class seleccionJugadorScreen implements Screen {
                         // Si el textField esta vacio, mostramos un Dialog indicando el error por 1 segundo
                         if (textField1.getText().length() == 0) {
                             errorDialog.show(stage);
+                            // Modificamos su tamaño y posición (utilizando una formula x = (anchoPantalla - anchoDialog) / 2 y
+                            // lo mismo para y)
+                            errorDialog.setPosition((VIRTUAL_WIDTH - 300) / 2, (VIRTUAL_HEIGHT - 70) / 2);
+                            errorDialog.setSize(300, 70);
+                            errorDialog.text(labelDialog).center();
+
                             // Agregamos las acciones que hemos declarado previamente
                             errorDialog.addAction(acciones);
+                        }
+                        // Si los textField's tienen nombres, entonces los guardamos 
+                        else {
+                            nombresVector = new String[1];
+                            nombresVector[0] = textField1.getText();
+                            for (int i = 0; i < 1; ++i) {
+                                System.out.println("[" + nombresVector[i] + "]");
+                            }
+
+                            System.out.println("Entrando a la pantalla selección colores con 1 jugador");
+
+                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
                         }
                         break;
                     case 2:
                         // Si el textField esta vacio, mostramos un Dialog indicando el error por 1 segundo
                         if (textField1.getText().length() == 0 || textField2.getText().length() == 0) {
                             errorDialog.show(stage);
+                            // Modificamos su tamaño y posición (utilizando una formula x = (anchoPantalla - anchoDialog) / 2 y
+                            // lo mismo para y)
+                            errorDialog.setPosition((VIRTUAL_WIDTH - 300) / 2, (VIRTUAL_HEIGHT - 70) / 2);
+                            errorDialog.setSize(300, 70);
+                            errorDialog.text(labelDialog).center();
+
                             // Agregamos las acciones que hemos declarado previamente
                             errorDialog.addAction(acciones);
+                        }
+                        // Si los textField's tienen nombres, entonces los guardamos 
+                        else {
+                            nombresVector = new String[2];
+                            nombresVector[0] = textField1.getText();
+                            nombresVector[1] = textField2.getText();
+                            for (int i = 0; i < 2; ++i) {
+                                System.out.println("[" + nombresVector[i] + "]");
+                            }
+
+                            System.out.println("Entrando a la pantalla selección colores con 1 jugador");
+
+                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
                         }
                         break;
                     case 3:
                         // Si el textField esta vacio, mostramos un Dialog indicando el error por 1 segundo
-                        if (textField1.getText().length() == 0 || textField2.getText().length() == 0 || textField3.getText().length() == 0) {
+                        if (textField1.getText().length() == 0 || textField2.getText().length() == 0
+                                || textField3.getText().length() == 0) {
                             errorDialog.show(stage);
+                            // Modificamos su tamaño y posición (utilizando una formula x = (anchoPantalla - anchoDialog) / 2 y
+                            // lo mismo para y)
+                            errorDialog.setPosition((VIRTUAL_WIDTH - 300) / 2, (VIRTUAL_HEIGHT - 70) / 2);
+                            errorDialog.setSize(300, 70);
+                            errorDialog.text(labelDialog).center();
+
                             // Agregamos las acciones que hemos declarado previamente
                             errorDialog.addAction(acciones);
+                        }
+                        // Si los textField's tienen nombres, entonces los guardamos 
+                        else {
+                            nombresVector = new String[3];
+                            nombresVector[0] = textField1.getText();
+                            nombresVector[1] = textField2.getText();
+                            nombresVector[2] = textField3.getText();
+                            for (int i = 0; i < 3; ++i) {
+                                System.out.println("[" + nombresVector[i] + "]");
+                            }
+
+                            System.out.println("Entrando a la pantalla selección colores con 1 jugador");
+
+                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
                         }
                         break;
                 }
@@ -330,11 +428,11 @@ public class seleccionJugadorScreen implements Screen {
 
         // Agregamos el ultimo botón al table
         tableTextField.row();
-        tableTextField.add(botonSiguienteScreen).center().width(300).height(50).pad(20);
+        tableTextField.add(botonSiguienteScreen).width(300).height(50).pad(20);
 
         // Creamos una nueva fila en el tablePrincipal para agregar esa otra con todas sus cosas
         tablePrincipal.row();
-        tablePrincipal.add(tableTextField).height(VIRTUAL_HEIGHT / 2).width(VIRTUAL_WIDTH).fillX().fillY().top();
+        tablePrincipal.add(tableTextField).height(VIRTUAL_HEIGHT / 2).width(VIRTUAL_WIDTH).center();
 
         /* --------- Configuración capas y fondo --------- */
 
@@ -399,17 +497,14 @@ public class seleccionJugadorScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override

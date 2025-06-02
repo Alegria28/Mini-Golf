@@ -1,6 +1,5 @@
 package com.minigolf;
 
-// Importamos los recursos necesarios para la clase
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -10,14 +9,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -25,27 +20,32 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /**
  * Las clases que implementan son diferentes escenas que Game puede mostrar, por lo que son parte del ciclo de vida del juego (ver {@link MiniGolfMain}).
  */
-public class menuInicialScreen implements Screen {
+public class seleccionColorScreen implements Screen {
 
-    // Atributos de la clase
+    // Atributos
     private Stage stage;
-    private Table table;
+    private Table tablePrincipal;
     private Stack stack;
+
     private final MiniGolfMain game;
+    TextButtonStyle buttonStyle;
+    String[] nombres;
 
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
 
     // Constructor de la clase
-    public menuInicialScreen(final MiniGolfMain game) {
+    public seleccionColorScreen(MiniGolfMain game, TextButtonStyle buttonStyle, String[] nombres) {
         this.game = game;
+        this.buttonStyle = buttonStyle;
+        this.nombres = nombres;
     }
 
     @Override
     public void show() {
 
-        /* --------- Configuración inicial stage y table --------- */
+        /* --------- Configuración inicial stage y tablePrincipal --------- */
 
         // Creamos una cámara, que actúa como el "ojo" del juego, definiendo qué parte del mundo se mostrará en pantalla
         OrthographicCamera camera = new OrthographicCamera();
@@ -57,8 +57,10 @@ public class menuInicialScreen implements Screen {
         stage = new Stage(viewport);
         Gdx.input.setInputProcessor(stage);
 
-        // Creamos nuestro table (actor)
-        table = new Table();
+        // Creamos nuestro table principal (actor)
+        tablePrincipal = new Table();
+        // Llenara por completo a stage
+        tablePrincipal.setFillParent(true);
 
         /* --------- Configuración font --------- */
 
@@ -83,89 +85,8 @@ public class menuInicialScreen implements Screen {
         // Aplicamos la opacidad a nuestra imagen de fondo
         imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
 
-        /* --------- Agregar imagen del juego --------- */
+        /* --------- Table 1 --------- */
 
-        // Creamos la textura a partir de la imagen
-        Texture textureImagenJuego = new Texture(Gdx.files.internal("logoMiniGolf.png"));
-
-        // Creamos la imagen
-        Image imagenMiniGolf = new Image(textureImagenJuego);
-
-        // Nos alineamos en la parte superior
-        table.top();
-
-        // Agregamos la imagen a la tabla y le aplica un espacio superior (para estar separado del viewport)
-        table.add(imagenMiniGolf).padTop(30);
-
-        /* --------- Configuración de los botones --------- */
-
-        // Creamos un buttonStyle para asignarle el font creado a los botones
-        TextButtonStyle buttonStyle = new TextButtonStyle();
-        buttonStyle.font = font;
-
-        // Utilizamos la skin para obtener el diseño de los botones (fondos para los estados up y down)
-        Skin buttonSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        // Declaraciones dentro del .json
-        buttonStyle.up = buttonSkin.getDrawable("buttonUp");
-        buttonStyle.down = buttonSkin.getDrawable("buttonDown");
-        buttonStyle.over = buttonSkin.getDrawable("buttonOver");
-
-        /* --------- Creación de los botones --------- */
-
-        // Creamos el botón con el texto y el estilo que hemos definido para este
-        TextButton botonIniciar = new TextButton("Iniciar", buttonStyle);
-        botonIniciar.addListener(new InputListener() {
-            @Override
-            // Called when a mouse button or a finger touch goes down on the actor
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            // Called when a mouse button or a finger touch goes up anywhere, but only if touchDown previously returned true for the mouse
-            // button or touch
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Entrando a la pantalla de seleccion de jugadores");
-
-                // Usando la referencia del juego principal, actualizamos screen creando una screen
-                game.setScreen(new seleccionJugadorScreen(game, buttonStyle));
-            }
-        });
-
-        // Creamos el botón con el texto y el estilo que hemos definido para este
-        TextButton botonInstrucciones = new TextButton("Instrucciones", buttonStyle);
-
-        // Creamos el botón con el texto y el estilo que hemos definido para este
-        TextButton botonCreditos = new TextButton("Creditos", buttonStyle);
-
-        // Creamos el botón con el texto y el estilo que hemos definido para este
-        TextButton botonSalir = new TextButton("Salir", buttonStyle);
-        botonSalir.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                // Salimos de la aplicación
-                Gdx.app.exit();
-            }
-        });
-
-        // Indicamos que lo siguiente que se va a agregar va a estar en otra row
-        table.row();
-        // Agregamos los botones con una altura y espaciado
-        table.add(botonIniciar).center().height(70).padTop(60);
-
-        table.row();
-        table.add(botonInstrucciones).center().height(70).padTop(40);
-
-        table.row();
-        table.add(botonCreditos).center().height(70).padTop(40);
-
-        table.row();
-        table.add(botonSalir).center().height(70).padTop(40);
 
         /* --------- Configuración capas y fondo --------- */
 
@@ -177,13 +98,14 @@ public class menuInicialScreen implements Screen {
         // Añadimos primero el fondo
         stack.add(imagenFondo);
 
-        // Añadimos el table que va a estar encima de la imagen de fondo
-        stack.add(table);
+        // Añadimos el table que va a estar encima de la imagen de fondo 
+        stack.add(tablePrincipal);
 
         /* --------- Actores --------- */
 
         // Agregamos el actor que tiene el orden de los demás
         stage.addActor(stack);
+
     }
 
     @Override
@@ -204,10 +126,12 @@ public class menuInicialScreen implements Screen {
 
     @Override
     public void pause() {
+
     }
 
     @Override
     public void resume() {
+
     }
 
     @Override
