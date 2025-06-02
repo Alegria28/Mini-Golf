@@ -10,9 +10,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -23,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -45,6 +50,11 @@ public class seleccionJugadorScreen implements Screen {
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
+
+    // Para poder jugar con setVisible los marcamos como variables globales
+    private TextField textField1;
+    private TextField textField2;
+    private TextField textField3;
 
     // Constructor de la clase
     public seleccionJugadorScreen(MiniGolfMain game, TextButtonStyle buttonStyle) {
@@ -100,7 +110,6 @@ public class seleccionJugadorScreen implements Screen {
         // Creamos el table para el label y los 3 botones
         Table tableArriba = new Table();
         tableArriba.center();
-        tableArriba.setDebug(true);
 
         // Creamos el estilo para nuestro label
         LabelStyle labelPrincipalStyle = new LabelStyle();
@@ -188,9 +197,23 @@ public class seleccionJugadorScreen implements Screen {
         tableArriba.add(boton3Jugador).height(70);
 
         // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
-        tablePrincipal.add(tableArriba).height(VIRTUAL_HEIGHT / 3).width(VIRTUAL_WIDTH).fillX().fillY().bottom();
+        tablePrincipal.add(tableArriba).height(VIRTUAL_HEIGHT / 5).width(VIRTUAL_WIDTH).fillX().fillY().bottom();
 
         /* ---------  Table 2 --------- */
+
+        /*  Configuración font para los text fields */
+
+        // Cargamos la tipografía que se utilizara
+        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Inter-Variable.ttf"));
+        // Creamos un objeto para modificar las características de esta tipografía
+        fontParameter = new FreeTypeFontParameter();
+        fontParameter.size = 25;
+        fontParameter.padLeft = 10;
+        fontParameter.padRight = 10;
+        // Creamos el font con las características nuevas
+        BitmapFont fontTextFields = fontGenerator.generateFont(fontParameter);
+        // Ya que ya no lo vamos a ocupar, podemos liberarlo
+        fontGenerator.dispose();
 
         // Creamos el table para los 3 textFields's
         tableTextField = new Table();
@@ -199,7 +222,7 @@ public class seleccionJugadorScreen implements Screen {
         // Creamos el estilo para nuestros textField's
         TextFieldStyle textFieldStyle = new TextFieldStyle();
         // Cambiamos su font y color
-        textFieldStyle.font = font;
+        textFieldStyle.font = fontTextFields;
         textFieldStyle.fontColor = Color.WHITE;
 
         // Utilizamos la skin para obtener el diseño de los textField (fondos para los estados up y down)
@@ -210,25 +233,104 @@ public class seleccionJugadorScreen implements Screen {
         textFieldStyle.selection = textFieldSkin.getDrawable("selection");
 
         // Creamos el textField
-        TextField textField1 = new TextField("", textFieldStyle);
+        textField1 = new TextField("", textFieldStyle);
+        // Definimos el tamaño máximo que puede almacenar
+        textField1.setMaxLength(10);
+        // El texto va a estar alineado al centro
+        textField1.setAlignment(Align.center);
         // Agregamos este textField a la tabla dedicada
-        tableTextField.add(textField1).center().width(300).height(40).pad(50);
+        tableTextField.add(textField1).center().width(300).height(50).pad(50);
 
         // Cambiamos de fila
         tableTextField.row();
 
         // Creamos el textField
-        TextField textField2 = new TextField("", textFieldStyle);
+        textField2 = new TextField("", textFieldStyle);
+        // Definimos el tamaño máximo que puede almacenar
+        textField2.setMaxLength(10);
+        // El texto va a estar alineado al centro
+        textField2.setAlignment(Align.center);
         // Agregamos este textField a la tabla dedicada
-        tableTextField.add(textField2).center().width(300).height(40).pad(50);
+        tableTextField.add(textField2).center().width(300).height(50).pad(50);
 
         // Cambiamos de fila
         tableTextField.row();
 
         // Creamos el textField
-        TextField textField3 = new TextField("", textFieldStyle);
+        textField3 = new TextField("", textFieldStyle);
+        // Definimos el tamaño máximo que puede almacenar
+        textField3.setMaxLength(10);
+        // El texto va a estar alineado al centro
+        textField3.setAlignment(Align.center);
         // Agregamos este textField a la tabla dedicada
-        tableTextField.add(textField3).center().width(300).height(40).pad(50);
+        tableTextField.add(textField3).center().width(300).height(50).pad(50);
+
+        // Creamos un botón para pasar a la siguiente screen con el numero de jugadores
+        TextButton botonSiguienteScreen = new TextButton("Siguiente", buttonStyle);
+        botonSiguienteScreen.addListener(new InputListener() {
+
+            @Override
+            // Called when a mouse button or a finger touch goes down on the actor
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            // Called when a mouse button or a finger touch goes up anywhere, but only if touchDown previously returned true for the mouse
+            // button or touch
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
+                // Cargamos la skin para el Dialog que vamos a usar
+                Skin errorDialogSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+                // Creamos un Dialog
+                
+                Dialog errorDialog = new Dialog("¡Todos los campos deben de estar llenos!", errorDialogSkin);
+
+                // Creamos una instancia de acciones
+                SequenceAction acciones = new SequenceAction();
+                // Creamos y agregamos las acciones que se van a ejecutar
+                acciones.addAction(Actions.delay(5));
+                acciones.addAction(new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        errorDialog.hide();
+                        return true;
+                    }
+                });
+
+                // Antes de pasar a la siguiente pantalla, verificamos si los textField no están vacíos (según el numero de jugadores seleccionados)
+                switch (numeroJugadores) {
+                    case 1:
+                        // Si el textField esta vacio, mostramos un Dialog indicando el error por 1 segundo
+                        if (textField1.getText().length() == 0) {
+                            errorDialog.show(stage);
+                            // Agregamos las acciones que hemos declarado previamente
+                            errorDialog.addAction(acciones);
+                        }
+                        break;
+                    case 2:
+                        // Si el textField esta vacio, mostramos un Dialog indicando el error por 1 segundo
+                        if (textField1.getText().length() == 0 || textField2.getText().length() == 0) {
+                            errorDialog.show(stage);
+                            // Agregamos las acciones que hemos declarado previamente
+                            errorDialog.addAction(acciones);
+                        }
+                        break;
+                    case 3:
+                        // Si el textField esta vacio, mostramos un Dialog indicando el error por 1 segundo
+                        if (textField1.getText().length() == 0 || textField2.getText().length() == 0 || textField3.getText().length() == 0) {
+                            errorDialog.show(stage);
+                            // Agregamos las acciones que hemos declarado previamente
+                            errorDialog.addAction(acciones);
+                        }
+                        break;
+                }
+            }
+        });
+
+        // Agregamos el ultimo botón al table
+        tableTextField.row();
+        tableTextField.add(botonSiguienteScreen).center().width(300).height(50).pad(20);
 
         // Creamos una nueva fila en el tablePrincipal para agregar esa otra con todas sus cosas
         tablePrincipal.row();
@@ -262,6 +364,30 @@ public class seleccionJugadorScreen implements Screen {
         stage.act(Gdx.graphics.getDeltaTime());
         // Dibujamos los estados en su nuevo estado
         stage.draw();
+
+        // En cada frame, verificamos que textfield se va a mostrar
+        switch (numeroJugadores) {
+            case 0:
+                textField1.setVisible(false);
+                textField2.setVisible(false);
+                textField3.setVisible(false);
+                break;
+            case 1:
+                textField1.setVisible(true);
+                textField2.setVisible(false);
+                textField3.setVisible(false);
+                break;
+            case 2:
+                textField1.setVisible(true);
+                textField2.setVisible(true);
+                textField3.setVisible(false);
+                break;
+            case 3:
+                textField1.setVisible(true);
+                textField2.setVisible(true);
+                textField3.setVisible(true);
+                break;
+        }
 
     }
 

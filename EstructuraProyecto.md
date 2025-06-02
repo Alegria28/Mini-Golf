@@ -55,10 +55,10 @@ La forma más común de iniciar tu juego en el escritorio es:
         ```
     *   En Linux y macOS:
         ```bash
-        gradlew lwjgl3:run
+        gradle lwjgl3:run
         ```
         ```bash
-        gradle lwjgl3:run
+        gradlew lwjgl3:run
         ```
 
     La primera vez que ejecutes esto, Gradle descargará las dependencias necesarias (incluyendo la propia versión de Gradle si no está presente). Esto puede tardar unos minutos. Después, tu juego debería compilarse y aparecer una ventana con la pantalla de inicio predeterminada de LibGDX.

@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "java (build)",
+            "paths": [
+                "${workspace}"
+            ],
+            "isFullBuild": true,
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "label": "java (build): Build Workspace",
+            "detail": "$(tools) Build all the Java projects in workspace."
+        },
+        {
+            "type": "shell",
+            "command": "gradle",
+            "args": ["lwjgl3:run"],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "label": "gradle: Run LWJGL3",
+            "detail": "Run the LWJGL3 desktop application",
+            "options": {
+                "cwd": "${workspaceFolder}/proyectoGradle"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
