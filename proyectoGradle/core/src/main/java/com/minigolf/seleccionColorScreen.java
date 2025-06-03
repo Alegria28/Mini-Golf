@@ -26,6 +26,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 /**
  * Las clases que implementan son diferentes escenas que Game puede mostrar, por lo que son parte del ciclo de vida del juego (ver {@link MiniGolfMain}).
@@ -130,9 +132,57 @@ public class seleccionColorScreen implements Screen {
 
         // Creamos el botón con un color obtenido del Drawable que retorna la función
         Button botonColor1 = new Button(crearDrawable(255, 255, 255)); // Blanco
+        botonColor1.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color blanco seleccionado");
+            }
+        });
+
         Button botonColor2 = new Button(crearDrawable(0, 255, 0)); // Verde
+        botonColor2.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color verde seleccionado");
+            }
+        });
+
         Button botonColor3 = new Button(crearDrawable(255, 255, 0)); // Amarillo
+        botonColor3.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color amarillo seleccionado");
+            }
+        });
+
         Button botonColor4 = new Button(crearDrawable(0, 0, 255)); // Azul
+        botonColor4.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color azul seleccionado");
+            }
+        });
+
         // Agregamos los primeros 4 colores a la tabla
         tableBotones.add(botonColor1).width(100).height(100).pad(10);
         tableBotones.add(botonColor2).width(100).height(100).pad(10);
@@ -144,9 +194,57 @@ public class seleccionColorScreen implements Screen {
 
         // Creamos el botón con un color obtenido del Drawable que retorna la función
         Button botonColor5 = new Button(crearDrawable(255, 0, 0)); // Rojo
+        botonColor5.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color rojo seleccionado");
+            }
+        });
+
         Button botonColor6 = new Button(crearDrawable(255, 0, 255)); // Rosa
+        botonColor6.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color rosa seleccionado");
+            }
+        });
+
         Button botonColor7 = new Button(crearDrawable(0, 255, 255)); // Cyan
+        botonColor7.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color cyan seleccionado");
+            }
+        });
+
         Button botonColor8 = new Button(crearDrawable(120, 0, 190)); // Morado
+        botonColor8.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Color morado seleccionado");
+            }
+        });
+
         // Agregamos los siguientes 4 colores a la tabla
         tableBotones.add(botonColor5).width(100).height(100).pad(10);
         tableBotones.add(botonColor6).width(100).height(100).pad(10);
@@ -160,6 +258,17 @@ public class seleccionColorScreen implements Screen {
 
         // Creamos un botón para iniciar el juego
         TextButton botonIniciar = new TextButton("Iniciar", buttonStyle);
+        botonIniciar.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Iniciando juego");
+            }
+        });
 
         // Agregamos el botón de iniciar centrado debajo de los colores
         tableBotones.add(botonIniciar).colspan(4).center().width(300).height(70).pad(30);
