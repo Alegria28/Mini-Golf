@@ -362,7 +362,7 @@ public class seleccionJugadorScreen implements Screen {
 
                             System.out.println("Entrando a la pantalla selección colores con 1 jugador");
 
-                            game.setScreen(new seleccionColorScreen(game, nombresVector));
+                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
                         }
                         break;
                     case 2:
@@ -389,7 +389,7 @@ public class seleccionJugadorScreen implements Screen {
 
                             System.out.println("Entrando a la pantalla selección colores con 1 jugador");
 
-                            game.setScreen(new seleccionColorScreen(game, nombresVector));
+                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
                         }
                         break;
                     case 3:
@@ -418,7 +418,7 @@ public class seleccionJugadorScreen implements Screen {
 
                             System.out.println("Entrando a la pantalla selección colores con 1 jugador");
 
-                            game.setScreen(new seleccionColorScreen(game, nombresVector));
+                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
                         }
                         break;
                 }

@@ -21,7 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -36,6 +38,7 @@ public class seleccionColorScreen implements Screen {
     private Stack stack;
 
     private final MiniGolfMain game;
+    TextButtonStyle buttonStyle;
     String[] nombres;
 
     // Dimensiones virtuales (buena practica para el diseño)
@@ -43,8 +46,9 @@ public class seleccionColorScreen implements Screen {
     private final float VIRTUAL_HEIGHT = 900;
 
     // Constructor de la clase
-    public seleccionColorScreen(MiniGolfMain game, String[] nombres) {
+    public seleccionColorScreen(MiniGolfMain game, TextButtonStyle buttonStyle, String[] nombres) {
         this.game = game;
+        this.buttonStyle = buttonStyle;
         this.nombres = nombres;
     }
 
@@ -93,6 +97,9 @@ public class seleccionColorScreen implements Screen {
 
         /* --------- Table 1 --------- */
 
+        // Creamos el table para el label de información
+        Table tableArriba = new Table();
+
         // Creamos el estilo para nuestro label
         LabelStyle labelPrincipalStyle = new LabelStyle();
         // Cambiamos su font
@@ -100,16 +107,26 @@ public class seleccionColorScreen implements Screen {
         // El color va a ser blanco
         labelPrincipalStyle.fontColor = Color.WHITE;
 
-        // Utilizaremos un label para indicar el nombre del jugador a que le toca elegir color
+        // Utilizaremos un label para indicar el nombre del jugador a que le toca elegir color el cual va a estar centrado
         Label informacionJugador = new Label("Prueba", labelPrincipalStyle);
+        informacionJugador.setAlignment(Align.center);
 
-        // Lo agregamos a nuestro table
-        tablePrincipal.add(informacionJugador).center().top();
+        // Agregamos el label al table de arriba
+        tableArriba.add(informacionJugador).center();
+        tableArriba.center();
+
+        // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
+        tablePrincipal.add(tableArriba).height(VIRTUAL_HEIGHT / 5).width(VIRTUAL_WIDTH).center();
+
+        /* --------- Table 2 --------- */
+
+        // Creamos una nueva fila en el tablePrincipal para agregar la segunda tabla
+        tablePrincipal.row();
+
+        // Creamos el table para los botones de colores
+        Table tableBotones = new Table();
 
         /* --------- Botones para colores --------- */
-
-        // Indicamos que lo siguiente que se va a agregar va a estar en otra row
-        tablePrincipal.row();
 
         // Creamos el botón con un color obtenido del Drawable que retorna la función
         Button botonColor1 = new Button(crearDrawable(255, 255, 255)); // Blanco
@@ -117,24 +134,38 @@ public class seleccionColorScreen implements Screen {
         Button botonColor3 = new Button(crearDrawable(255, 255, 0)); // Amarillo
         Button botonColor4 = new Button(crearDrawable(0, 0, 255)); // Azul
         // Agregamos los primeros 4 colores a la tabla
-        tablePrincipal.add(botonColor1).width(100).height(100);
-        tablePrincipal.add(botonColor2).width(100).height(100);
-        tablePrincipal.add(botonColor3).width(100).height(100);
-        tablePrincipal.add(botonColor4).width(100).height(100);
+        tableBotones.add(botonColor1).width(100).height(100).pad(10);
+        tableBotones.add(botonColor2).width(100).height(100).pad(10);
+        tableBotones.add(botonColor3).width(100).height(100).pad(10);
+        tableBotones.add(botonColor4).width(100).height(100).pad(10);
 
         // Indicamos que lo siguiente que se va a agregar va a estar en otra row
-        tablePrincipal.row();
+        tableBotones.row();
 
         // Creamos el botón con un color obtenido del Drawable que retorna la función
         Button botonColor5 = new Button(crearDrawable(255, 0, 0)); // Rojo
         Button botonColor6 = new Button(crearDrawable(255, 0, 255)); // Rosa
         Button botonColor7 = new Button(crearDrawable(0, 255, 255)); // Cyan
         Button botonColor8 = new Button(crearDrawable(120, 0, 190)); // Morado
-        // Agregamos los primeros 4 colores a la tabla
-        tablePrincipal.add(botonColor5).width(100).height(100);
-        tablePrincipal.add(botonColor6).width(100).height(100);
-        tablePrincipal.add(botonColor7).width(100).height(100);
-        tablePrincipal.add(botonColor8).width(100).height(100);
+        // Agregamos los siguientes 4 colores a la tabla
+        tableBotones.add(botonColor5).width(100).height(100).pad(10);
+        tableBotones.add(botonColor6).width(100).height(100).pad(10);
+        tableBotones.add(botonColor7).width(100).height(100).pad(10);
+        tableBotones.add(botonColor8).width(100).height(100).pad(10);
+
+        /* --------- Botón iniciar --------- */
+
+        // Creamos una nueva fila para el botón de iniciar
+        tableBotones.row();
+
+        // Creamos un botón para iniciar el juego
+        TextButton botonIniciar = new TextButton("Iniciar", buttonStyle);
+
+        // Agregamos el botón de iniciar centrado debajo de los colores
+        tableBotones.add(botonIniciar).colspan(4).center().width(300).height(70).pad(30);
+
+        // Agregamos el table de botones al tablePrincipal
+        tablePrincipal.add(tableBotones).height(VIRTUAL_HEIGHT * 3 / 5).width(VIRTUAL_WIDTH).center();
 
         /* --------- Configuración capas y fondo --------- */
 
