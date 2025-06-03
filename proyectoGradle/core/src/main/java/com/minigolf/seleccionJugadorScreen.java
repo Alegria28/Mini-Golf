@@ -237,7 +237,6 @@ public class seleccionJugadorScreen implements Screen {
         // Creamos el table para los 3 textFields's
         tableTextField = new Table();
 
-
         // Creamos el estilo para nuestros textField's
         TextFieldStyle textFieldStyle = new TextFieldStyle();
         // Cambiamos su font y color
@@ -363,7 +362,7 @@ public class seleccionJugadorScreen implements Screen {
 
                             System.out.println("Entrando a la pantalla selección colores con 1 jugador");
 
-                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
+                            game.setScreen(new seleccionColorScreen(game, nombresVector));
                         }
                         break;
                     case 2:
@@ -390,7 +389,7 @@ public class seleccionJugadorScreen implements Screen {
 
                             System.out.println("Entrando a la pantalla selección colores con 1 jugador");
 
-                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
+                            game.setScreen(new seleccionColorScreen(game, nombresVector));
                         }
                         break;
                     case 3:
@@ -419,7 +418,7 @@ public class seleccionJugadorScreen implements Screen {
 
                             System.out.println("Entrando a la pantalla selección colores con 1 jugador");
 
-                            game.setScreen(new seleccionColorScreen(game, buttonStyle, nombresVector));
+                            game.setScreen(new seleccionColorScreen(game, nombresVector));
                         }
                         break;
                 }

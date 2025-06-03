@@ -1,3 +1,4 @@
+// cspell: ignore pixmap
 package com.minigolf;
 
 import com.badlogic.gdx.Gdx;
@@ -5,15 +6,22 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -28,7 +36,6 @@ public class seleccionColorScreen implements Screen {
     private Stack stack;
 
     private final MiniGolfMain game;
-    TextButtonStyle buttonStyle;
     String[] nombres;
 
     // Dimensiones virtuales (buena practica para el diseño)
@@ -36,9 +43,8 @@ public class seleccionColorScreen implements Screen {
     private final float VIRTUAL_HEIGHT = 900;
 
     // Constructor de la clase
-    public seleccionColorScreen(MiniGolfMain game, TextButtonStyle buttonStyle, String[] nombres) {
+    public seleccionColorScreen(MiniGolfMain game, String[] nombres) {
         this.game = game;
-        this.buttonStyle = buttonStyle;
         this.nombres = nombres;
     }
 
@@ -87,6 +93,48 @@ public class seleccionColorScreen implements Screen {
 
         /* --------- Table 1 --------- */
 
+        // Creamos el estilo para nuestro label
+        LabelStyle labelPrincipalStyle = new LabelStyle();
+        // Cambiamos su font
+        labelPrincipalStyle.font = font;
+        // El color va a ser blanco
+        labelPrincipalStyle.fontColor = Color.WHITE;
+
+        // Utilizaremos un label para indicar el nombre del jugador a que le toca elegir color
+        Label informacionJugador = new Label("Prueba", labelPrincipalStyle);
+
+        // Lo agregamos a nuestro table
+        tablePrincipal.add(informacionJugador).center().top();
+
+        /* --------- Botones para colores --------- */
+
+        // Indicamos que lo siguiente que se va a agregar va a estar en otra row
+        tablePrincipal.row();
+
+        // Creamos el botón con un color obtenido del Drawable que retorna la función
+        Button botonColor1 = new Button(crearDrawable(255, 255, 255)); // Blanco
+        Button botonColor2 = new Button(crearDrawable(0, 255, 0)); // Verde
+        Button botonColor3 = new Button(crearDrawable(255, 255, 0)); // Amarillo
+        Button botonColor4 = new Button(crearDrawable(0, 0, 255)); // Azul
+        // Agregamos los primeros 4 colores a la tabla
+        tablePrincipal.add(botonColor1).width(100).height(100);
+        tablePrincipal.add(botonColor2).width(100).height(100);
+        tablePrincipal.add(botonColor3).width(100).height(100);
+        tablePrincipal.add(botonColor4).width(100).height(100);
+
+        // Indicamos que lo siguiente que se va a agregar va a estar en otra row
+        tablePrincipal.row();
+
+        // Creamos el botón con un color obtenido del Drawable que retorna la función
+        Button botonColor5 = new Button(crearDrawable(255, 0, 0)); // Rojo
+        Button botonColor6 = new Button(crearDrawable(255, 0, 255)); // Rosa
+        Button botonColor7 = new Button(crearDrawable(0, 255, 255)); // Cyan
+        Button botonColor8 = new Button(crearDrawable(120, 0, 190)); // Morado
+        // Agregamos los primeros 4 colores a la tabla
+        tablePrincipal.add(botonColor5).width(100).height(100);
+        tablePrincipal.add(botonColor6).width(100).height(100);
+        tablePrincipal.add(botonColor7).width(100).height(100);
+        tablePrincipal.add(botonColor8).width(100).height(100);
 
         /* --------- Configuración capas y fondo --------- */
 
@@ -143,5 +191,26 @@ public class seleccionColorScreen implements Screen {
     public void dispose() {
         // Limpiamos y liberamos todos los recursos cargados
         stage.dispose();
+    }
+
+    public Drawable crearDrawable(float r, float g, float b) {
+
+        // Información de https://shorturl.at/mCaWx
+
+        // Creamos un pixmap, lo cual es un "lienzo" donde se puede dibujar pixel por pixel, en este caso solo hacemos un lienzo de 1x1 pixeles con un formato RGBA con
+        // 8 bits en cada canal
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        // Primero cargamos el color que va a tener este pixel (pixmap tiene un formato normalizado de 0-1 en lugar de 0-255, por lo que dividimos entre 255 para poder
+        // obtener el formato normalizado)
+        pixmap.setColor(new Color(r / 255f, g / 255f, b / 255f, 1f));
+        // Ahora si pintamos este pixel con el color cargado
+        pixmap.fill();
+
+        // Creamos una textura a partir de este pixmap
+        Texture textureColor = new Texture(pixmap);
+        // Creamos un drawable a partir de la textura
+        Drawable colorBoton = new TextureRegionDrawable(new TextureRegion(textureColor));
+
+        return colorBoton;
     }
 }
