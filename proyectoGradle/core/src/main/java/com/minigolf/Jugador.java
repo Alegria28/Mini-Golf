@@ -1,7 +1,9 @@
 package com.minigolf;
 
-import com.badlogic.gdx.graphics.Color;
 import java.util.ArrayList;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.physics.box2d.Body;
 
 // Clase que va a representar a cada jugador
 public class Jugador {
@@ -12,6 +14,7 @@ public class Jugador {
     private ArrayList<Integer> puntajePorHoyo;
     private int puntajeTotal;
     private int strokesActuales;
+    private Body bolaJugador;
 
     // Constructor de la clase
     public Jugador(String nombre, Color colorBola) {
@@ -43,6 +46,10 @@ public class Jugador {
         return strokesActuales;
     }
 
+    public Body getBolaJugador() {
+        return bolaJugador;
+    }
+
     // Setters
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -52,11 +59,15 @@ public class Jugador {
         this.colorBola = colorBola;
     }
 
+    public void setBolaJugador(Body bolaJugador) {
+        this.bolaJugador = bolaJugador;
+    }
+
+    // Métodos de la clase
     public void incrementarStrokes() {
         this.strokesActuales++;
     }
 
-    // Métodos de la clase
     public void reiniciarStrokes() {
         this.strokesActuales = 0;
     }

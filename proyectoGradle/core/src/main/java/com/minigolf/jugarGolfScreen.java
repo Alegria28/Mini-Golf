@@ -3,24 +3,28 @@ package com.minigolf;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -34,6 +38,9 @@ public class jugarGolfScreen implements Screen {
     private Stage stage;
     Texture textureFondo;
     private Stack stack;
+    private Table tablePrincipal;
+    private Label infoLabel;
+    private BitmapFont font;
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
@@ -58,19 +65,43 @@ public class jugarGolfScreen implements Screen {
     @Override
     public void show() {
 
-        /* --------- Configuración inicial stage --------- */
+        // Instancia de la clase que maneja los eventos, mandando nuestro ArrayList y el mundo creado
+        manejoEventos eventos = new manejoEventos(jugadores, mundoBox2d);
+
+        // Creamos un InputMultiplexer para manejar varios eventos
+        InputMultiplexer multiplexer = new InputMultiplexer();
+
+        /* --------- Configuración inicial stage y eventos --------- */
         camera = new OrthographicCamera();
         Viewport viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 
         // Creamos el stage
         stage = new Stage(viewport);
-        Gdx.input.setInputProcessor(stage);
+
+        // Agregamos este evento al multiplexer
+        multiplexer.addProcessor(stage); // El UI tiene prioridad antes que la clase
+        // Después, nuestra clase
+        multiplexer.addProcessor(eventos);
 
         // Al mostrar esta pantalla, mostramos la información de los jugadores
         System.out.println("Iniciando juego con " + jugadores.size() + " jugadores:");
         for (Jugador jugador : jugadores) {
             System.out.println(jugador);
         }
+
+        /* --------- Configuración font --------- */
+
+        // Cargamos la tipografía que se utilizara
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Inter-Variable.ttf"));
+        // Creamos un objeto para modificar las características de esta tipografía
+        FreeTypeFontParameter fontParameter = new FreeTypeFontParameter();
+        fontParameter.size = 40;
+        fontParameter.padLeft = 10;
+        fontParameter.padRight = 10;
+        // Creamos el font con las características nuevas
+        font = fontGenerator.generateFont(fontParameter);
+        // Ya que ya no lo vamos a ocupar, podemos liberarlo
+        fontGenerator.dispose();
 
         /* --------- Configuración imagen fondo --------- */
 
@@ -80,6 +111,58 @@ public class jugarGolfScreen implements Screen {
         Image imagenFondo = new Image(textureFondo);
         // Aplicamos la opacidad a nuestra imagen de fondo
         imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
+
+        /* --------- Configuración tablePrincipal --------- */
+
+        // Creamos nuestro table principal (actor)
+        tablePrincipal = new Table();
+        // Llenara por completo a stage
+        tablePrincipal.setFillParent(true);
+        // Alineamos todo hacia arriba
+        tablePrincipal.top();
+
+        /* --------- Table para label información --------- */
+
+        // Creamos el table para el label de información
+        Table tableArriba = new Table();
+
+        // Creamos el estilo para nuestro label
+        LabelStyle labelPrincipalStyle = new LabelStyle();
+        // Cambiamos su font
+        labelPrincipalStyle.font = font;
+        // El color va a ser blanco
+        labelPrincipalStyle.fontColor = Color.WHITE;
+
+        // Utilizaremos un label para mostrar información del juego
+        infoLabel = new Label("INFORMACIÓN", labelPrincipalStyle);
+        infoLabel.setAlignment(Align.center);
+
+        // Agregamos el label al table de arriba
+        tableArriba.add(infoLabel).center();
+        tableArriba.center();
+
+        // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
+        // Usamos una altura específica para que quede justo arriba de las paredes
+        tablePrincipal.add(tableArriba).height(90).width(VIRTUAL_WIDTH).center();
+        
+        // Agregamos una nueva fila para el área de juego
+        tablePrincipal.row();
+
+        /* --------- Table para juego --------- */
+        
+        // Creamos un table vacío para el área de juego (donde están las paredes Box2D)
+        Table tableJuego = new Table();
+        // Este table ocupará el espacio donde están las paredes (desde y=90 hasta y=810)
+        tablePrincipal.add(tableJuego).height(720).width(720).center();
+        
+        // Agregamos una nueva fila para el espacio inferior
+        tablePrincipal.row();
+
+        /* --------- Table abajo juego --------- */
+        
+        // Creamos un table vacío para el espacio inferior
+        Table tableAbajo = new Table();
+        tablePrincipal.add(tableAbajo).height(90).width(VIRTUAL_WIDTH).center();
 
         /* --------- Pared 1 --------- */
 
@@ -162,33 +245,6 @@ public class jugarGolfScreen implements Screen {
         // Liberamos el polígono
         pared4Shape.dispose();
 
-        /* --------- Creación bola --------- */
-
-        // Definimos un BodyDef para la bola
-        BodyDef bolaBodyDef = new BodyDef();
-        // Establecemos el tipo de cuerpo como dinámico (se mueve y responde a fuerzas)
-        bolaBodyDef.type = BodyType.DynamicBody;
-        // Establecemos la posición inicial de la bola en el centro del mundo virtual
-        bolaBodyDef.position.set(VIRTUAL_WIDTH / 2f, VIRTUAL_HEIGHT / 2f);
-
-        // Creamos el Body de la bola en el mundo de Box2D usando la definición anterior
-        Body bolaBody = mundoBox2d.createBody(bolaBodyDef);
-
-        // Creamos una forma circular para la bola y establecemos su radio
-        CircleShape bolaShape = new CircleShape();
-        bolaShape.setRadius(10f);
-
-        // Creamos una FixtureDef para definir las propiedades físicas de la bola
-        FixtureDef bolaFixtureDef = new FixtureDef();
-        bolaFixtureDef.shape = bolaShape;
-        bolaFixtureDef.friction = 0.4f;
-
-        // Creamos la fixture y la unimos al cuerpo de la bola
-        bolaBody.createFixture(bolaFixtureDef);
-
-        // Liberamos la memoria de la forma una vez que ya no se necesita
-        bolaShape.dispose();
-
         /* --------- Configuración capas y fondo --------- */
 
         // Iniciamos nuestro stack para tener "capas" de nuestros actores
@@ -199,11 +255,16 @@ public class jugarGolfScreen implements Screen {
         // Añadimos primero el fondo
         stack.add(imagenFondo);
 
+        // Añadimos el table que va a estar encima de la imagen de fondo 
+        stack.add(tablePrincipal);
+
         /* --------- Actores --------- */
+
+        // Agregamos por ultimo los eventos en el multiplexer
+        Gdx.input.setInputProcessor(multiplexer);
 
         // Agregamos el actor que tiene el orden de los demás
         stage.addActor(stack);
-
     }
 
     @Override
@@ -247,5 +308,6 @@ public class jugarGolfScreen implements Screen {
         mundoBox2d.dispose();
         debugRenderer.dispose();
         textureFondo.dispose();
+        font.dispose();
     }
 }
