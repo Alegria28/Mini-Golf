@@ -49,6 +49,9 @@ public class jugarGolfScreen implements Screen {
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
 
+    // Variable para tener un control de turno durante el juego
+    private int turnoActual = 0;
+
     /* --------- Atributos motor físico Box2D --------- */
 
     // Creamos nuestro mundo sin gravedad
@@ -134,7 +137,7 @@ public class jugarGolfScreen implements Screen {
         labelPrincipalStyle.fontColor = Color.WHITE;
 
         // Utilizaremos un label para mostrar información del juego
-        infoLabel = new Label("INFORMACIÓN", labelPrincipalStyle);
+        infoLabel = new Label("", labelPrincipalStyle);
         infoLabel.setAlignment(Align.center);
 
         // Agregamos el label al table de arriba
@@ -279,6 +282,23 @@ public class jugarGolfScreen implements Screen {
         stage.draw();
         // Dibujamos nuestro mundo
         debugRenderer.render(mundoBox2d, camera.combined);
+
+        // Verificamos si el turno actual tiene bola, de no ser asi, entonces esperamos a que la coloque
+        if (jugadores.get(turnoActual).getBolaJugador() == null){
+            infoLabel.setText("Colocar bola para: " + jugadores.get(turnoActual).getNombre());
+        }
+        // Si el jugador tiene bola, significa que puede 
+        else if (jugadores.get(turnoActual).getBolaJugador() != null){
+
+        }
+        // Si tiene bola entonces pasamos al siguiente jugador para que también la coloque
+        else{
+            // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
+            // nuestro contador
+            if (turnoActual + 1 == jugadores.size()){
+                turnoActual = 0;
+            }
+        }
     }
 
     @Override
