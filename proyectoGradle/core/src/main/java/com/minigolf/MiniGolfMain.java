@@ -11,11 +11,10 @@ public class MiniGolfMain extends Game {
     /* Ciclo de vida del juego */
 
     @Override
+    // Method called once when the application is created.
     public void create() {
-
         // Establecemos la pantalla inicial del juego como el menú principal
         this.setScreen(new menuInicialScreen(this));
-        
     }
 
     // This method is called by the game loop from the application every time (cada fotograma) rendering should be performed.

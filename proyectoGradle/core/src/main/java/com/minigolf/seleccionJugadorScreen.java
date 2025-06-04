@@ -39,6 +39,7 @@ public class seleccionJugadorScreen implements Screen {
     // Atributos
     private Stage stage;
     private Table tablePrincipal;
+    Texture textureFondo;
     private Table tableTextField;
     private Stack stack;
 
@@ -103,7 +104,7 @@ public class seleccionJugadorScreen implements Screen {
         /* --------- Configuración imagen fondo --------- */
 
         // Creamos la textura a partir de la imagen
-        Texture textureFondo = new Texture(Gdx.files.internal("fondoInicio.png"));
+        textureFondo = new Texture(Gdx.files.internal("fondoInicio.png"));
         // Creamos la imagen
         Image imagenFondo = new Image(textureFondo);
         // Aplicamos la opacidad a nuestra imagen de fondo
@@ -510,5 +511,6 @@ public class seleccionJugadorScreen implements Screen {
     public void dispose() {
         // Limpiamos y liberamos todos los recursos cargados
         stage.dispose();
+        textureFondo.dispose();
     }
 }

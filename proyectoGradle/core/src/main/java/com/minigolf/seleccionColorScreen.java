@@ -1,6 +1,8 @@
 // cspell: ignore pixmap
 package com.minigolf;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -38,6 +40,11 @@ public class seleccionColorScreen implements Screen {
     private Stage stage;
     private Table tablePrincipal;
     private Stack stack;
+    Label informacionJugador;
+    TextButton botonIniciar;
+
+    // Creamos un ArrayList para texturas, y que sea mas fácil limpiarlas
+    private ArrayList<Texture> texturasColores = new ArrayList<Texture>();
 
     private final MiniGolfMain game;
     TextButtonStyle buttonStyle;
@@ -46,6 +53,11 @@ public class seleccionColorScreen implements Screen {
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
+
+    // Indice para el vector nombres que recibimos
+    private int indiceVector = 0;
+    // Lista para almacenar la información de los jugadores
+    private ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 
     // Constructor de la clase
     public seleccionColorScreen(MiniGolfMain game, TextButtonStyle buttonStyle, String[] nombres) {
@@ -97,6 +109,9 @@ public class seleccionColorScreen implements Screen {
         // Aplicamos la opacidad a nuestra imagen de fondo
         imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
 
+        // Agregamos el Texture a nuestro array
+        texturasColores.add(textureFondo);
+
         /* --------- Table 1 --------- */
 
         // Creamos el table para el label de información
@@ -110,7 +125,7 @@ public class seleccionColorScreen implements Screen {
         labelPrincipalStyle.fontColor = Color.WHITE;
 
         // Utilizaremos un label para indicar el nombre del jugador a que le toca elegir color el cual va a estar centrado
-        Label informacionJugador = new Label("Prueba", labelPrincipalStyle);
+        informacionJugador = new Label("", labelPrincipalStyle);
         informacionJugador.setAlignment(Align.center);
 
         // Agregamos el label al table de arriba
@@ -141,6 +156,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color blanco seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(1, 1, 1, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor1.setVisible(false);
             }
         });
 
@@ -154,6 +176,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color verde seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 1f, 0f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor2.setVisible(false);
             }
         });
 
@@ -167,6 +196,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color amarillo seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 1f, 0f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor3.setVisible(false);
             }
         });
 
@@ -180,6 +216,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color azul seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 0f, 1f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor4.setVisible(false);
             }
         });
 
@@ -203,6 +246,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color rojo seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 0f, 0f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor5.setVisible(false);
             }
         });
 
@@ -216,6 +266,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color rosa seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 0f, 1f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor6.setVisible(false);
             }
         });
 
@@ -229,6 +286,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color cyan seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 1f, 1f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor7.setVisible(false);
             }
         });
 
@@ -242,6 +306,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Color morado seleccionado");
+
+                // Creamos y agregamos la instancia de Jugador a nuestra lista
+                jugadores.add(new Jugador(nombres[indiceVector], new Color(120f / 255f, 0f, 190f / 255f, 1f)));
+                // Aumentamos el indice del vector
+                indiceVector++;
+                // Ocultamos este botón ya que no esta disponible
+                botonColor8.setVisible(false);
             }
         });
 
@@ -257,7 +328,7 @@ public class seleccionColorScreen implements Screen {
         tableBotones.row();
 
         // Creamos un botón para iniciar el juego
-        TextButton botonIniciar = new TextButton("Iniciar", buttonStyle);
+        botonIniciar = new TextButton("Iniciar", buttonStyle);
         botonIniciar.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -267,8 +338,13 @@ public class seleccionColorScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Iniciando juego");
+                // Cambiar a la pantalla del juego de golf
+                game.setScreen(new jugarGolfScreen(game, jugadores));
             }
         });
+
+        // Lo ocultamos por ahora
+        botonIniciar.setVisible(false);
 
         // Agregamos el botón de iniciar centrado debajo de los colores
         tableBotones.add(botonIniciar).colspan(4).center().width(300).height(70).pad(30);
@@ -304,6 +380,14 @@ public class seleccionColorScreen implements Screen {
         stage.act(Gdx.graphics.getDeltaTime());
         // Dibujamos los estados en su nuevo estado
         stage.draw();
+
+        // Mostramos el nombre que le corresponde a esa posición en el vector
+        try {
+            informacionJugador.setText("Color para: " + nombres[indiceVector]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Si cachamos este error, entonces ya hemos elegido el ultimo color
+            botonIniciar.setVisible(true);
+        }
     }
 
     @Override
@@ -331,6 +415,12 @@ public class seleccionColorScreen implements Screen {
     public void dispose() {
         // Limpiamos y liberamos todos los recursos cargados
         stage.dispose();
+        // Recorremos nuestro array limpiando cada textura
+        for (Texture actual : texturasColores){
+            actual.dispose();
+        }
+        // Limpiamos el array
+        texturasColores.clear();
     }
 
     public Drawable crearDrawable(float r, float g, float b) {
@@ -350,6 +440,10 @@ public class seleccionColorScreen implements Screen {
         Texture textureColor = new Texture(pixmap);
         // Creamos un drawable a partir de la textura
         Drawable colorBoton = new TextureRegionDrawable(new TextureRegion(textureColor));
+
+        // Liberamos pixmap y guardamos el texture
+        pixmap.dispose();
+        texturasColores.add(textureColor);
 
         return colorBoton;
     }

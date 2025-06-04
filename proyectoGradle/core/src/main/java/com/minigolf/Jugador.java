@@ -79,9 +79,14 @@ public class Jugador {
     // Sobrescribimos el método para imprimir
     @Override
     public String toString() {
-        return "Jugador{" +
-                "nombre='" + nombre + '\'' +
-                ", puntajeTotal=" + puntajeTotal +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Jugador {\n");
+        sb.append("  Nombre: ").append(nombre).append(",\n");
+        sb.append("  Color de Bola: ").append(colorBola).append(",\n");
+        sb.append("  Puntaje por Hoyo: ").append(puntajePorHoyo).append(",\n");
+        sb.append("  Puntaje Total: ").append(puntajeTotal).append(",\n");
+        sb.append("  Strokes Actuales: ").append(strokesActuales).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
 }

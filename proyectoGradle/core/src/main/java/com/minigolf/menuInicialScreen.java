@@ -30,6 +30,8 @@ public class menuInicialScreen implements Screen {
     // Atributos de la clase
     private Stage stage;
     private Table table;
+    Texture textureFondo;
+    Texture textureImagenJuego;
     private Stack stack;
     private final MiniGolfMain game;
 
@@ -43,6 +45,7 @@ public class menuInicialScreen implements Screen {
     }
 
     @Override
+    /** Called when this screen becomes the current screen for a {@link Game}. */
     public void show() {
 
         /* --------- Configuración inicial stage y table --------- */
@@ -77,7 +80,7 @@ public class menuInicialScreen implements Screen {
         /* --------- Configuración imagen fondo --------- */
 
         // Creamos la textura a partir de la imagen
-        Texture textureFondo = new Texture(Gdx.files.internal("fondoInicio.png"));
+        textureFondo = new Texture(Gdx.files.internal("fondoInicio.png"));
         // Creamos la imagen
         Image imagenFondo = new Image(textureFondo);
         // Aplicamos la opacidad a nuestra imagen de fondo
@@ -86,7 +89,7 @@ public class menuInicialScreen implements Screen {
         /* --------- Agregar imagen del juego --------- */
 
         // Creamos la textura a partir de la imagen
-        Texture textureImagenJuego = new Texture(Gdx.files.internal("logoMiniGolf.png"));
+        textureImagenJuego = new Texture(Gdx.files.internal("logoMiniGolf.png"));
 
         // Creamos la imagen
         Image imagenMiniGolf = new Image(textureImagenJuego);
@@ -187,6 +190,8 @@ public class menuInicialScreen implements Screen {
     }
 
     @Override
+    /** Called when the screen should render itself.
+    * @param delta The time in seconds since the last render. */
     public void render(float delta) {
         // En cada fotograma, se limpia el buffer de color (en pocas palabra se limpia la pantalla)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -197,27 +202,38 @@ public class menuInicialScreen implements Screen {
     }
 
     @Override
+    /** Called when the {@link Application} is resized. This can happen at any point during a non-paused state but will never
+    * happen before a call to {@link #create()}.
+    * 
+    * @param width the new width in pixels
+    * @param height the new height in pixels */
     public void resize(int width, int height) {
         // Nos aseguramos de que nuestro viewport (ventana a traves de la cual se ve el stage) siempre este centrado
         stage.getViewport().update(width, height, true);
     }
 
     @Override
+    /** Called when the {@link Application} is paused, usually when it's not active or visible on-screen. An Application is also
+    * paused before it is destroyed. */
     public void pause() {
     }
 
     @Override
+    /** Called when the {@link Application} is resumed from a paused state, usually when it regains focus. */
     public void resume() {
     }
 
     @Override
+    /** Called when this screen is no longer the current screen for a {@link Game}. */
     public void hide() {
-
     }
 
     @Override
+    /** Called when this screen should release all resources. */
     public void dispose() {
         // Limpiamos y liberamos todos los recursos cargados
         stage.dispose();
+        textureFondo.dispose();
+        textureImagenJuego.dispose();
     }
 }
