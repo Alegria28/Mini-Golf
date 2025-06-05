@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,8 +17,18 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class manejoEventos implements InputProcessor {
 
-    ArrayList<Jugador> jugadores;
-    World mundoBox2d;
+    private final float RADIO = 10;
+
+    // Atributos
+    private ArrayList<Jugador> jugadores;
+    private World mundoBox2d;
+
+    // Fuerza del golpe (1-) ***************************************
+    private float fuerza = 0f;
+    // Angulo (0-360) para almacenar la dirección del golpe
+    private float anguloDireccion = 0f;
+    // Indice para saber con que jugador estamos trabajando
+    private int jugadorActual = 0;
 
     // Recibimos los jugadores y el mundo, estos por referencia
     public manejoEventos(ArrayList<Jugador> jugadores, World mundoBox2d) {
@@ -30,6 +42,37 @@ public class manejoEventos implements InputProcessor {
      * @return whether the input was processed */
     @Override
     public boolean keyDown(int keycode) {
+
+        // Al presionar la tecla espacio, se ejecuta el golpe si este jugador tiene bola
+        if (keycode == Input.Keys.SPACE && jugadores.get(jugadorActual).getBolaJugador() != null) {
+            Vector2 vectorFuerza = new Vector2(MathUtils.cosDeg(anguloDireccion) * fuerza,
+                    MathUtils.sinDeg(anguloDireccion) * fuerza);
+
+            // Obtenemos la bola del jugador y guardamos su posición
+            Body bolaTemporal = jugadores.get(jugadorActual).getBolaJugador();
+            Vector2 posicionBola = bolaTemporal.getPosition();
+
+            // Calculamos el angulo opuesto para el punto de impacto
+            float anguloTemporal = anguloDireccion + 180;
+            // Si este se pasa de 360, obtenemos el angulo correcto
+            if (anguloTemporal > 360) {
+                anguloTemporal -= 360;
+            }
+
+            // A partir de este angulo opuesto calculamos el punto de impacto sobre la pelota
+            Vector2 puntoImpacto = new Vector2(posicionBola.x + MathUtils.cosDeg(anguloTemporal) * RADIO,
+                    posicionBola.y + MathUtils.sinDeg(anguloTemporal) * RADIO);
+
+            System.out.println(vectorFuerza);
+            System.out.println(puntoImpacto);
+
+            // Aplicamos el golpe
+            bolaTemporal.applyLinearImpulse(vectorFuerza, puntoImpacto, true);
+
+            // Este jugador ya golpeo
+            jugadores.get(jugadorActual).setPuedeGolpear(false);
+
+        }
         return false;
     }
 
@@ -60,7 +103,13 @@ public class manejoEventos implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-        jugadores.get(0).setBolaJugador(colocarBola(mundoBox2d, screenX, screenY));
+        // Solo agregamos una bola si el jugador no tiene
+        if (jugadores.get(jugadorActual).getBolaJugador() == null) {
+            // Le agregamos la bola al jugador
+            jugadores.get(jugadorActual).setBolaJugador(colocarBola(mundoBox2d, screenX, screenY));
+            // Cambiamos la bandera para que pueda golpear
+            jugadores.get(jugadorActual).setPuedeGolpear(true);
+        }
 
         return false;
     }
@@ -118,7 +167,7 @@ public class manejoEventos implements InputProcessor {
 
     // Método para colocar la bola donde el usuario haga click
     public Body colocarBola(World mundoBax2d, int screenX, int screenY) {
-        
+
         /* --------- Creación bola --------- */
 
         // Definimos un BodyDef para la bola
@@ -133,15 +182,17 @@ public class manejoEventos implements InputProcessor {
 
         // Creamos el Body de la bola en el mundo de Box2D usando la definición anterior
         Body bolaBody = mundoBox2d.createBody(bolaBodyDef);
+        // Para reducir la velocidad gradualmente
+        bolaBody.setLinearDamping(0.4f);
 
         // Creamos una forma circular para la bola y establecemos su radio
         CircleShape bolaShape = new CircleShape();
-        bolaShape.setRadius(10f);
+        bolaShape.setRadius(RADIO);
 
         // Creamos una FixtureDef para definir las propiedades físicas de la bola
         FixtureDef bolaFixtureDef = new FixtureDef();
         bolaFixtureDef.shape = bolaShape;
-        bolaFixtureDef.friction = 0.4f;
+        bolaFixtureDef.restitution = 1f; // Rebote perfecto
 
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);
@@ -151,4 +202,37 @@ public class manejoEventos implements InputProcessor {
 
         return bolaBody;
     }
+
+    // Método para actualizar el vectorDireccion
+    public void actualizarAngulo(int direccion) {
+
+        switch (direccion) {
+            case 0:
+                this.anguloDireccion -= 5;
+                break;
+            case 1:
+                this.anguloDireccion += 5;
+                break;
+        }
+    }
+
+    // Método para actualizar la fuerza del golpe
+    public void actualizarFuerza(int direccion) {
+
+        // Calculamos la fuerza aplicada, asegurándonos que no pase de 10 y que no baje de 1
+        switch (direccion) {
+            case 0:
+                this.fuerza = Math.max(1, this.fuerza - 10f);
+                break;
+            case 1:
+                this.fuerza = Math.min(200, this.fuerza + 10f);
+                break;
+        }
+    }
+
+    // Método para obtener el jugador actual
+    public void setJugadorActual(int jugadorActual) {
+        this.jugadorActual = jugadorActual;
+    }
+
 }

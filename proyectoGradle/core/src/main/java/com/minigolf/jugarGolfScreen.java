@@ -3,6 +3,7 @@ package com.minigolf;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -51,6 +53,8 @@ public class jugarGolfScreen implements Screen {
 
     // Variable para tener un control de turno durante el juego
     private int turnoActual = 0;
+    // Instancia de la clase que va a manejar los eventos
+    private manejoEventos eventos;
 
     /* --------- Atributos motor físico Box2D --------- */
 
@@ -63,13 +67,11 @@ public class jugarGolfScreen implements Screen {
     public jugarGolfScreen(MiniGolfMain game, ArrayList<Jugador> jugadores) {
         this.game = game;
         this.jugadores = jugadores;
+        eventos = new manejoEventos(jugadores, mundoBox2d);
     }
 
     @Override
     public void show() {
-
-        // Instancia de la clase que maneja los eventos, mandando nuestro ArrayList y el mundo creado
-        manejoEventos eventos = new manejoEventos(jugadores, mundoBox2d);
 
         // Creamos un InputMultiplexer para manejar varios eventos
         InputMultiplexer multiplexer = new InputMultiplexer();
@@ -147,22 +149,22 @@ public class jugarGolfScreen implements Screen {
         // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
         // Usamos una altura específica para que quede justo arriba de las paredes
         tablePrincipal.add(tableArriba).height(90).width(VIRTUAL_WIDTH).center();
-        
+
         // Agregamos una nueva fila para el área de juego
         tablePrincipal.row();
 
         /* --------- Table para juego --------- */
-        
+
         // Creamos un table vacío para el área de juego (donde están las paredes Box2D)
         Table tableJuego = new Table();
         // Este table ocupará el espacio donde están las paredes (desde y=90 hasta y=810)
         tablePrincipal.add(tableJuego).height(720).width(720).center();
-        
+
         // Agregamos una nueva fila para el espacio inferior
         tablePrincipal.row();
 
         /* --------- Table abajo juego --------- */
-        
+
         // Creamos un table vacío para el espacio inferior
         Table tableAbajo = new Table();
         tablePrincipal.add(tableAbajo).height(90).width(VIRTUAL_WIDTH).center();
@@ -183,8 +185,17 @@ public class jugarGolfScreen implements Screen {
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como 
         // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
         pared1Shape.setAsBox(360, 0);
-        // Unimos la forma creada con el Body creado anteriormente, sin densidad
-        pared1Body.createFixture(pared1Shape, 0.0f);
+
+        // Creamos una FixtureDef para definir las propiedades físicas de la pared
+        FixtureDef paredFixtureDef = new FixtureDef();
+        paredFixtureDef.friction = 0.2f;
+        paredFixtureDef.density = 0f;
+        paredFixtureDef.restitution = 1f; // Para que tenga un rebote perfecto
+        // Ponemos la forma creada 
+        paredFixtureDef.shape = pared1Shape;
+
+        // Creamos la fixture y la unimos al cuerpo de la pared
+        pared1Body.createFixture(paredFixtureDef);
         // Liberamos el polígono
         pared1Shape.dispose();
 
@@ -203,8 +214,11 @@ public class jugarGolfScreen implements Screen {
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
         // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
         pared2Shape.setAsBox(360, 0);
-        // Unimos la forma creada con el Body creado anteriormente, sin densidad
-        pared2Body.createFixture(pared2Shape, 0.0f);
+
+        // Ponemos la forma creada 
+        paredFixtureDef.shape = pared2Shape;
+        // Creamos la fixture y la unimos al cuerpo de la pared
+        pared2Body.createFixture(paredFixtureDef);
         // Liberamos el polígono
         pared2Shape.dispose();
 
@@ -223,8 +237,11 @@ public class jugarGolfScreen implements Screen {
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
         // MITAD de un lado Y 360 y en X es nulo, por lo que es muy fino o invisible
         pared3Shape.setAsBox(0, 360);
-        // Unimos la forma creada con el Body creado anteriormente, sin densidad
-        pared3Body.createFixture(pared3Shape, 0.0f);
+
+        // Ponemos la forma creada 
+        paredFixtureDef.shape = pared3Shape;
+        // Creamos la fixture y la unimos al cuerpo de la pared
+        pared3Body.createFixture(paredFixtureDef);
         // Liberamos el polígono
         pared3Shape.dispose();
 
@@ -243,8 +260,11 @@ public class jugarGolfScreen implements Screen {
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
         // MITAD de un lado Y 360 y en X es nulo, por lo que es muy fino o invisible
         pared4Shape.setAsBox(0, 360);
-        // Unimos la forma creada con el Body creado anteriormente, sin densidad
-        pared4Body.createFixture(pared4Shape, 0.0f);
+
+        // Ponemos la forma creada 
+        paredFixtureDef.shape = pared4Shape;
+        // Creamos la fixture y la unimos al cuerpo de la pared
+        pared4Body.createFixture(paredFixtureDef);
         // Liberamos el polígono
         pared4Shape.dispose();
 
@@ -283,22 +303,61 @@ public class jugarGolfScreen implements Screen {
         // Dibujamos nuestro mundo
         debugRenderer.render(mundoBox2d, camera.combined);
 
+        // Bandera para saber si la pelota se esta moviendo, verificando si para empezar el jugador tiene bola
+        boolean pelotaDetenida = false;
+        if (jugadores.get(turnoActual).getBolaJugador() != null) {
+            pelotaDetenida = pelotaDetenida(jugadores.get(turnoActual).getBolaJugador());
+        }
+
         // Verificamos si el turno actual tiene bola, de no ser asi, entonces esperamos a que la coloque
-        if (jugadores.get(turnoActual).getBolaJugador() == null){
+        if (jugadores.get(turnoActual).getBolaJugador() == null) {
             infoLabel.setText("Colocar bola para: " + jugadores.get(turnoActual).getNombre());
         }
-        // Si el jugador tiene bola, significa que puede 
-        else if (jugadores.get(turnoActual).getBolaJugador() != null){
+        // Si el jugador tiene bola y le toca golpear
+        else if (jugadores.get(turnoActual).getBolaJugador() != null
+                && jugadores.get(turnoActual).getPuedeGolpear() == true) {
 
-        }
-        // Si tiene bola entonces pasamos al siguiente jugador para que también la coloque
-        else{
-            // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
-            // nuestro contador
-            if (turnoActual + 1 == jugadores.size()){
-                turnoActual = 0;
+            infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
+            // Verificamos que tecla esta pulsada
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                System.out.println("Tecla LEFT");
+                eventos.actualizarAngulo(0);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                System.out.println("Tecla RIGHT");
+                eventos.actualizarAngulo(1);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                System.out.println("Tecla DOWN");
+                eventos.actualizarFuerza(0);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                System.out.println("Tecla UP");
+                eventos.actualizarFuerza(1);
             }
         }
+        // Verificamos si el turno ha terminado:
+        // - El jugador tiene pelota
+        // - Ya no puede golpear
+        // - Y la pelota se ha parado
+        else if (jugadores.get(turnoActual).getBolaJugador() != null
+                && jugadores.get(turnoActual).getPuedeGolpear() == false && pelotaDetenida) {
+
+            System.out.println("Pelota detenida para: " + jugadores.get(turnoActual).getNombre());
+
+            // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
+            // nuestro contador
+            if (turnoActual + 1 == jugadores.size()) {
+                turnoActual = 0;
+            } else {
+                turnoActual++;
+            }
+
+            // Este jugador puede volver a golpear
+            jugadores.get(turnoActual).setPuedeGolpear(true);
+            // Actualizamos en nuestra clase eventos
+            eventos.setJugadorActual(turnoActual);
+
+            System.out.println("Cambiando de turno, ahora sigue: " + jugadores.get(turnoActual).getNombre());
+        }
+
     }
 
     @Override
@@ -323,11 +382,29 @@ public class jugarGolfScreen implements Screen {
 
     @Override
     public void dispose() {
+        // Limpiamos todas las pelotas de los jugadores
+        for (Jugador jugador : jugadores){
+            if (jugador.getBolaJugador() != null){
+                mundoBox2d.destroyBody(jugador.getBolaJugador());
+                jugador.setBolaJugador(null);
+            }
+        }
+
         // Liberar recursos
         stage.dispose();
         mundoBox2d.dispose();
         debugRenderer.dispose();
         textureFondo.dispose();
         font.dispose();
+    }
+
+    // Obtenemos actualizaciones de la bola para saber si esta esta detenida
+    public boolean pelotaDetenida(Body pelota) {
+        // Obtenemos la magnitud de la velocidad
+        Vector2 velocidad = pelota.getLinearVelocity();
+        float magnitudVelocidad = velocidad.len();
+
+        // Se detectara que esta parada si la velocidad cumple
+        return magnitudVelocidad < 0.5f;
     }
 }

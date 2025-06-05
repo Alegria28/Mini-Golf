@@ -14,7 +14,9 @@ public class Jugador {
     private ArrayList<Integer> puntajePorHoyo;
     private int puntajeTotal;
     private int strokesActuales;
+
     private Body bolaJugador;
+    private boolean puedeGolpear = false;
 
     // Constructor de la clase
     public Jugador(String nombre, Color colorBola) {
@@ -50,6 +52,19 @@ public class Jugador {
         return bolaJugador;
     }
 
+    public int getPuntajeHoyo(int numeroHoyo) {
+        // Verificamos si ya hemos jugado ese numero de hoyo
+        if (numeroHoyo >= 0 && numeroHoyo < puntajePorHoyo.size()) {
+            return puntajePorHoyo.get(numeroHoyo);
+        }
+        // En caso de que ese hoyo no este en nuestro ArrayList
+        return -1;
+    }
+
+    public boolean getPuedeGolpear() {
+        return puedeGolpear;
+    }
+
     // Setters
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -61,6 +76,10 @@ public class Jugador {
 
     public void setBolaJugador(Body bolaJugador) {
         this.bolaJugador = bolaJugador;
+    }
+
+    public void setPuedeGolpear(boolean puedeGolpear) {
+        this.puedeGolpear = puedeGolpear;
     }
 
     // Métodos de la clase
@@ -76,15 +95,6 @@ public class Jugador {
         puntajePorHoyo.add(strokes);
         puntajeTotal += strokes;
         reiniciarStrokes();
-    }
-
-    public int getPuntajeHoyo(int numeroHoyo) {
-        // Verificamos si ya hemos jugado ese numero de hoyo
-        if (numeroHoyo >= 0 && numeroHoyo < puntajePorHoyo.size()) {
-            return puntajePorHoyo.get(numeroHoyo);
-        }
-        // En caso de que ese hoyo no este en nuestro ArrayList
-        return -1;
     }
 
     // Sobrescribimos el método para imprimir
