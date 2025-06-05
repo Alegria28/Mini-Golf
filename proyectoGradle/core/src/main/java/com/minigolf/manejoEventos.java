@@ -18,13 +18,14 @@ import com.badlogic.gdx.physics.box2d.World;
 public class manejoEventos implements InputProcessor {
 
     private final float RADIO = 10;
+    private final float MAXIMO_FUERZA = 1000f;
 
     // Atributos
     private ArrayList<Jugador> jugadores;
     private World mundoBox2d;
 
     // Fuerza del golpe (1-) ***************************************
-    private float fuerza = 0f;
+    private float fuerza = 500f;
     // Angulo (0-360) para almacenar la dirección del golpe
     private float anguloDireccion = 0f;
     // Indice para saber con que jugador estamos trabajando
@@ -45,29 +46,24 @@ public class manejoEventos implements InputProcessor {
 
         // Al presionar la tecla espacio, se ejecuta el golpe si este jugador tiene bola
         if (keycode == Input.Keys.SPACE && jugadores.get(jugadorActual).getBolaJugador() != null) {
-            Vector2 vectorFuerza = new Vector2(MathUtils.cosDeg(anguloDireccion) * fuerza,
-                    MathUtils.sinDeg(anguloDireccion) * fuerza);
+
+            // Variable para escalar la fuerza
+            float escala = 2f;
+
+            Vector2 vectorFuerza = new Vector2(
+                    MathUtils.cosDeg(anguloDireccion) * fuerza * escala,
+                    MathUtils.sinDeg(anguloDireccion) * fuerza * escala);
 
             // Obtenemos la bola del jugador y guardamos su posición
             Body bolaTemporal = jugadores.get(jugadorActual).getBolaJugador();
             Vector2 posicionBola = bolaTemporal.getPosition();
 
-            // Calculamos el angulo opuesto para el punto de impacto
-            float anguloTemporal = anguloDireccion + 180;
-            // Si este se pasa de 360, obtenemos el angulo correcto
-            if (anguloTemporal > 360) {
-                anguloTemporal -= 360;
-            }
-
-            // A partir de este angulo opuesto calculamos el punto de impacto sobre la pelota
-            Vector2 puntoImpacto = new Vector2(posicionBola.x + MathUtils.cosDeg(anguloTemporal) * RADIO,
-                    posicionBola.y + MathUtils.sinDeg(anguloTemporal) * RADIO);
-
-            System.out.println(vectorFuerza);
-            System.out.println(puntoImpacto);
-
             // Aplicamos el golpe
-            bolaTemporal.applyLinearImpulse(vectorFuerza, puntoImpacto, true);
+            bolaTemporal.applyForceToCenter(vectorFuerza, true);
+
+            // Mostramos la magnitud y posición
+            System.out.println("Magnitud fuerza: " + vectorFuerza.len() + "Nw");
+            System.out.println("Posición de la bola: " + posicionBola);
 
             // Este jugador ya golpeo
             jugadores.get(jugadorActual).setPuedeGolpear(false);
@@ -166,7 +162,7 @@ public class manejoEventos implements InputProcessor {
     }
 
     // Método para colocar la bola donde el usuario haga click
-    public Body colocarBola(World mundoBax2d, int screenX, int screenY) {
+    private Body colocarBola(World mundoBax2d, int screenX, int screenY) {
 
         /* --------- Creación bola --------- */
 
@@ -183,7 +179,7 @@ public class manejoEventos implements InputProcessor {
         // Creamos el Body de la bola en el mundo de Box2D usando la definición anterior
         Body bolaBody = mundoBox2d.createBody(bolaBodyDef);
         // Para reducir la velocidad gradualmente
-        bolaBody.setLinearDamping(0.4f);
+        bolaBody.setLinearDamping(0.5f);
 
         // Creamos una forma circular para la bola y establecemos su radio
         CircleShape bolaShape = new CircleShape();
@@ -192,7 +188,9 @@ public class manejoEventos implements InputProcessor {
         // Creamos una FixtureDef para definir las propiedades físicas de la bola
         FixtureDef bolaFixtureDef = new FixtureDef();
         bolaFixtureDef.shape = bolaShape;
-        bolaFixtureDef.restitution = 1f; // Rebote perfecto
+        bolaFixtureDef.restitution = 0.6f; // Rebote perfecto
+        bolaFixtureDef.density = 1f;
+        bolaFixtureDef.friction = 0.1f;
 
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);
@@ -222,10 +220,10 @@ public class manejoEventos implements InputProcessor {
         // Calculamos la fuerza aplicada, asegurándonos que no pase de 10 y que no baje de 1
         switch (direccion) {
             case 0:
-                this.fuerza = Math.max(1, this.fuerza - 10f);
+                this.fuerza = Math.max(1, this.fuerza - 50f);
                 break;
             case 1:
-                this.fuerza = Math.min(200, this.fuerza + 10f);
+                this.fuerza = Math.min(MAXIMO_FUERZA, this.fuerza + 50f);
                 break;
         }
     }
@@ -235,4 +233,8 @@ public class manejoEventos implements InputProcessor {
         this.jugadorActual = jugadorActual;
     }
 
+    // Método para regresar la fuerza actual en porcentaje
+    public float obtenerFuerza() {
+        return (this.fuerza * 100) / MAXIMO_FUERZA;
+    }
 }

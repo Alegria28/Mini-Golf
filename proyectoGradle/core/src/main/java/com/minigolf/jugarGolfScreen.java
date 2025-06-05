@@ -42,6 +42,7 @@ public class jugarGolfScreen implements Screen {
     private Stack stack;
     private Table tablePrincipal;
     private Label infoLabel;
+    private Label fuerzaLabel;
     private BitmapFont font;
 
     private final MiniGolfMain game;
@@ -167,6 +168,13 @@ public class jugarGolfScreen implements Screen {
 
         // Creamos un table vacío para el espacio inferior
         Table tableAbajo = new Table();
+        // Creamos un label para mostrar el nivel de fuerza
+        fuerzaLabel = new Label("", labelPrincipalStyle);
+        fuerzaLabel.setAlignment(Align.center);
+        // Agregamos el label a esta tabla
+        tableAbajo.add(fuerzaLabel).center();
+        tableAbajo.center();
+
         tablePrincipal.add(tableAbajo).height(90).width(VIRTUAL_WIDTH).center();
 
         /* --------- Pared 1 --------- */
@@ -318,6 +326,7 @@ public class jugarGolfScreen implements Screen {
                 && jugadores.get(turnoActual).getPuedeGolpear() == true) {
 
             infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
+
             // Verificamos que tecla esta pulsada
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
                 System.out.println("Tecla LEFT");
@@ -332,6 +341,9 @@ public class jugarGolfScreen implements Screen {
                 System.out.println("Tecla UP");
                 eventos.actualizarFuerza(1);
             }
+
+            // Mostramos información sobre el tiro
+            fuerzaLabel.setText("Fuerza: " + String.valueOf(eventos.obtenerFuerza()) + "%");
         }
         // Verificamos si el turno ha terminado:
         // - El jugador tiene pelota
@@ -383,8 +395,8 @@ public class jugarGolfScreen implements Screen {
     @Override
     public void dispose() {
         // Limpiamos todas las pelotas de los jugadores
-        for (Jugador jugador : jugadores){
-            if (jugador.getBolaJugador() != null){
+        for (Jugador jugador : jugadores) {
+            if (jugador.getBolaJugador() != null) {
                 mundoBox2d.destroyBody(jugador.getBolaJugador());
                 jugador.setBolaJugador(null);
             }
