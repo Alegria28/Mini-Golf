@@ -35,6 +35,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  */
 public class jugarGolfScreen implements Screen {
 
+    // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
+    private final float PIXEL_A_METRO = 0.01f;
+
     // Atributos
     OrthographicCamera camera;
     private Stage stage;
@@ -184,7 +187,7 @@ public class jugarGolfScreen implements Screen {
         BodyDef pared1BodyDef = new BodyDef();
         // Establecemos su posición en el mundo (pared inferior), es importante recalcar que Box2D si 
         // toma el centro del Body como posición, y no una esquina como LibGDX
-        pared1BodyDef.position.set(new Vector2(450, 90));
+        pared1BodyDef.position.set(450 * PIXEL_A_METRO, 90 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared1Body = mundoBox2d.createBody(pared1BodyDef);
 
@@ -192,13 +195,13 @@ public class jugarGolfScreen implements Screen {
         PolygonShape pared1Shape = new PolygonShape();
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como 
         // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
-        pared1Shape.setAsBox(360, 0);
+        pared1Shape.setAsBox(360 * PIXEL_A_METRO, 0);
 
         // Creamos una FixtureDef para definir las propiedades físicas de la pared
         FixtureDef paredFixtureDef = new FixtureDef();
         paredFixtureDef.friction = 0.2f;
         paredFixtureDef.density = 0f;
-        paredFixtureDef.restitution = 1f; // Para que tenga un rebote perfecto
+        paredFixtureDef.restitution = 1f; // Rebote
         // Ponemos la forma creada 
         paredFixtureDef.shape = pared1Shape;
 
@@ -213,7 +216,7 @@ public class jugarGolfScreen implements Screen {
         // significando que no se mueve
         BodyDef pared2BodyDef = new BodyDef();
         // Establecemos su posición en el mundo (pared superior), Box2D toma el centro del Body como posición
-        pared2BodyDef.position.set(new Vector2(450, 810));
+        pared2BodyDef.position.set(450 * PIXEL_A_METRO, 810 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared2Body = mundoBox2d.createBody(pared2BodyDef);
 
@@ -221,7 +224,7 @@ public class jugarGolfScreen implements Screen {
         PolygonShape pared2Shape = new PolygonShape();
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
         // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
-        pared2Shape.setAsBox(360, 0);
+        pared2Shape.setAsBox(360 * PIXEL_A_METRO, 0);
 
         // Ponemos la forma creada 
         paredFixtureDef.shape = pared2Shape;
@@ -236,7 +239,7 @@ public class jugarGolfScreen implements Screen {
         // significando que no se mueve
         BodyDef pared3BodyDef = new BodyDef();
         // Establecemos su posición en el mundo (pared izquierda), Box2D toma el centro del Body como posición
-        pared3BodyDef.position.set(new Vector2(90, 450));
+        pared3BodyDef.position.set(90 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared3Body = mundoBox2d.createBody(pared3BodyDef);
 
@@ -244,7 +247,7 @@ public class jugarGolfScreen implements Screen {
         PolygonShape pared3Shape = new PolygonShape();
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
         // MITAD de un lado Y 360 y en X es nulo, por lo que es muy fino o invisible
-        pared3Shape.setAsBox(0, 360);
+        pared3Shape.setAsBox(0, 360 * PIXEL_A_METRO);
 
         // Ponemos la forma creada 
         paredFixtureDef.shape = pared3Shape;
@@ -259,7 +262,7 @@ public class jugarGolfScreen implements Screen {
         // significando que no se mueve
         BodyDef pared4BodyDef = new BodyDef();
         // Establecemos su posición en el mundo (pared derecha), Box2D toma el centro del Body como posición
-        pared4BodyDef.position.set(new Vector2(810, 450));
+        pared4BodyDef.position.set(810 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared4Body = mundoBox2d.createBody(pared4BodyDef);
 
@@ -267,7 +270,7 @@ public class jugarGolfScreen implements Screen {
         PolygonShape pared4Shape = new PolygonShape();
         // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
         // MITAD de un lado Y 360 y en X es nulo, por lo que es muy fino o invisible
-        pared4Shape.setAsBox(0, 360);
+        pared4Shape.setAsBox(0, 360 * PIXEL_A_METRO);
 
         // Ponemos la forma creada 
         paredFixtureDef.shape = pared4Shape;
@@ -310,6 +313,22 @@ public class jugarGolfScreen implements Screen {
         stage.draw();
         // Dibujamos nuestro mundo
         debugRenderer.render(mundoBox2d, camera.combined);
+
+        // Ponemos la posición de la cámara al centro del mundo virtual (450px,450px), esto para que la cámara 
+        // "mire" al centro del campo de golf
+        camera.position.set(450, 450, 0);
+        // Actualizamos la cámara para que esto surta efecto
+        camera.update();
+
+        // RENDERIZADO DEL DEBUG DE BOX2D CON ESCALADO
+        // Dibujamos las formas de colisión de Box2D para debug, .cpy() crea una copia de la matriz 
+        // de la cámara para no modificar la original, .scl(100f) escala la matriz × 100 para convertir 
+        // metros de Box2D a píxeles de pantalla
+        debugRenderer.render(
+                mundoBox2d, // Mundo Box2D
+                camera.combined // Matriz de transformación
+                        .cpy() // Creamos una copia (no modifica la original)
+                        .scl(100f)); // Escalar x100 para metro -> pixel
 
         // Bandera para saber si la pelota se esta moviendo, verificando si para empezar el jugador tiene bola
         boolean pelotaDetenida = false;
@@ -408,6 +427,7 @@ public class jugarGolfScreen implements Screen {
         debugRenderer.dispose();
         textureFondo.dispose();
         font.dispose();
+        Gdx.input.setInputProcessor(null);
     }
 
     // Obtenemos actualizaciones de la bola para saber si esta esta detenida
@@ -416,7 +436,7 @@ public class jugarGolfScreen implements Screen {
         Vector2 velocidad = pelota.getLinearVelocity();
         float magnitudVelocidad = velocidad.len();
 
-        // Se detectara que esta parada si la velocidad cumple
-        return magnitudVelocidad < 0.5f;
+        // Se detectara que esta parada si la velocidad cumple 0.05m/s
+        return magnitudVelocidad < 0.1f;
     }
 }

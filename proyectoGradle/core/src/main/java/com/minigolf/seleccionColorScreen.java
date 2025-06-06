@@ -42,6 +42,7 @@ public class seleccionColorScreen implements Screen {
     private Stack stack;
     Label informacionJugador;
     TextButton botonIniciar;
+    private BitmapFont font;
 
     // Creamos un ArrayList para texturas, y que sea mas fácil limpiarlas
     private ArrayList<Texture> texturasColores = new ArrayList<Texture>();
@@ -96,7 +97,7 @@ public class seleccionColorScreen implements Screen {
         fontParameter.padLeft = 10;
         fontParameter.padRight = 10;
         // Creamos el font con las características nuevas
-        BitmapFont font = fontGenerator.generateFont(fontParameter);
+        font = fontGenerator.generateFont(fontParameter);
         // Ya que ya no lo vamos a ocupar, podemos liberarlo
         fontGenerator.dispose();
 
@@ -416,11 +417,13 @@ public class seleccionColorScreen implements Screen {
         // Limpiamos y liberamos todos los recursos cargados
         stage.dispose();
         // Recorremos nuestro array limpiando cada textura
-        for (Texture actual : texturasColores){
+        for (Texture actual : texturasColores) {
             actual.dispose();
         }
         // Limpiamos el array
         texturasColores.clear();
+        font.dispose();
+        Gdx.input.setInputProcessor(null);
     }
 
     public Drawable crearDrawable(float r, float g, float b) {

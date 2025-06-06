@@ -34,6 +34,8 @@ public class menuInicialScreen implements Screen {
     Texture textureImagenJuego;
     private Stack stack;
     private final MiniGolfMain game;
+    private Skin buttonSkin;
+    private BitmapFont font;
 
     // Dimensiones virtuales (buena practica para el diseño)
     private final float VIRTUAL_WIDTH = 900;
@@ -73,7 +75,7 @@ public class menuInicialScreen implements Screen {
         fontParameter.padLeft = 10;
         fontParameter.padRight = 10;
         // Creamos el font con las características nuevas
-        BitmapFont font = fontGenerator.generateFont(fontParameter);
+        font = fontGenerator.generateFont(fontParameter);
         // Ya que ya no lo vamos a ocupar, podemos liberarlo
         fontGenerator.dispose();
 
@@ -107,7 +109,7 @@ public class menuInicialScreen implements Screen {
         buttonStyle.font = font;
 
         // Utilizamos la skin para obtener el diseño de los botones (fondos para los estados up y down)
-        Skin buttonSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        buttonSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         // Declaraciones dentro del .json
         buttonStyle.up = buttonSkin.getDrawable("buttonUp");
         buttonStyle.down = buttonSkin.getDrawable("buttonDown");
@@ -235,5 +237,8 @@ public class menuInicialScreen implements Screen {
         stage.dispose();
         textureFondo.dispose();
         textureImagenJuego.dispose();
+        buttonSkin.dispose();
+        font.dispose();
+        Gdx.input.setInputProcessor(null);
     }
 }

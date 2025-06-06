@@ -17,19 +17,24 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class manejoEventos implements InputProcessor {
 
-    private final float RADIO = 10;
-    private final float MAXIMO_FUERZA = 1000f;
+    // Factor de conversion para el mundo 
+    private final float PIXEL_A_METRO = 0.01f; // 100 pixeles = 1m
+
+    // Declaramos el radio de las bolas y el máximo de fuerza que se puede ejercer
+    private final float RADIO = 10 * PIXEL_A_METRO; // La bola tiene un radio de 0.1m
+    private final float MAXIMO_FUERZA = 2f;
 
     // Atributos
     private ArrayList<Jugador> jugadores;
     private World mundoBox2d;
 
-    // Fuerza del golpe (1-) ***************************************
-    private float fuerza = 500f;
-    // Angulo (0-360) para almacenar la dirección del golpe
-    private float anguloDireccion = 0f;
     // Indice para saber con que jugador estamos trabajando
     private int jugadorActual = 0;
+
+    // Fuerza del golpe 
+    private float fuerza = 0.1f;
+    // Angulo (0-360) para almacenar la dirección del golpe
+    private float anguloDireccion = 0f;
 
     // Recibimos los jugadores y el mundo, estos por referencia
     public manejoEventos(ArrayList<Jugador> jugadores, World mundoBox2d) {
@@ -47,23 +52,32 @@ public class manejoEventos implements InputProcessor {
         // Al presionar la tecla espacio, se ejecuta el golpe si este jugador tiene bola
         if (keycode == Input.Keys.SPACE && jugadores.get(jugadorActual).getBolaJugador() != null) {
 
-            // Variable para escalar la fuerza
-            float escala = 2f;
-
+            // El fector fuerza tiene una magnitud (fuerza) y una dirección (anguloDireccion) para cada uno
+            //  de sus componentes
             Vector2 vectorFuerza = new Vector2(
-                    MathUtils.cosDeg(anguloDireccion) * fuerza * escala,
-                    MathUtils.sinDeg(anguloDireccion) * fuerza * escala);
+                    MathUtils.cosDeg(anguloDireccion) * fuerza,
+                    MathUtils.sinDeg(anguloDireccion) * fuerza);
 
             // Obtenemos la bola del jugador y guardamos su posición
             Body bolaTemporal = jugadores.get(jugadorActual).getBolaJugador();
             Vector2 posicionBola = bolaTemporal.getPosition();
 
-            // Aplicamos el golpe
-            bolaTemporal.applyForceToCenter(vectorFuerza, true);
+            // Calculamos el angulo opuesto para el punto de impacto
+            float anguloTemporal = anguloDireccion + 180;
+            // Si este se pasa de 360, obtenemos el angulo correcto
+            if (anguloTemporal > 360) {
+                anguloTemporal -= 360;
+            }
 
-            // Mostramos la magnitud y posición
+            // A partir de este angulo opuesto calculamos el punto de impacto sobre la pelota
+            Vector2 puntoImpacto = new Vector2(posicionBola.x + MathUtils.cosDeg(anguloTemporal) * RADIO,
+                    posicionBola.y + MathUtils.sinDeg(anguloTemporal) * RADIO);
+
+            // Aplicamos la fuerza de manera instantánea al centro de la bola
+            bolaTemporal.applyLinearImpulse(vectorFuerza, puntoImpacto, true);
+
+            // Mostramos la magnitud
             System.out.println("Magnitud fuerza: " + vectorFuerza.len() + "Nw");
-            System.out.println("Posición de la bola: " + posicionBola);
 
             // Este jugador ya golpeo
             jugadores.get(jugadorActual).setPuedeGolpear(false);
@@ -171,24 +185,25 @@ public class manejoEventos implements InputProcessor {
         // Establecemos el tipo de cuerpo como dinámico (se mueve y responde a fuerzas)
         bolaBodyDef.type = BodyType.DynamicBody;
         // Establecemos la posición inicial de la bola en el centro del mundo virtual
-        // Convertir coordenadas de pantalla (origen arriba-izquierda) a Box2D (origen abajo-izquierda)
-        float worldX = screenX;
-        float worldY = Gdx.graphics.getHeight() - screenY;
+        // Convertir coordenadas de pantalla (origen arriba-izquierda) a Box2D (origen abajo-izquierda),
+        // haciendo la conversion de pixel a metro, 900px * 0.01 = 9m
+        float worldX = screenX * PIXEL_A_METRO;
+        float worldY = (Gdx.graphics.getHeight() - screenY) * PIXEL_A_METRO;
         bolaBodyDef.position.set(worldX, worldY);
 
         // Creamos el Body de la bola en el mundo de Box2D usando la definición anterior
         Body bolaBody = mundoBox2d.createBody(bolaBodyDef);
         // Para reducir la velocidad gradualmente
-        bolaBody.setLinearDamping(0.5f);
+        bolaBody.setLinearDamping(0.3f);
 
         // Creamos una forma circular para la bola y establecemos su radio
         CircleShape bolaShape = new CircleShape();
         bolaShape.setRadius(RADIO);
 
-        // Creamos una FixtureDef para definir las propiedades físicas de la bola
+        // Creamos una FixtureDef para definir las propiedades físicas de la bola (lo mas realista posible)
         FixtureDef bolaFixtureDef = new FixtureDef();
         bolaFixtureDef.shape = bolaShape;
-        bolaFixtureDef.restitution = 0.6f; // Rebote perfecto
+        bolaFixtureDef.restitution = 0.6f; // Rebote
         bolaFixtureDef.density = 1f;
         bolaFixtureDef.friction = 0.1f;
 
@@ -206,10 +221,10 @@ public class manejoEventos implements InputProcessor {
 
         switch (direccion) {
             case 0:
-                this.anguloDireccion -= 5;
+                this.anguloDireccion -= 0.02f;
                 break;
             case 1:
-                this.anguloDireccion += 5;
+                this.anguloDireccion += 0.02f;
                 break;
         }
     }
@@ -220,10 +235,10 @@ public class manejoEventos implements InputProcessor {
         // Calculamos la fuerza aplicada, asegurándonos que no pase de 10 y que no baje de 1
         switch (direccion) {
             case 0:
-                this.fuerza = Math.max(1, this.fuerza - 50f);
+                this.fuerza = Math.max(0.1f, this.fuerza - 0.01f);
                 break;
             case 1:
-                this.fuerza = Math.min(MAXIMO_FUERZA, this.fuerza + 50f);
+                this.fuerza = Math.min(MAXIMO_FUERZA, this.fuerza + 0.01f);
                 break;
         }
     }

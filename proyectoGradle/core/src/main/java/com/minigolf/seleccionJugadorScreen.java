@@ -42,6 +42,9 @@ public class seleccionJugadorScreen implements Screen {
     Texture textureFondo;
     private Table tableTextField;
     private Stack stack;
+    private BitmapFont fontTextFields;
+    private Skin textFieldSkin;
+    private BitmapFont font;
 
     private final MiniGolfMain game;
     TextButtonStyle buttonStyle;
@@ -97,7 +100,7 @@ public class seleccionJugadorScreen implements Screen {
         fontParameter.padLeft = 10;
         fontParameter.padRight = 10;
         // Creamos el font con las características nuevas
-        BitmapFont font = fontGenerator.generateFont(fontParameter);
+        font = fontGenerator.generateFont(fontParameter);
         // Ya que ya no lo vamos a ocupar, podemos liberarlo
         fontGenerator.dispose();
 
@@ -231,7 +234,7 @@ public class seleccionJugadorScreen implements Screen {
         fontParameter.size = 25;
 
         // Creamos el font con las características nuevas
-        BitmapFont fontTextFields = fontGenerator.generateFont(fontParameter);
+        fontTextFields = fontGenerator.generateFont(fontParameter);
         // Ya que ya no lo vamos a ocupar, podemos liberarlo
         fontGenerator.dispose();
 
@@ -245,7 +248,7 @@ public class seleccionJugadorScreen implements Screen {
         textFieldStyle.fontColor = Color.WHITE;
 
         // Utilizamos la skin para obtener el diseño de los textField (fondos para los estados up y down)
-        Skin textFieldSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        textFieldSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         // Declaraciones dentro del .json
         textFieldStyle.background = textFieldSkin.getDrawable("textField");
         textFieldStyle.cursor = textFieldSkin.getDrawable("textFieldCursor");
@@ -334,6 +337,9 @@ public class seleccionJugadorScreen implements Screen {
                     @Override
                     public boolean act(float delta) {
                         errorDialog.hide();
+                        // Liberamos recursos después de mostrar el mensaje
+                        errorDialogSkin.dispose();
+                        temporalFont.dispose();
                         return true;
                     }
                 });
@@ -512,5 +518,9 @@ public class seleccionJugadorScreen implements Screen {
         // Limpiamos y liberamos todos los recursos cargados
         stage.dispose();
         textureFondo.dispose();
+        fontTextFields.dispose();
+        textFieldSkin.dispose();
+        font.dispose();
+        Gdx.input.setInputProcessor(null);
     }
 }
