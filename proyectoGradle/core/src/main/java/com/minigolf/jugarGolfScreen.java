@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -66,6 +68,8 @@ public class jugarGolfScreen implements Screen {
     World mundoBox2d = new World(new Vector2(0, 0), true);
     // Para poder ver los elementos en nuestro mundo de Box2D
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+    // Para poder dibujar figuras simples
+    ShapeRenderer shapeRenderer;
 
     // Constructor de la clase
     public jugarGolfScreen(MiniGolfMain game, ArrayList<Jugador> jugadores) {
@@ -79,6 +83,8 @@ public class jugarGolfScreen implements Screen {
 
         // Creamos un InputMultiplexer para manejar varios eventos
         InputMultiplexer multiplexer = new InputMultiplexer();
+        // Iniciamos la instancia de shapeRenderer
+        shapeRenderer = new ShapeRenderer();
 
         /* --------- Configuración inicial stage y eventos --------- */
         camera = new OrthographicCamera();
@@ -346,6 +352,9 @@ public class jugarGolfScreen implements Screen {
 
             infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
 
+            // Llamamos a nuestro método para dibujar la linea de dirección
+            dibujarLineaDireccion();
+
             // Verificamos que tecla esta pulsada
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
                 System.out.println("Tecla LEFT");
@@ -428,15 +437,56 @@ public class jugarGolfScreen implements Screen {
         textureFondo.dispose();
         font.dispose();
         Gdx.input.setInputProcessor(null);
+        shapeRenderer.dispose();
     }
 
     // Obtenemos actualizaciones de la bola para saber si esta esta detenida
-    public boolean pelotaDetenida(Body pelota) {
+    private boolean pelotaDetenida(Body pelota) {
         // Obtenemos la magnitud de la velocidad
         Vector2 velocidad = pelota.getLinearVelocity();
         float magnitudVelocidad = velocidad.len();
 
         // Se detectara que esta parada si la velocidad cumple 0.05m/s
         return magnitudVelocidad < 0.1f;
+    }
+    
+    // Dibujamos una linea para mostrar la dirección del golpe
+    private void dibujarLineaDireccion(){
+
+        // Obtenemos la bola del jugador
+        Body bola = jugadores.get(turnoActual).getBolaJugador();
+
+        // Obtenemos la posición de la bola (convertida en metros)
+        Vector2 posicionBola = bola.getPosition();
+        float pelotaX = posicionBola.x / PIXEL_A_METRO;
+        float pelotaY = posicionBola.y / PIXEL_A_METRO;
+
+        // Obtenemos la fuerza y dirección del golpe actual
+        float anguloDireccion = eventos.obtenerAnguloDireccion();
+        float fuerza = eventos.obtenerFuerza();
+
+        // Longitud de la linea basada en la fuerza del golpe (mínimo 0.5 y máximo 5 pixeles)
+        float longitudLinea = 0.5f + (fuerza * 4.5f);
+
+        // Calculamos las coordenadas donde termina la linea
+        float lineaFinX = pelotaX + MathUtils.cos(anguloDireccion) * longitudLinea;
+        float lineaFinY = pelotaY + MathUtils.sin(anguloDireccion) * longitudLinea;
+
+        // Configuramos el render para usar la matriz de la cámara, esto para que utilice las coordenadas
+        // de nuestra matriz de camera
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        // Preparamos el shapeRenderer para dibujar (una linea)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        // Le ponemos un color a la linea (según el color del jugador)
+        Color colorJugador = jugadores.get(turnoActual).getColorBola();
+        shapeRenderer.setColor(colorJugador);
+
+        // Ahora si dibujamos la linea
+        shapeRenderer.line(pelotaX, pelotaY, lineaFinX, lineaFinY);
+
+        // Terminamos de utilizar shapeRenderer
+        shapeRenderer.end();
+
     }
 }

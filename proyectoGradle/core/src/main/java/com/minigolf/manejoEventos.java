@@ -252,4 +252,9 @@ public class manejoEventos implements InputProcessor {
     public float obtenerFuerza() {
         return (this.fuerza * 100) / MAXIMO_FUERZA;
     }
+
+    // Método para regresar el angulo actual de dirección
+    public float obtenerAnguloDireccion(){
+        return this.anguloDireccion;
+    }
 }
