@@ -22,7 +22,13 @@ public class manejoEventos implements InputProcessor {
 
     // Declaramos el radio de las bolas y el máximo de fuerza que se puede ejercer
     private final float RADIO = 10 * PIXEL_A_METRO; // La bola tiene un radio de 0.1m
-    private final float MAXIMO_FUERZA = 2f;
+    private final float MAXIMO_FUERZA = 1.5f;
+
+    // Categorías para colisión, esto sirve para etiquetar cada objeto con una de estas categorías para
+    // después decidir que objetos pueden colisionar entre si. Se utilizan bits para diferenciar entre estos,
+    // para que sean mas cortos y claros utilizamos hexadecimal
+    public static final short CATEGORIA_BOLA = 0x0001; // 0000000000000001
+    public static final short CATEGORIA_PARED = 0x0002; // 0000000000000010
 
     // Atributos
     private ArrayList<Jugador> jugadores;
@@ -32,7 +38,7 @@ public class manejoEventos implements InputProcessor {
     private int jugadorActual = 0;
 
     // Fuerza del golpe 
-    private float fuerza = 0.1f;
+    public float fuerza = 0f;
     // Angulo (0-360) para almacenar la dirección del golpe
     private float anguloDireccion = 0f;
 
@@ -81,6 +87,9 @@ public class manejoEventos implements InputProcessor {
 
             // Este jugador ya golpeo
             jugadores.get(jugadorActual).setPuedeGolpear(false);
+
+            // Reiniciamos la fuerza
+            this.fuerza = 0f;
 
         }
         return false;
@@ -191,10 +200,17 @@ public class manejoEventos implements InputProcessor {
         float worldY = (Gdx.graphics.getHeight() - screenY) * PIXEL_A_METRO;
         bolaBodyDef.position.set(worldX, worldY);
 
+        // Activamos la detección continua de colisiones
+        bolaBodyDef.bullet = true;
+
         // Creamos el Body de la bola en el mundo de Box2D usando la definición anterior
         Body bolaBody = mundoBox2d.createBody(bolaBodyDef);
         // Para reducir la velocidad gradualmente
         bolaBody.setLinearDamping(0.3f);
+        // Eliminamos la rotación de la bola
+        bolaBody.setFixedRotation(true);
+        // La pelota "duerme" cuando esta quieta
+        bolaBody.setSleepingAllowed(true);
 
         // Creamos una forma circular para la bola y establecemos su radio
         CircleShape bolaShape = new CircleShape();
@@ -206,6 +222,10 @@ public class manejoEventos implements InputProcessor {
         bolaFixtureDef.restitution = 0.6f; // Rebote
         bolaFixtureDef.density = 1f;
         bolaFixtureDef.friction = 0.1f;
+
+        // Configuración de colisiones
+        bolaFixtureDef.filter.categoryBits = CATEGORIA_BOLA; // Las pelotas pertenecen a esta categoría
+        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED; // Esta bola puede colisionar con otras bolas y paredes
 
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);
@@ -221,10 +241,18 @@ public class manejoEventos implements InputProcessor {
 
         switch (direccion) {
             case 0:
-                this.anguloDireccion -= 0.02f;
+                this.anguloDireccion -= 0.5f;
+                // Nos aseguramos que no baje de 360º
+                if (this.anguloDireccion < 0) {
+                    this.anguloDireccion += 360;
+                }
                 break;
             case 1:
-                this.anguloDireccion += 0.02f;
+                this.anguloDireccion += 0.5f;
+                // Nos aseguramos que no pase de 359º
+                if (this.anguloDireccion >= 0) {
+                    this.anguloDireccion -= 360;
+                }
                 break;
         }
     }
@@ -235,7 +263,7 @@ public class manejoEventos implements InputProcessor {
         // Calculamos la fuerza aplicada, asegurándonos que no pase de 10 y que no baje de 1
         switch (direccion) {
             case 0:
-                this.fuerza = Math.max(0.1f, this.fuerza - 0.01f);
+                this.fuerza = Math.max(0f, this.fuerza - 0.01f);
                 break;
             case 1:
                 this.fuerza = Math.min(MAXIMO_FUERZA, this.fuerza + 0.01f);
@@ -254,7 +282,7 @@ public class manejoEventos implements InputProcessor {
     }
 
     // Método para regresar el angulo actual de dirección
-    public float obtenerAnguloDireccion(){
+    public float obtenerAnguloDireccion() {
         return this.anguloDireccion;
     }
 }

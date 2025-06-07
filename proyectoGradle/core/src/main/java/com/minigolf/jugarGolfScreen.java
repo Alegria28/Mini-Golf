@@ -70,6 +70,8 @@ public class jugarGolfScreen implements Screen {
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
     // Para poder dibujar figuras simples
     ShapeRenderer shapeRenderer;
+    // Para guardar las paredes del campo
+    ArrayList<Body> arrayListParedes = new ArrayList<Body>();
 
     // Constructor de la clase
     public jugarGolfScreen(MiniGolfMain game, ArrayList<Jugador> jugadores) {
@@ -196,6 +198,8 @@ public class jugarGolfScreen implements Screen {
         pared1BodyDef.position.set(450 * PIXEL_A_METRO, 90 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared1Body = mundoBox2d.createBody(pared1BodyDef);
+        // Agregamos esta pared a la cola para liberarlo después
+        arrayListParedes.add(pared1Body);
 
         // Creamos un polígono en general
         PolygonShape pared1Shape = new PolygonShape();
@@ -205,11 +209,15 @@ public class jugarGolfScreen implements Screen {
 
         // Creamos una FixtureDef para definir las propiedades físicas de la pared
         FixtureDef paredFixtureDef = new FixtureDef();
-        paredFixtureDef.friction = 0.2f;
-        paredFixtureDef.density = 0f;
-        paredFixtureDef.restitution = 1f; // Rebote
         // Ponemos la forma creada 
         paredFixtureDef.shape = pared1Shape;
+        paredFixtureDef.restitution = 1f; // Rebote
+        paredFixtureDef.density = 0f; // 0 para bodies estáticos
+        paredFixtureDef.friction = 0.2f;
+
+        // Configuración de colisiones
+        paredFixtureDef.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
+        paredFixtureDef.filter.maskBits = manejoEventos.CATEGORIA_BOLA; // Puede colisionar con las bolas
 
         // Creamos la fixture y la unimos al cuerpo de la pared
         pared1Body.createFixture(paredFixtureDef);
@@ -225,6 +233,8 @@ public class jugarGolfScreen implements Screen {
         pared2BodyDef.position.set(450 * PIXEL_A_METRO, 810 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared2Body = mundoBox2d.createBody(pared2BodyDef);
+        // Agregamos esta pared a la cola para liberarlo después
+        arrayListParedes.add(pared2Body);
 
         // Creamos un polígono en general
         PolygonShape pared2Shape = new PolygonShape();
@@ -248,6 +258,8 @@ public class jugarGolfScreen implements Screen {
         pared3BodyDef.position.set(90 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared3Body = mundoBox2d.createBody(pared3BodyDef);
+        // Agregamos esta pared a la cola para liberarlo después
+        arrayListParedes.add(pared3Body);
 
         // Creamos un polígono en general
         PolygonShape pared3Shape = new PolygonShape();
@@ -271,6 +283,8 @@ public class jugarGolfScreen implements Screen {
         pared4BodyDef.position.set(810 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body pared4Body = mundoBox2d.createBody(pared4BodyDef);
+        // Agregamos esta pared a la cola para liberarlo después
+        arrayListParedes.add(pared4Body);
 
         // Creamos un polígono en general
         PolygonShape pared4Shape = new PolygonShape();
@@ -311,8 +325,14 @@ public class jugarGolfScreen implements Screen {
     public void render(float delta) {
         // Limpiar pantalla
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        // Actualizamos nuestro mundo de física
-        mundoBox2d.step(1 / 60f, 6, 2);
+
+        // En caso de que haya lag (que delta sea mayor que 1/60f) entonces 
+        // obligamos que el paso sea 1/60 para que este sea constante
+        float timeStep = Math.min(delta, 1 / 60f); // 60fps
+        // Actualizamos nuestro mundo de física, en cada iteración (timeStep) se ajustan las
+        // velocidades y posiciones para que estas sean mas precisas, el rendimiento depende 
+        // de cuantas iteraciones para el calculo de velocidad y posición se hagan cada frame
+        mundoBox2d.step(timeStep, 10, 10);
 
         // Actualizar y dibujar stage
         stage.act(delta);
@@ -424,10 +444,13 @@ public class jugarGolfScreen implements Screen {
     public void dispose() {
         // Limpiamos todas las pelotas de los jugadores
         for (Jugador jugador : jugadores) {
-            if (jugador.getBolaJugador() != null) {
-                mundoBox2d.destroyBody(jugador.getBolaJugador());
-                jugador.setBolaJugador(null);
-            }
+            mundoBox2d.destroyBody(jugador.getBolaJugador());
+            jugador.setBolaJugador(null);
+        }
+
+        // Limpiamos todas las paredes
+        for (Body pared : arrayListParedes) {
+            mundoBox2d.destroyBody(pared);
         }
 
         // Liberar recursos
@@ -447,11 +470,11 @@ public class jugarGolfScreen implements Screen {
         float magnitudVelocidad = velocidad.len();
 
         // Se detectara que esta parada si la velocidad cumple 0.05m/s
-        return magnitudVelocidad < 0.1f;
+        return magnitudVelocidad < 0.05f;
     }
-    
+
     // Dibujamos una linea para mostrar la dirección del golpe
-    private void dibujarLineaDireccion(){
+    private void dibujarLineaDireccion() {
 
         // Obtenemos la bola del jugador
         Body bola = jugadores.get(turnoActual).getBolaJugador();
@@ -469,8 +492,8 @@ public class jugarGolfScreen implements Screen {
         float longitudLinea = 0.5f + (fuerza * 4.5f);
 
         // Calculamos las coordenadas donde termina la linea
-        float lineaFinX = pelotaX + MathUtils.cos(anguloDireccion) * longitudLinea;
-        float lineaFinY = pelotaY + MathUtils.sin(anguloDireccion) * longitudLinea;
+        float lineaFinX = pelotaX + MathUtils.cosDeg(anguloDireccion) * longitudLinea;
+        float lineaFinY = pelotaY + MathUtils.sinDeg(anguloDireccion) * longitudLinea;
 
         // Configuramos el render para usar la matriz de la cámara, esto para que utilice las coordenadas
         // de nuestra matriz de camera
