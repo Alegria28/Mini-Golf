@@ -1,4 +1,4 @@
-package com.minigolf;
+package com.minigolf.handlers;
 
 import java.util.ArrayList;
 
@@ -14,6 +14,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+
+// Importamos la clase
+import com.minigolf.models.Jugador;
 
 public class manejoEventos implements InputProcessor {
 

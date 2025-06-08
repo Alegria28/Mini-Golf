@@ -1,5 +1,8 @@
 package com.minigolf;
 
+// Importamos la clases
+import com.minigolf.screens.menuInicialScreen;
+
 // En lugar de ApplicationListener para tener un manejo mas sencillo de las pantallas
 import com.badlogic.gdx.Game;
 

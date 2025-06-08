@@ -1,4 +1,4 @@
-package com.minigolf;
+package com.minigolf.screens;
 
 import java.util.ArrayList;
 
@@ -31,6 +31,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+// Importamos las clases necesarias
+import com.minigolf.MiniGolfMain;
+import com.minigolf.models.Jugador;
+import com.minigolf.handlers.manejoEventos;
 
 /**
  * Pantalla principal del juego de golf donde se desarrolla la partida

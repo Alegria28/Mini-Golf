@@ -1,5 +1,5 @@
 // cspell: ignore pixmap
-package com.minigolf;
+package com.minigolf.screens;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+
+// Importamos las clases necesarias
+import com.minigolf.MiniGolfMain;
+import com.minigolf.models.Jugador;;
 
 /**
  * Las clases que implementan son diferentes escenas que Game puede mostrar, por lo que son parte del ciclo de vida del juego (ver {@link MiniGolfMain}).

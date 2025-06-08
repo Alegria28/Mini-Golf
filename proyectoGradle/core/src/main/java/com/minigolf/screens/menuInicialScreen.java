@@ -1,4 +1,4 @@
-package com.minigolf;
+package com.minigolf.screens;
 
 // Importamos los recursos necesarios para la clase
 import com.badlogic.gdx.Gdx;
@@ -21,6 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+// Importamos las clases necesarias
+import com.minigolf.MiniGolfMain;
 
 /**
  * Las clases que implementan son diferentes escenas que Game puede mostrar, por lo que son parte del ciclo de vida del juego (ver {@link MiniGolfMain}).

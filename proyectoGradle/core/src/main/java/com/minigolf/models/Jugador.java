@@ -1,4 +1,4 @@
-package com.minigolf;
+package com.minigolf.models;
 
 import java.util.ArrayList;
 
