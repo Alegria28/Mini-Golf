@@ -1,4 +1,3 @@
-- Empezar lógica de golpes
-- Agregar linea de dirección para el golpe (y corregir golpe si hace falta para eso)
-- Corregir rebote entre bola y pared
 - Empezar diseño de niveles
+- Acomodar correctamente el label informacionTurno
+- Corregir rebote entre bola y pared

@@ -47,7 +47,7 @@ public class jugarGolfScreen implements Screen {
     private Stack stack;
     private Table tablePrincipal;
     private Label infoLabel;
-    private Label fuerzaLabel;
+    private Label informacionTurno;
     private BitmapFont font;
 
     private final MiniGolfMain game;
@@ -180,10 +180,10 @@ public class jugarGolfScreen implements Screen {
         // Creamos un table vacío para el espacio inferior
         Table tableAbajo = new Table();
         // Creamos un label para mostrar el nivel de fuerza
-        fuerzaLabel = new Label("", labelPrincipalStyle);
-        fuerzaLabel.setAlignment(Align.center);
+        informacionTurno = new Label("", labelPrincipalStyle);
+        informacionTurno.setAlignment(Align.center);
         // Agregamos el label a esta tabla
-        tableAbajo.add(fuerzaLabel).center();
+        tableAbajo.add(informacionTurno).center();
         tableAbajo.center();
 
         tablePrincipal.add(tableAbajo).height(90).width(VIRTUAL_WIDTH).center();
@@ -365,57 +365,68 @@ public class jugarGolfScreen implements Screen {
         // Verificamos si el turno actual tiene bola, de no ser asi, entonces esperamos a que la coloque
         if (jugadores.get(turnoActual).getBolaJugador() == null) {
             infoLabel.setText("Colocar bola para: " + jugadores.get(turnoActual).getNombre());
-        }
-        // Si el jugador tiene bola y le toca golpear
-        else if (jugadores.get(turnoActual).getBolaJugador() != null
-                && jugadores.get(turnoActual).getPuedeGolpear() == true) {
+            // Limpiamos el label
+            informacionTurno.setText("");
+        } else {
 
-            infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
+            // Le agregamos un formato a la fuerza para solo mostrar 2 decimales
+            String numeroConFormato = String.format("%.2f", eventos.obtenerFuerza());
+            
+            // Mostramos la información una vez que el usuario haya colocado la bola
+            informacionTurno.setText(
+                    "Fuerza: " + numeroConFormato + "%\t\tStrokes: "
+                            + jugadores.get(turnoActual).getStrokesActuales());
 
-            // Llamamos a nuestro método para dibujar la linea de dirección
-            dibujarLineaDireccion();
+            // Si el jugador tiene bola y le toca golpear
+            if (jugadores.get(turnoActual).getBolaJugador() != null
+                    && jugadores.get(turnoActual).getPuedeGolpear() == true) {
 
-            // Verificamos que tecla esta pulsada
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                System.out.println("Tecla LEFT");
-                eventos.actualizarAngulo(0);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                System.out.println("Tecla RIGHT");
-                eventos.actualizarAngulo(1);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                System.out.println("Tecla DOWN");
-                eventos.actualizarFuerza(0);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                System.out.println("Tecla UP");
-                eventos.actualizarFuerza(1);
+                // Mostramos información sobre el turno
+                infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
+
+                // Llamamos a nuestro método para dibujar la linea de dirección
+                dibujarLineaDireccion();
+
+                // Verificamos que tecla esta pulsada
+                if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                    System.out.println("Tecla LEFT");
+                    eventos.actualizarAngulo(0);
+                } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                    System.out.println("Tecla RIGHT");
+                    eventos.actualizarAngulo(1);
+                } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                    System.out.println("Tecla DOWN");
+                    eventos.actualizarFuerza(0);
+                } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                    System.out.println("Tecla UP");
+                    eventos.actualizarFuerza(1);
+                }
+
             }
+            // Verificamos si el turno ha terminado:
+            // - El jugador tiene pelota
+            // - Ya no puede golpear
+            // - Y la pelota se ha parado
+            else if (jugadores.get(turnoActual).getBolaJugador() != null
+                    && jugadores.get(turnoActual).getPuedeGolpear() == false && pelotaDetenida) {
 
-            // Mostramos información sobre el tiro
-            fuerzaLabel.setText("Fuerza: " + String.valueOf(eventos.obtenerFuerza()) + "%");
-        }
-        // Verificamos si el turno ha terminado:
-        // - El jugador tiene pelota
-        // - Ya no puede golpear
-        // - Y la pelota se ha parado
-        else if (jugadores.get(turnoActual).getBolaJugador() != null
-                && jugadores.get(turnoActual).getPuedeGolpear() == false && pelotaDetenida) {
+                System.out.println("Pelota detenida para: " + jugadores.get(turnoActual).getNombre());
 
-            System.out.println("Pelota detenida para: " + jugadores.get(turnoActual).getNombre());
+                // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
+                // nuestro contador
+                if (turnoActual + 1 == jugadores.size()) {
+                    turnoActual = 0;
+                } else {
+                    turnoActual++;
+                }
 
-            // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
-            // nuestro contador
-            if (turnoActual + 1 == jugadores.size()) {
-                turnoActual = 0;
-            } else {
-                turnoActual++;
+                // Este jugador puede volver a golpear
+                jugadores.get(turnoActual).setPuedeGolpear(true);
+                // Actualizamos en nuestra clase eventos
+                eventos.setJugadorActual(turnoActual);
+
+                System.out.println("Cambiando de turno, ahora sigue: " + jugadores.get(turnoActual).getNombre());
             }
-
-            // Este jugador puede volver a golpear
-            jugadores.get(turnoActual).setPuedeGolpear(true);
-            // Actualizamos en nuestra clase eventos
-            eventos.setJugadorActual(turnoActual);
-
-            System.out.println("Cambiando de turno, ahora sigue: " + jugadores.get(turnoActual).getNombre());
         }
 
     }
@@ -469,8 +480,8 @@ public class jugarGolfScreen implements Screen {
         Vector2 velocidad = pelota.getLinearVelocity();
         float magnitudVelocidad = velocidad.len();
 
-        // Se detectara que esta parada si la velocidad cumple 0.05m/s
-        return magnitudVelocidad < 0.05f;
+        // Se detectara que esta parada si la velocidad cumple 0.01m/s
+        return magnitudVelocidad < 0.01f;
     }
 
     // Dibujamos una linea para mostrar la dirección del golpe

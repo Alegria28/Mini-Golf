@@ -88,6 +88,9 @@ public class manejoEventos implements InputProcessor {
             // Este jugador ya golpeo
             jugadores.get(jugadorActual).setPuedeGolpear(false);
 
+            // Aumentamos el numero de golpes de este jugador
+            jugadores.get(jugadorActual).incrementarStrokes();
+
             // Reiniciamos la fuerza
             this.fuerza = 0f;
 
@@ -206,7 +209,7 @@ public class manejoEventos implements InputProcessor {
         // Creamos el Body de la bola en el mundo de Box2D usando la definición anterior
         Body bolaBody = mundoBox2d.createBody(bolaBodyDef);
         // Para reducir la velocidad gradualmente
-        bolaBody.setLinearDamping(0.3f);
+        bolaBody.setLinearDamping(0.7f);
         // Eliminamos la rotación de la bola
         bolaBody.setFixedRotation(true);
         // La pelota "duerme" cuando esta quieta
