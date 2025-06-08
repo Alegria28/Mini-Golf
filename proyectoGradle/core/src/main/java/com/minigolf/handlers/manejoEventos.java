@@ -17,6 +17,8 @@ import com.badlogic.gdx.physics.box2d.World;
 
 // Importamos la clase
 import com.minigolf.models.Jugador;
+// Importamos los niveles
+import com.minigolf.niveles.*;;
 
 public class manejoEventos implements InputProcessor {
 
@@ -39,6 +41,8 @@ public class manejoEventos implements InputProcessor {
 
     // Indice para saber con que jugador estamos trabajando
     private int jugadorActual = 0;
+    // Para tener un control sobre el nivel
+    private int nivelActual = 1;
 
     // Fuerza del golpe 
     public float fuerza = 0f;
@@ -128,12 +132,22 @@ public class manejoEventos implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-        // Solo agregamos una bola si el jugador no tiene
-        if (jugadores.get(jugadorActual).getBolaJugador() == null) {
-            // Le agregamos la bola al jugador
-            jugadores.get(jugadorActual).setBolaJugador(colocarBola(mundoBox2d, screenX, screenY));
-            // Cambiamos la bandera para que pueda golpear
-            jugadores.get(jugadorActual).setPuedeGolpear(true);
+        // Hacemos la conversion de las coordenadas para nuestro mundo
+        float screenXConvertido = screenX * PIXEL_A_METRO;
+        float screenYConvertido = (Gdx.graphics.getHeight() - screenY) * PIXEL_A_METRO;
+
+        // Simple mensaje en consola para saber la posición del click
+        System.out.println("X = " + screenXConvertido + "\t" + "Y = " + screenYConvertido);
+
+        // Verificamos si el punto presionado es valido
+        if (posicionValida(screenXConvertido, screenYConvertido)) {
+            // Solo agregamos una bola si el jugador no tiene
+            if (jugadores.get(jugadorActual).getBolaJugador() == null) {
+                // Le agregamos la bola al jugador
+                jugadores.get(jugadorActual).setBolaJugador(colocarBola(mundoBox2d, screenX, screenY));
+                // Cambiamos la bandera para que pueda golpear
+                jugadores.get(jugadorActual).setPuedeGolpear(true);
+            }
         }
 
         return false;
@@ -190,6 +204,22 @@ public class manejoEventos implements InputProcessor {
         return false;
     }
 
+    // Método para verificar si la posición es valida para el nivel
+    private boolean posicionValida(float screenX, float screenY) {
+
+        boolean temporal = false;
+
+        switch (nivelActual) {
+            case 1:
+                // Que este entre el mínimo y máximo para X/Y
+                temporal = (screenX >= nivel1Golf.minX && screenX <= nivel1Golf.maxX)
+                        && (screenY >= nivel1Golf.minY && screenY <= nivel1Golf.maxY);
+                break;
+        }
+
+        return temporal;
+    }
+
     // Método para colocar la bola donde el usuario haga click
     private Body colocarBola(World mundoBax2d, int screenX, int screenY) {
 
@@ -243,7 +273,7 @@ public class manejoEventos implements InputProcessor {
     }
 
     // Método para actualizar el vectorDireccion
-    public void actualizarAngulo(int direccion) {
+    public void setAngulo(int direccion) {
 
         switch (direccion) {
             case 0:
@@ -256,7 +286,7 @@ public class manejoEventos implements InputProcessor {
             case 1:
                 this.anguloDireccion += 0.5f;
                 // Nos aseguramos que no pase de 359º
-                if (this.anguloDireccion >= 0) {
+                if (this.anguloDireccion >= 360) {
                     this.anguloDireccion -= 360;
                 }
                 break;
@@ -264,7 +294,7 @@ public class manejoEventos implements InputProcessor {
     }
 
     // Método para actualizar la fuerza del golpe
-    public void actualizarFuerza(int direccion) {
+    public void setFuerza(int direccion) {
 
         // Calculamos la fuerza aplicada, asegurándonos que no pase de 10 y que no baje de 1
         switch (direccion) {
@@ -282,13 +312,21 @@ public class manejoEventos implements InputProcessor {
         this.jugadorActual = jugadorActual;
     }
 
+    public void setNivelActual(int nivelActual) {
+        this.nivelActual = nivelActual;
+    }
+
     // Método para regresar la fuerza actual en porcentaje
-    public float obtenerFuerza() {
+    public float getFuerza() {
         return (this.fuerza * 100) / MAXIMO_FUERZA;
     }
 
     // Método para regresar el angulo actual de dirección
-    public float obtenerAnguloDireccion() {
+    public float getAnguloDireccion() {
         return this.anguloDireccion;
+    }
+
+    public int getNivelActual() {
+        return nivelActual;
     }
 }

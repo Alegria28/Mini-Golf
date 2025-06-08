@@ -63,6 +63,8 @@ public class seleccionColorScreen implements Screen {
     private int indiceVector = 0;
     // Lista para almacenar la información de los jugadores
     private ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
+    // Para saber si ya hemos terminado de seleccionar los colores
+    private boolean terminado = false;
 
     // Constructor de la clase
     public seleccionColorScreen(MiniGolfMain game, TextButtonStyle buttonStyle, String[] nombres) {
@@ -160,14 +162,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color blanco seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color blanco seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(1, 1, 1, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor1.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(1, 1, 1, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor1.setVisible(false);
+                }
             }
         });
 
@@ -180,14 +185,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color verde seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color verde seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 1f, 0f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor2.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 1f, 0f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor2.setVisible(false);
+                }
             }
         });
 
@@ -200,14 +208,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color amarillo seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color amarillo seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 1f, 0f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor3.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 1f, 0f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor3.setVisible(false);
+                }
             }
         });
 
@@ -220,14 +231,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color azul seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color azul seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 0f, 1f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor4.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 0f, 1f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor4.setVisible(false);
+                }
             }
         });
 
@@ -250,14 +264,18 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color rojo seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color rojo seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 0f, 0f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor5.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 0f, 0f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor5.setVisible(false);
+                }
+
             }
         });
 
@@ -270,14 +288,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color rosa seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color rosa seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 0f, 1f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor6.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(1f, 0f, 1f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor6.setVisible(false);
+                }
             }
         });
 
@@ -290,14 +311,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color cyan seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color cyan seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 1f, 1f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor7.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(0f, 1f, 1f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor7.setVisible(false);
+                }
             }
         });
 
@@ -310,14 +334,17 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Color morado seleccionado");
+                // Ya no podremos hacer click si ya hemos terminado
+                if (!terminado) {
+                    System.out.println("Color morado seleccionado");
 
-                // Creamos y agregamos la instancia de Jugador a nuestra lista
-                jugadores.add(new Jugador(nombres[indiceVector], new Color(120f / 255f, 0f, 190f / 255f, 1f)));
-                // Aumentamos el indice del vector
-                indiceVector++;
-                // Ocultamos este botón ya que no esta disponible
-                botonColor8.setVisible(false);
+                    // Creamos y agregamos la instancia de Jugador a nuestra lista
+                    jugadores.add(new Jugador(nombres[indiceVector], new Color(120f / 255f, 0f, 190f / 255f, 1f)));
+                    // Aumentamos el indice del vector
+                    indiceVector++;
+                    // Ocultamos este botón ya que no esta disponible
+                    botonColor8.setVisible(false);
+                }
             }
         });
 
@@ -392,6 +419,8 @@ public class seleccionColorScreen implements Screen {
         } catch (ArrayIndexOutOfBoundsException e) {
             // Si cachamos este error, entonces ya hemos elegido el ultimo color
             botonIniciar.setVisible(true);
+            // Ya hemos terminado de seleccionar
+            terminado = true;
         }
     }
 

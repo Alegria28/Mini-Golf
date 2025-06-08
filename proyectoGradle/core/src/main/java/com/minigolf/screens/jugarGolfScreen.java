@@ -36,6 +36,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minigolf.MiniGolfMain;
 import com.minigolf.models.Jugador;
 import com.minigolf.handlers.manejoEventos;
+// Importamos los niveles
+import com.minigolf.niveles.*;;
 
 /**
  * Pantalla principal del juego de golf donde se desarrolla la partida
@@ -49,6 +51,8 @@ public class jugarGolfScreen implements Screen {
     OrthographicCamera camera;
     private Stage stage;
     Texture textureFondo;
+    Texture texturePuntoDeInicio;
+    Image imagePuntoDeInicio;
     private Stack stack;
     private Table tablePrincipal;
     private Label infoLabel;
@@ -62,10 +66,16 @@ public class jugarGolfScreen implements Screen {
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
 
+    // Para tener un control sobre el nivel actual del juego
+    private int nivelActual = 1;
+    // Para saber si ya cargamos el nivel indicado
+    private boolean nivelCargado = false;
     // Variable para tener un control de turno durante el juego
     private int turnoActual = 0;
     // Instancia de la clase que va a manejar los eventos
     private manejoEventos eventos;
+    // Para guardar los bodies temporales de cada nivel
+    private ArrayList<Body> arrayListBodiesTemporales = new ArrayList<Body>();
 
     /* --------- Atributos motor físico Box2D --------- */
 
@@ -93,12 +103,19 @@ public class jugarGolfScreen implements Screen {
         // Iniciamos la instancia de shapeRenderer
         shapeRenderer = new ShapeRenderer();
 
-        /* --------- Configuración inicial stage y eventos --------- */
+        /* --------- Configuración inicial stage, eventos y cámara --------- */
+
         camera = new OrthographicCamera();
         Viewport viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 
         // Creamos el stage
         stage = new Stage(viewport);
+
+        // Ponemos la posición de la cámara al centro del mundo virtual (450px,450px), esto para que la cámara 
+        // "mire" al centro del campo de golf
+        camera.position.set(450, 450, 0);
+        // Actualizamos la cámara para que esto surta efecto
+        camera.update();
 
         // Agregamos este evento al multiplexer
         multiplexer.addProcessor(stage); // El UI tiene prioridad antes que la clase
@@ -133,6 +150,14 @@ public class jugarGolfScreen implements Screen {
         Image imagenFondo = new Image(textureFondo);
         // Aplicamos la opacidad a nuestra imagen de fondo
         imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
+
+        /* --------- Configuración imagen punto de inicio --------- */
+
+        // Creamos la textura a partir de la imagen
+        texturePuntoDeInicio = new Texture(Gdx.files.internal("puntoDeInicio.jpg"));
+        // Creamos la imagen y le cambiamos el tamaño
+        imagePuntoDeInicio = new Image(texturePuntoDeInicio);
+        imagePuntoDeInicio.setSize(70f, 70f);
 
         /* --------- Configuración tablePrincipal --------- */
 
@@ -193,6 +218,189 @@ public class jugarGolfScreen implements Screen {
 
         tablePrincipal.add(tableAbajo).height(90).width(VIRTUAL_WIDTH).center();
 
+        /* --------- Preparación nivel --------- */
+
+        agregarParedes();
+
+        /* --------- Configuración capas y fondo --------- */
+
+        // Iniciamos nuestro stack para tener "capas" de nuestros actores
+        stack = new Stack();
+        // De esta manera stack ocupara todo el espacio de stage, y asi todos los demás que se agreguen
+        stack.setFillParent(true);
+
+        // Añadimos primero el fondo
+        stack.add(imagenFondo);
+
+        // Añadimos el table que va a estar encima de la imagen de fondo 
+        stack.add(tablePrincipal);
+
+        /* --------- Actores --------- */
+
+        // Agregamos por ultimo los eventos en el multiplexer
+        Gdx.input.setInputProcessor(multiplexer);
+
+        // Agregamos el actor que tiene el orden de los demás
+        stage.addActor(stack);
+    }
+
+    @Override
+    public void render(float delta) {
+        // Limpiar pantalla
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // En caso de que haya lag (que delta sea mayor que 1/60f) entonces 
+        // obligamos que el paso sea 1/60 para que este sea constante
+        float timeStep = Math.min(delta, 1 / 60f); // 60fps
+        // Actualizamos nuestro mundo de física, en cada iteración (timeStep) se ajustan las
+        // velocidades y posiciones para que estas sean mas precisas, el rendimiento depende 
+        // de cuantas iteraciones para el calculo de velocidad y posición se hagan cada frame
+        mundoBox2d.step(timeStep, 10, 10);
+
+        // Actualizar y dibujar stage
+        stage.act(delta);
+        stage.draw();
+        // RENDERIZADO DEL DEBUG DE BOX2D CON ESCALADO (actualizar y dibujar con escalado)
+        // Dibujamos las formas de colisión de Box2D para debug, .cpy() crea una copia de la matriz 
+        // de la cámara para no modificar la original, .scl(100f) escala la matriz × 100 para convertir 
+        // metros de Box2D a píxeles de pantalla
+        debugRenderer.render(
+                mundoBox2d, // Mundo Box2D
+                camera.combined // Matriz de transformación
+                        .cpy() // Creamos una copia (no modifica la original)
+                        .scl(100f)); // Escalar x100 para metro -> pixel
+
+        // Verificamos el nivel actual 
+        nivelActual();
+
+        // Bandera para saber si la pelota se esta moviendo, verificando si para empezar el jugador tiene bola
+        boolean pelotaDetenida = false;
+        if (jugadores.get(turnoActual).getBolaJugador() != null) {
+            pelotaDetenida = pelotaDetenida(jugadores.get(turnoActual).getBolaJugador());
+        }
+
+        // Verificamos si el turno actual tiene bola, de no ser asi, entonces esperamos a que la coloque
+        if (jugadores.get(turnoActual).getBolaJugador() == null) {
+            infoLabel.setText("Colocar bola para: " + jugadores.get(turnoActual).getNombre());
+            // Limpiamos el label
+            informacionTurno.setText("");
+        } else {
+
+            // Le agregamos un formato a la fuerza para solo mostrar 2 decimales
+            String numeroConFormato = String.format("%.2f", eventos.getFuerza());
+
+            // Mostramos la información una vez que el usuario haya colocado la bola
+            informacionTurno.setText(
+                    "Fuerza: " + numeroConFormato + "%\t\tStrokes: "
+                            + jugadores.get(turnoActual).getStrokesActuales());
+
+            // Si el jugador tiene bola y le toca golpear
+            if (jugadores.get(turnoActual).getBolaJugador() != null
+                    && jugadores.get(turnoActual).getPuedeGolpear() == true) {
+
+                // Mostramos información sobre el turno
+                infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
+
+                // Llamamos a nuestro método para dibujar la linea de dirección
+                dibujarLineaDireccion();
+
+                // Verificamos que tecla esta pulsada
+                if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                    System.out.println("Tecla LEFT");
+                    eventos.setAngulo(0);
+                } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                    System.out.println("Tecla RIGHT");
+                    eventos.setAngulo(1);
+                } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                    System.out.println("Tecla DOWN");
+                    eventos.setFuerza(0);
+                } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                    System.out.println("Tecla UP");
+                    eventos.setFuerza(1);
+                }
+
+            }
+            // Verificamos si el turno ha terminado:
+            // - El jugador tiene pelota
+            // - Ya no puede golpear
+            // - Y la pelota se ha parado
+            else if (jugadores.get(turnoActual).getBolaJugador() != null
+                    && jugadores.get(turnoActual).getPuedeGolpear() == false && pelotaDetenida) {
+
+                System.out.println("Pelota detenida para: " + jugadores.get(turnoActual).getNombre());
+
+                // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
+                // nuestro contador
+                if (turnoActual + 1 == jugadores.size()) {
+                    turnoActual = 0;
+                } else {
+                    turnoActual++;
+                }
+
+                // Este jugador puede volver a golpear
+                jugadores.get(turnoActual).setPuedeGolpear(true);
+                // Actualizamos en nuestra clase eventos
+                eventos.setJugadorActual(turnoActual);
+
+                System.out.println("Cambiando de turno, ahora sigue: " + jugadores.get(turnoActual).getNombre());
+            }
+        }
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        // Limpiamos todas las pelotas de los jugadores
+        for (Jugador jugador : jugadores) {
+            mundoBox2d.destroyBody(jugador.getBolaJugador());
+            jugador.setBolaJugador(null);
+        }
+
+        // Limpiamos los bodies temporales que uso el nivel
+        for (Body body : arrayListBodiesTemporales) {
+            mundoBox2d.destroyBody(body);
+        }
+
+        // Limpiamos todas las paredes
+        for (Body pared : arrayListParedes) {
+            mundoBox2d.destroyBody(pared);
+        }
+
+        // Liberar recursos
+        stage.dispose();
+        mundoBox2d.dispose();
+        debugRenderer.dispose();
+        textureFondo.dispose();
+        font.dispose();
+        Gdx.input.setInputProcessor(null);
+        shapeRenderer.dispose();
+
+        jugadores.clear();
+        arrayListBodiesTemporales.clear();
+        arrayListParedes.clear();
+    }
+
+    private void agregarParedes() {
         /* --------- Pared 1 --------- */
 
         // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático, 
@@ -303,180 +511,19 @@ public class jugarGolfScreen implements Screen {
         pared4Body.createFixture(paredFixtureDef);
         // Liberamos el polígono
         pared4Shape.dispose();
-
-        /* --------- Configuración capas y fondo --------- */
-
-        // Iniciamos nuestro stack para tener "capas" de nuestros actores
-        stack = new Stack();
-        // De esta manera stack ocupara todo el espacio de stage, y asi todos los demás que se agreguen
-        stack.setFillParent(true);
-
-        // Añadimos primero el fondo
-        stack.add(imagenFondo);
-
-        // Añadimos el table que va a estar encima de la imagen de fondo 
-        stack.add(tablePrincipal);
-
-        /* --------- Actores --------- */
-
-        // Agregamos por ultimo los eventos en el multiplexer
-        Gdx.input.setInputProcessor(multiplexer);
-
-        // Agregamos el actor que tiene el orden de los demás
-        stage.addActor(stack);
     }
 
-    @Override
-    public void render(float delta) {
-        // Limpiar pantalla
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // En caso de que haya lag (que delta sea mayor que 1/60f) entonces 
-        // obligamos que el paso sea 1/60 para que este sea constante
-        float timeStep = Math.min(delta, 1 / 60f); // 60fps
-        // Actualizamos nuestro mundo de física, en cada iteración (timeStep) se ajustan las
-        // velocidades y posiciones para que estas sean mas precisas, el rendimiento depende 
-        // de cuantas iteraciones para el calculo de velocidad y posición se hagan cada frame
-        mundoBox2d.step(timeStep, 10, 10);
-
-        // Actualizar y dibujar stage
-        stage.act(delta);
-        stage.draw();
-        // Dibujamos nuestro mundo
-        debugRenderer.render(mundoBox2d, camera.combined);
-
-        // Ponemos la posición de la cámara al centro del mundo virtual (450px,450px), esto para que la cámara 
-        // "mire" al centro del campo de golf
-        camera.position.set(450, 450, 0);
-        // Actualizamos la cámara para que esto surta efecto
-        camera.update();
-
-        // RENDERIZADO DEL DEBUG DE BOX2D CON ESCALADO
-        // Dibujamos las formas de colisión de Box2D para debug, .cpy() crea una copia de la matriz 
-        // de la cámara para no modificar la original, .scl(100f) escala la matriz × 100 para convertir 
-        // metros de Box2D a píxeles de pantalla
-        debugRenderer.render(
-                mundoBox2d, // Mundo Box2D
-                camera.combined // Matriz de transformación
-                        .cpy() // Creamos una copia (no modifica la original)
-                        .scl(100f)); // Escalar x100 para metro -> pixel
-
-        // Bandera para saber si la pelota se esta moviendo, verificando si para empezar el jugador tiene bola
-        boolean pelotaDetenida = false;
-        if (jugadores.get(turnoActual).getBolaJugador() != null) {
-            pelotaDetenida = pelotaDetenida(jugadores.get(turnoActual).getBolaJugador());
-        }
-
-        // Verificamos si el turno actual tiene bola, de no ser asi, entonces esperamos a que la coloque
-        if (jugadores.get(turnoActual).getBolaJugador() == null) {
-            infoLabel.setText("Colocar bola para: " + jugadores.get(turnoActual).getNombre());
-            // Limpiamos el label
-            informacionTurno.setText("");
-        } else {
-
-            // Le agregamos un formato a la fuerza para solo mostrar 2 decimales
-            String numeroConFormato = String.format("%.2f", eventos.obtenerFuerza());
-            
-            // Mostramos la información una vez que el usuario haya colocado la bola
-            informacionTurno.setText(
-                    "Fuerza: " + numeroConFormato + "%\t\tStrokes: "
-                            + jugadores.get(turnoActual).getStrokesActuales());
-
-            // Si el jugador tiene bola y le toca golpear
-            if (jugadores.get(turnoActual).getBolaJugador() != null
-                    && jugadores.get(turnoActual).getPuedeGolpear() == true) {
-
-                // Mostramos información sobre el turno
-                infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
-
-                // Llamamos a nuestro método para dibujar la linea de dirección
-                dibujarLineaDireccion();
-
-                // Verificamos que tecla esta pulsada
-                if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                    System.out.println("Tecla LEFT");
-                    eventos.actualizarAngulo(0);
-                } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                    System.out.println("Tecla RIGHT");
-                    eventos.actualizarAngulo(1);
-                } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                    System.out.println("Tecla DOWN");
-                    eventos.actualizarFuerza(0);
-                } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                    System.out.println("Tecla UP");
-                    eventos.actualizarFuerza(1);
-                }
-
-            }
-            // Verificamos si el turno ha terminado:
-            // - El jugador tiene pelota
-            // - Ya no puede golpear
-            // - Y la pelota se ha parado
-            else if (jugadores.get(turnoActual).getBolaJugador() != null
-                    && jugadores.get(turnoActual).getPuedeGolpear() == false && pelotaDetenida) {
-
-                System.out.println("Pelota detenida para: " + jugadores.get(turnoActual).getNombre());
-
-                // Verificamos si podemos pasar al siguiente jugador, de no ser asi, entonces reiniciamos
-                // nuestro contador
-                if (turnoActual + 1 == jugadores.size()) {
-                    turnoActual = 0;
-                } else {
-                    turnoActual++;
-                }
-
-                // Este jugador puede volver a golpear
-                jugadores.get(turnoActual).setPuedeGolpear(true);
-                // Actualizamos en nuestra clase eventos
-                eventos.setJugadorActual(turnoActual);
-
-                System.out.println("Cambiando de turno, ahora sigue: " + jugadores.get(turnoActual).getNombre());
+    private void nivelActual() {
+        // Si no se ha cargado el nivel aun, entonces lo hacemos
+        if (!nivelCargado) {
+            // Según el nivel en el que estemos
+            switch (nivelActual) {
+                case 1:
+                    arrayListBodiesTemporales = nivel1Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio);
+                    nivelCargado = true;
+                    break;
             }
         }
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        // Limpiamos todas las pelotas de los jugadores
-        for (Jugador jugador : jugadores) {
-            mundoBox2d.destroyBody(jugador.getBolaJugador());
-            jugador.setBolaJugador(null);
-        }
-
-        // Limpiamos todas las paredes
-        for (Body pared : arrayListParedes) {
-            mundoBox2d.destroyBody(pared);
-        }
-
-        // Liberar recursos
-        stage.dispose();
-        mundoBox2d.dispose();
-        debugRenderer.dispose();
-        textureFondo.dispose();
-        font.dispose();
-        Gdx.input.setInputProcessor(null);
-        shapeRenderer.dispose();
     }
 
     // Obtenemos actualizaciones de la bola para saber si esta esta detenida
@@ -501,8 +548,8 @@ public class jugarGolfScreen implements Screen {
         float pelotaY = posicionBola.y / PIXEL_A_METRO;
 
         // Obtenemos la fuerza y dirección del golpe actual
-        float anguloDireccion = eventos.obtenerAnguloDireccion();
-        float fuerza = eventos.obtenerFuerza();
+        float anguloDireccion = eventos.getAnguloDireccion();
+        float fuerza = eventos.getFuerza();
 
         // Longitud de la linea basada en la fuerza del golpe (mínimo 0.5 y máximo 5 pixeles)
         float longitudLinea = 0.5f + (fuerza * 4.5f);
@@ -526,6 +573,5 @@ public class jugarGolfScreen implements Screen {
 
         // Terminamos de utilizar shapeRenderer
         shapeRenderer.end();
-
     }
 }
