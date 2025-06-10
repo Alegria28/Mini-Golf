@@ -37,7 +37,7 @@ import com.minigolf.MiniGolfMain;
 import com.minigolf.models.Jugador;
 import com.minigolf.handlers.manejoEventos;
 // Importamos los niveles
-import com.minigolf.niveles.*;;
+import com.minigolf.niveles.*;
 
 /**
  * Pantalla principal del juego de golf donde se desarrolla la partida

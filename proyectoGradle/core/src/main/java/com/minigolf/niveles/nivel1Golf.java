@@ -3,9 +3,15 @@ package com.minigolf.niveles;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+
+// Importamos la clase 
+import com.minigolf.handlers.*;
 
 public class nivel1Golf {
 
@@ -34,6 +40,42 @@ public class nivel1Golf {
 
         // Agregamos la imagen a nuestro table con cierto tamaño
         stage.addActor(imagePuntoDeInicio);
+
+        /* --------- Obstaculo 1 --------- */
+
+        // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático, 
+        // significando que no se mueve 
+        BodyDef bodyDefObstaculo1 = new BodyDef();
+        // Establecemos su posición en el mundo (pared inferior), es importante recalcar que Box2D si 
+        // toma el centro del Body como posición, y no una esquina como LibGDX
+        bodyDefObstaculo1.position.set(450 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
+        // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
+        Body bodyObstaculo1 = mundoBox2d.createBody(bodyDefObstaculo1);
+        // Agregamos esta pared a la cola para liberarlo después
+        arrayListBodiesTemporales.add(bodyObstaculo1);
+
+        // Creamos un polígono en general
+        PolygonShape shapeObstaculo1 = new PolygonShape();
+        // Establecemos el polígono con la forma de un rectángulo, el cual tiene como 
+        // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
+        shapeObstaculo1.setAsBox(20 * PIXEL_A_METRO, 300 * PIXEL_A_METRO);
+
+        // Creamos una FixtureDef para definir las propiedades físicas de la pared
+        FixtureDef fixtureDefObstaculo1 = new FixtureDef();
+        // Ponemos la forma creada 
+        fixtureDefObstaculo1.shape = shapeObstaculo1;
+        fixtureDefObstaculo1.restitution = 1f; // Rebote
+        fixtureDefObstaculo1.density = 0f; // 0 para bodies estáticos
+        fixtureDefObstaculo1.friction = 0.2f;
+
+        // Configuración de colisiones
+        fixtureDefObstaculo1.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
+        fixtureDefObstaculo1.filter.maskBits = manejoEventos.CATEGORIA_BOLA; // Puede colisionar con las bolas
+
+        // Creamos la fixture y la unimos al cuerpo de la pared
+        bodyObstaculo1.createFixture(fixtureDefObstaculo1);
+        // Liberamos el polígono
+        shapeObstaculo1.dispose();
 
         return arrayListBodiesTemporales;
     }

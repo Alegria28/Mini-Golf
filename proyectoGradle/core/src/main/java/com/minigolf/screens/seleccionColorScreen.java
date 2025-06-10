@@ -33,7 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 // Importamos las clases necesarias
 import com.minigolf.MiniGolfMain;
-import com.minigolf.models.Jugador;;
+import com.minigolf.models.Jugador;
 
 /**
  * Las clases que implementan son diferentes escenas que Game puede mostrar, por lo que son parte del ciclo de vida del juego (ver {@link MiniGolfMain}).

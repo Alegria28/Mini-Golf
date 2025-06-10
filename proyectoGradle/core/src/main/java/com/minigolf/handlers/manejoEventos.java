@@ -18,7 +18,7 @@ import com.badlogic.gdx.physics.box2d.World;
 // Importamos la clase
 import com.minigolf.models.Jugador;
 // Importamos los niveles
-import com.minigolf.niveles.*;;
+import com.minigolf.niveles.*;
 
 public class manejoEventos implements InputProcessor {
 
