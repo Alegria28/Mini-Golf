@@ -34,6 +34,7 @@ public class manejoEventos implements InputProcessor {
     // para que sean mas cortos y claros utilizamos hexadecimal
     public static final short CATEGORIA_BOLA = 0x0001; // 0000000000000001
     public static final short CATEGORIA_PARED = 0x0002; // 0000000000000010
+    public static final short CATEGORIA_HOYO = 0x0004; // 0000000000000100
 
     // Atributos
     private ArrayList<Jugador> jugadores;
@@ -141,8 +142,8 @@ public class manejoEventos implements InputProcessor {
 
         // Verificamos si el punto presionado es valido
         if (posicionValida(screenXConvertido, screenYConvertido)) {
-            // Solo agregamos una bola si el jugador no tiene
-            if (jugadores.get(jugadorActual).getBolaJugador() == null) {
+            // Solo agregamos una bola si el jugador no ha terminado el hoyo, no tiene bola 
+            if (jugadores.get(jugadorActual).getBolaJugador() == null && !jugadores.get(jugadorActual).isHoyoTerminado()) {
                 // Le agregamos la bola al jugador
                 jugadores.get(jugadorActual).setBolaJugador(colocarBola(mundoBox2d, screenX, screenY));
                 // Cambiamos la bandera para que pueda golpear
@@ -261,7 +262,7 @@ public class manejoEventos implements InputProcessor {
 
         // Configuración de colisiones
         bolaFixtureDef.filter.categoryBits = CATEGORIA_BOLA; // Las pelotas pertenecen a esta categoría
-        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED; // Esta bola puede colisionar con otras bolas y paredes
+        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED | CATEGORIA_HOYO; // Esta bola puede colisionar con otras bolas, paredes y el hoyo
 
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);
@@ -327,6 +328,10 @@ public class manejoEventos implements InputProcessor {
     }
 
     public int getNivelActual() {
-        return nivelActual;
+        return this.nivelActual;
+    }
+
+    public int getJugadorActual() {
+        return this.jugadorActual;
     }
 }

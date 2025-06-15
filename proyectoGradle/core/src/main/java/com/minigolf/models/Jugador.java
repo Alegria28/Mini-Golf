@@ -17,6 +17,7 @@ public class Jugador {
 
     private Body bolaJugador;
     private boolean puedeGolpear = false;
+    private boolean hoyoTerminado = false;
 
     // Constructor de la clase
     public Jugador(String nombre, Color colorBola) {
@@ -61,8 +62,12 @@ public class Jugador {
         return -1;
     }
 
-    public boolean getPuedeGolpear() {
+    public boolean isPuedeGolpear() {
         return puedeGolpear;
+    }
+
+    public boolean isHoyoTerminado() {
+        return this.hoyoTerminado;
     }
 
     // Setters
@@ -82,19 +87,28 @@ public class Jugador {
         this.puedeGolpear = puedeGolpear;
     }
 
+    public void setHoyoTerminado(boolean hoyoTerminado) {
+        this.hoyoTerminado = hoyoTerminado;
+    }
+
     // Métodos de la clase
     public void incrementarStrokes() {
         this.strokesActuales++;
     }
 
-    public void reiniciarStrokes() {
-        this.strokesActuales = 0;
-    }
+    public void terminarHoyo() {
+        this.hoyoTerminado = true;
 
-    public void terminarHoyo(int strokes) {
-        puntajePorHoyo.add(strokes);
-        puntajeTotal += strokes;
-        reiniciarStrokes();
+        // Agregamos este puntaje al hoyo
+        puntajePorHoyo.add(strokesActuales);
+        // Aumentamos nuestro contador global
+        puntajeTotal += strokesActuales;
+        // Reiniciamos para el siguiente hoyo
+        this.strokesActuales = 0;
+        // El jugador ya no tiene bola
+        this.bolaJugador = null;
+        // Ya no puede golpear
+        this.puedeGolpear = false;
     }
 
     // Sobrescribimos el método para imprimir
@@ -103,10 +117,8 @@ public class Jugador {
         StringBuilder sb = new StringBuilder();
         sb.append("Jugador {\n");
         sb.append("  Nombre: ").append(nombre).append(",\n");
-        sb.append("  Color de Bola: ").append(colorBola).append(",\n");
         sb.append("  Puntaje por Hoyo: ").append(puntajePorHoyo).append(",\n");
-        sb.append("  Puntaje Total: ").append(puntajeTotal).append(",\n");
-        sb.append("  Strokes Actuales: ").append(strokesActuales).append("\n");
+        sb.append("  Puntaje Total: ").append(puntajeTotal).append("\n");
         sb.append("}");
         return sb.toString();
     }

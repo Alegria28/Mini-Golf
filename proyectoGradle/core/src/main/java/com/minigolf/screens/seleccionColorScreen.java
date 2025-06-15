@@ -369,7 +369,6 @@ public class seleccionColorScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Iniciando juego");
                 // Cambiar a la pantalla del juego de golf
                 game.setScreen(new jugarGolfScreen(game, jugadores));
             }

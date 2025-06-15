@@ -1,6 +1,9 @@
 package com.minigolf.screens;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -35,6 +38,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 // Importamos las clases necesarias
 import com.minigolf.MiniGolfMain;
 import com.minigolf.models.Jugador;
+import com.minigolf.handlers.manejoColisiones;
 import com.minigolf.handlers.manejoEventos;
 // Importamos los niveles
 import com.minigolf.niveles.*;
@@ -48,11 +52,11 @@ public class jugarGolfScreen implements Screen {
     private final float PIXEL_A_METRO = 0.01f;
 
     // Atributos
-    OrthographicCamera camera;
+    private OrthographicCamera camera;
     private Stage stage;
-    Texture textureFondo;
-    Texture texturePuntoDeInicio;
-    Image imagePuntoDeInicio;
+    private Texture textureFondo;
+    private Texture texturePuntoDeInicio;
+    private Image imagePuntoDeInicio;
     private Stack stack;
     private Table tablePrincipal;
     private Label infoLabel;
@@ -61,10 +65,23 @@ public class jugarGolfScreen implements Screen {
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
+    // Instancia de la clase que va a manejar los eventos
+    private manejoEventos eventos;
+    // Instancia de la clase que va a manejar las colisiones
+    private manejoColisiones manejoColisiones;
 
     // Dimensiones virtuales
     private final float VIRTUAL_WIDTH = 900;
     private final float VIRTUAL_HEIGHT = 900;
+
+    /* --------- Atributos motor físico Box2D --------- */
+
+    // Creamos nuestro mundo sin gravedad
+    private World mundoBox2d = new World(new Vector2(0, 0), true);
+    // Para poder ver los elementos en nuestro mundo de Box2D
+    private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+    // Para poder dibujar figuras simples
+    private ShapeRenderer shapeRenderer;
 
     // Para tener un control sobre el nivel actual del juego
     private int nivelActual = 1;
@@ -72,38 +89,31 @@ public class jugarGolfScreen implements Screen {
     private boolean nivelCargado = false;
     // Variable para tener un control de turno durante el juego
     private int turnoActual = 0;
-    // Instancia de la clase que va a manejar los eventos
-    private manejoEventos eventos;
-    // Para guardar los bodies temporales de cada nivel
-    private ArrayList<Body> arrayListBodiesTemporales = new ArrayList<Body>();
-
-    /* --------- Atributos motor físico Box2D --------- */
-
-    // Creamos nuestro mundo sin gravedad
-    World mundoBox2d = new World(new Vector2(0, 0), true);
-    // Para poder ver los elementos en nuestro mundo de Box2D
-    Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
-    // Para poder dibujar figuras simples
-    ShapeRenderer shapeRenderer;
+    // Para guardar los bodies temporales que se van a eliminar
+    private HashMap<Body, Boolean> hashMapBodiesTemporales = new HashMap<Body, Boolean>();
     // Para guardar las paredes del campo
-    ArrayList<Body> arrayListParedes = new ArrayList<Body>();
+    private ArrayList<Body> arrayListParedes = new ArrayList<Body>();
 
     // Constructor de la clase
     public jugarGolfScreen(MiniGolfMain game, ArrayList<Jugador> jugadores) {
         this.game = game;
         this.jugadores = jugadores;
-        eventos = new manejoEventos(jugadores, mundoBox2d);
+        // Iniciamos las instancias de nuestros handlers
+        this.eventos = new manejoEventos(jugadores, mundoBox2d);
+        this.manejoColisiones = new manejoColisiones(jugadores, hashMapBodiesTemporales, mundoBox2d,
+                eventos);
+
+        // Iniciamos la instancia de shapeRenderer
+        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
     public void show() {
 
+        /* --------- Configuración inicial stage, eventos y cámara --------- */
+
         // Creamos un InputMultiplexer para manejar varios eventos
         InputMultiplexer multiplexer = new InputMultiplexer();
-        // Iniciamos la instancia de shapeRenderer
-        shapeRenderer = new ShapeRenderer();
-
-        /* --------- Configuración inicial stage, eventos y cámara --------- */
 
         camera = new OrthographicCamera();
         Viewport viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
@@ -124,9 +134,6 @@ public class jugarGolfScreen implements Screen {
 
         // Al mostrar esta pantalla, mostramos la información de los jugadores
         System.out.println("Iniciando juego con " + jugadores.size() + " jugadores:");
-        for (Jugador jugador : jugadores) {
-            System.out.println(jugador);
-        }
 
         /* --------- Configuración font --------- */
 
@@ -240,6 +247,9 @@ public class jugarGolfScreen implements Screen {
         // Agregamos por ultimo los eventos en el multiplexer
         Gdx.input.setInputProcessor(multiplexer);
 
+        // Agregamos la clase que se va a encargar de procesar las colisiones
+        mundoBox2d.setContactListener(manejoColisiones);
+
         // Agregamos el actor que tiene el orden de los demás
         stage.addActor(stack);
     }
@@ -257,6 +267,9 @@ public class jugarGolfScreen implements Screen {
         // de cuantas iteraciones para el calculo de velocidad y posición se hagan cada frame
         mundoBox2d.step(timeStep, 10, 10);
 
+        // Aquí limpiamos las bolas (si es necesario)
+        limpiarBodiesMundo(true);
+
         // Actualizar y dibujar stage
         stage.act(delta);
         stage.draw();
@@ -271,7 +284,7 @@ public class jugarGolfScreen implements Screen {
                         .scl(100f)); // Escalar x100 para metro -> pixel
 
         // Verificamos el nivel actual 
-        nivelActual();
+        nivelActual(jugadoresTerminaron());
 
         // Bandera para saber si la pelota se esta moviendo, verificando si para empezar el jugador tiene bola
         boolean pelotaDetenida = false;
@@ -279,8 +292,8 @@ public class jugarGolfScreen implements Screen {
             pelotaDetenida = pelotaDetenida(jugadores.get(turnoActual).getBolaJugador());
         }
 
-        // Verificamos si el turno actual tiene bola, de no ser asi, entonces esperamos a que la coloque
-        if (jugadores.get(turnoActual).getBolaJugador() == null) {
+        // Verificamos si el turno actual tiene bola y si no ha terminado el hoyo, de no ser asi, entonces esperamos a que la coloque
+        if (jugadores.get(turnoActual).getBolaJugador() == null && !jugadores.get(turnoActual).isHoyoTerminado()) {
             infoLabel.setText("Colocar bola para: " + jugadores.get(turnoActual).getNombre());
             // Limpiamos el label
             informacionTurno.setText("");
@@ -296,7 +309,7 @@ public class jugarGolfScreen implements Screen {
 
             // Si el jugador tiene bola y le toca golpear
             if (jugadores.get(turnoActual).getBolaJugador() != null
-                    && jugadores.get(turnoActual).getPuedeGolpear() == true) {
+                    && jugadores.get(turnoActual).isPuedeGolpear() == true) {
 
                 // Mostramos información sobre el turno
                 infoLabel.setText("Turno de: " + jugadores.get(turnoActual).getNombre());
@@ -306,26 +319,22 @@ public class jugarGolfScreen implements Screen {
 
                 // Verificamos que tecla esta pulsada
                 if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                    System.out.println("Tecla LEFT");
                     eventos.setAngulo(0);
                 } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                    System.out.println("Tecla RIGHT");
                     eventos.setAngulo(1);
                 } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                    System.out.println("Tecla DOWN");
                     eventos.setFuerza(0);
                 } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                    System.out.println("Tecla UP");
                     eventos.setFuerza(1);
                 }
 
             }
             // Verificamos si el turno ha terminado:
-            // - El jugador tiene pelota
-            // - Ya no puede golpear
-            // - Y la pelota se ha parado
+            // - El jugador tiene bola, ya no puede golpear y la pelota se ha parado
+            // - O si el jugador ya termino el hoyo
             else if (jugadores.get(turnoActual).getBolaJugador() != null
-                    && jugadores.get(turnoActual).getPuedeGolpear() == false && pelotaDetenida) {
+                    && !jugadores.get(turnoActual).isPuedeGolpear() && pelotaDetenida
+                    || jugadores.get(turnoActual).isHoyoTerminado()) {
 
                 System.out.println("Pelota detenida para: " + jugadores.get(turnoActual).getNombre());
 
@@ -377,8 +386,8 @@ public class jugarGolfScreen implements Screen {
         }
 
         // Limpiamos los bodies temporales que uso el nivel
-        for (Body body : arrayListBodiesTemporales) {
-            mundoBox2d.destroyBody(body);
+        for (Map.Entry<Body, Boolean> e : hashMapBodiesTemporales.entrySet()) {
+            mundoBox2d.destroyBody(e.getKey());
         }
 
         // Limpiamos todas las paredes
@@ -391,12 +400,13 @@ public class jugarGolfScreen implements Screen {
         mundoBox2d.dispose();
         debugRenderer.dispose();
         textureFondo.dispose();
+        texturePuntoDeInicio.dispose();
         font.dispose();
         Gdx.input.setInputProcessor(null);
         shapeRenderer.dispose();
 
         jugadores.clear();
-        arrayListBodiesTemporales.clear();
+        hashMapBodiesTemporales.clear();
         arrayListParedes.clear();
     }
 
@@ -513,13 +523,42 @@ public class jugarGolfScreen implements Screen {
         pared4Shape.dispose();
     }
 
-    private void nivelActual() {
+    private void nivelActual(boolean jugadoresTerminaron) {
+
+        // Si todos los jugadores ya terminaron
+        if (jugadoresTerminaron) {
+            System.out.println("Cambiando de nivel");
+
+            // Cambiamos el estado de la bandera
+            nivelCargado = !nivelCargado;
+            // Cambiamos de nivel
+            nivelActual++;
+            // Limpiamos los bodies 
+            limpiarBodiesMundo(false);
+
+            // Reiniciamos los estados 
+            turnoActual = 0;
+            eventos.setJugadorActual(nivelActual);
+            for (Jugador jugador : jugadores) {
+                jugador.setHoyoTerminado(false);
+            }
+        }
+
         // Si no se ha cargado el nivel aun, entonces lo hacemos
         if (!nivelCargado) {
             // Según el nivel en el que estemos
             switch (nivelActual) {
                 case 1:
-                    arrayListBodiesTemporales = nivel1Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio);
+                    System.out.println("Creando primer nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel1Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 2:
+                    System.out.println("Creando el segundo nivel");
+                    mostrarInformacionJugadores();
+
                     nivelCargado = true;
                     break;
             }
@@ -573,5 +612,39 @@ public class jugarGolfScreen implements Screen {
 
         // Terminamos de utilizar shapeRenderer
         shapeRenderer.end();
+    }
+
+    // Método para mostrar la información de los jugadores cada hoyo
+    private void mostrarInformacionJugadores() {
+        for (Jugador jugador : jugadores) {
+            System.out.println(jugador);
+        }
+    }
+
+    // Limpiamos los bodies del nivel según su bandera (true - bola | false - obstáculos/hoyo...)
+    private void limpiarBodiesMundo(boolean tipoBody) {
+        // Creamos un iterator para poder recorrer nuestro hashMap de manera segura
+        Iterator<Map.Entry<Body, Boolean>> iterator = hashMapBodiesTemporales.entrySet().iterator();
+        while (iterator.hasNext()) { // Mientras que haya elementos 
+            // Obtenemos este elemento y avanzamos al siguiente
+            Map.Entry<Body, Boolean> temporal = iterator.next();
+
+            // Solo eliminamos los bodies que correspondan a la bandera
+            if (temporal.getValue() == tipoBody) {
+                mundoBox2d.destroyBody(temporal.getKey()); // La eliminamos del mundo
+                iterator.remove(); // Lo eliminamos del hashMap de manera segura (para que de esta manera
+                // no obtengamos la excepción ConcurrentModificationException https://www.shorturl.at/shortener.php)
+            }
+        }
+    }
+
+    // Método para verificar si todos los jugadores han terminado el hoyo
+    private boolean jugadoresTerminaron() {
+        for (Jugador jugador : jugadores) {
+            if (!jugador.isHoyoTerminado()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
