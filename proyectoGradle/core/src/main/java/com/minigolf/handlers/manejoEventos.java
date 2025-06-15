@@ -143,7 +143,8 @@ public class manejoEventos implements InputProcessor {
         // Verificamos si el punto presionado es valido
         if (posicionValida(screenXConvertido, screenYConvertido)) {
             // Solo agregamos una bola si el jugador no ha terminado el hoyo, no tiene bola 
-            if (jugadores.get(jugadorActual).getBolaJugador() == null && !jugadores.get(jugadorActual).isHoyoTerminado()) {
+            if (jugadores.get(jugadorActual).getBolaJugador() == null
+                    && !jugadores.get(jugadorActual).isHoyoTerminado()) {
                 // Le agregamos la bola al jugador
                 jugadores.get(jugadorActual).setBolaJugador(colocarBola(mundoBox2d, screenX, screenY));
                 // Cambiamos la bandera para que pueda golpear
@@ -210,11 +211,15 @@ public class manejoEventos implements InputProcessor {
 
         boolean temporal = false;
 
+        // Que este entre el mínimo y máximo para X/Y
         switch (nivelActual) {
             case 1:
-                // Que este entre el mínimo y máximo para X/Y
                 temporal = (screenX >= nivel1Golf.minX && screenX <= nivel1Golf.maxX)
                         && (screenY >= nivel1Golf.minY && screenY <= nivel1Golf.maxY);
+                break;
+            case 2:
+                temporal = (screenX >= nivel2Golf.minX && screenX <= nivel2Golf.maxX)
+                        && (screenY >= nivel2Golf.minY && screenY <= nivel2Golf.maxY);
                 break;
         }
 

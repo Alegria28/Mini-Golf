@@ -538,7 +538,7 @@ public class jugarGolfScreen implements Screen {
 
             // Reiniciamos los estados 
             turnoActual = 0;
-            eventos.setJugadorActual(nivelActual);
+            eventos.setNivelActual(nivelActual);
             for (Jugador jugador : jugadores) {
                 jugador.setHoyoTerminado(false);
             }
@@ -558,7 +558,8 @@ public class jugarGolfScreen implements Screen {
                 case 2:
                     System.out.println("Creando el segundo nivel");
                     mostrarInformacionJugadores();
-
+                    hashMapBodiesTemporales = nivel2Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
                     nivelCargado = true;
                     break;
             }

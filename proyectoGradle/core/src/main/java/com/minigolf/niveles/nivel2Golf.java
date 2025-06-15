@@ -14,22 +14,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 // Importamos la clase 
 import com.minigolf.handlers.*;
 
-public class nivel1Golf {
+public class nivel2Golf {
 
     // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
     private static final float PIXEL_A_METRO = 0.01f;
 
     // Atributos
-    public static final float coordenadaInicioX = 130;
-    private static final float coordenadaInicioY = 130;
-    private static final float coordenadaHoyoX = 750;
-    private static final float coordenadaHoyoY = 750;
+    public static final float coordenadaInicioX = 130; 
+    private static final float coordenadaInicioY = 700; 
+    private static final float coordenadaHoyoX = 750; 
+    private static final float coordenadaHoyoY = 750; 
 
-    // Areas validas para colocar la bola (en el mundo)
-    public static final float minX = 130 * PIXEL_A_METRO, maxX = 200 * PIXEL_A_METRO; // 200 ya que el tamaño de la imagen es de 70px
-    public static final float minY = 130 * PIXEL_A_METRO, maxY = 200 * PIXEL_A_METRO; // 200 ya que el tamaño de la imagen es de 70px
+    // Areas válidas para colocar la bola (en el mundo)
+    public static final float minX = 130 * PIXEL_A_METRO, maxX = 200 * PIXEL_A_METRO; // Ajustamos el área válida
+    public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO; // Ajustamos el área válida
 
-    public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio, HashMap<Body, Boolean> hashMapBodiesTemporales) {
+    public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
+            HashMap<Body, Boolean> hashMapBodiesTemporales) {
 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
@@ -79,9 +80,9 @@ public class nivel1Golf {
         // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático, 
         // significando que no se mueve 
         BodyDef bodyDefObstaculo1 = new BodyDef();
-        // Establecemos su posición en el mundo (pared inferior), es importante recalcar que Box2D si 
+        // Establecemos su posición en el mundo (centro del campo), es importante recalcar que Box2D si 
         // toma el centro del Body como posición, y no una esquina como LibGDX
-        bodyDefObstaculo1.position.set(450 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
+        bodyDefObstaculo1.position.set(450 * PIXEL_A_METRO, 560 * PIXEL_A_METRO); // Ajustamos la posición del obstáculo pegado a la pared derecha
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body bodyObstaculo1 = mundoBox2d.createBody(bodyDefObstaculo1);
         // Agregamos esta pared a la cola para liberarlo después (al acabar el nivel)
@@ -89,9 +90,9 @@ public class nivel1Golf {
 
         // Creamos un polígono en general
         PolygonShape shapeObstaculo1 = new PolygonShape();
-        // Establecemos el polígono con la forma de un rectángulo, el cual tiene como 
-        // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
-        shapeObstaculo1.setAsBox(20 * PIXEL_A_METRO, 300 * PIXEL_A_METRO);
+        // Establecemos el polígono con la forma de un rectángulo vertical (barrera de madera)
+        // MITAD de un lado X 25 (ancho de 50px) y en Y 250 (altura de 500px), creando una barrera vertical
+        shapeObstaculo1.setAsBox(20 * PIXEL_A_METRO, 250 * PIXEL_A_METRO); // Ajustamos la altura del obstáculo
 
         // Creamos una FixtureDef para definir las propiedades físicas de la pared
         FixtureDef fixtureDefObstaculo1 = new FixtureDef();
