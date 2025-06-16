@@ -138,7 +138,7 @@ public class ScoreBoardScreen implements Screen {
         scoreContainer.pad(20);
 
         // Título de la pantalla
-        Label titleLabel = new Label("El campo de golf de Maspalomas", styleTitle);
+        Label titleLabel = new Label("El campo de golf Campestre", styleTitle);
         mainTable.add(titleLabel).padBottom(40).row();
 
         // Tabla para las puntuaciones (dentro de scoreContainer)
