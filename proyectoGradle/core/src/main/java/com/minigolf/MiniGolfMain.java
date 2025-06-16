@@ -26,7 +26,6 @@ public class MiniGolfMain extends Game {
         // Llamamos al método render que esta en la clase Game
         super.render();
     }
-
     // This method is called every time the game screen is resized.
     @Override
     public void resize(int width, int height) {

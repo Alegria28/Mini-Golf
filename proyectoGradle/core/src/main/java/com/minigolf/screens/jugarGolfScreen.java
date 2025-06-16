@@ -62,6 +62,7 @@ public class jugarGolfScreen implements Screen {
     private Label infoLabel;
     private Label informacionTurno;
     private BitmapFont font;
+    private boolean showingScoreBoard = false;
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
@@ -84,7 +85,7 @@ public class jugarGolfScreen implements Screen {
     private ShapeRenderer shapeRenderer;
 
     // Para tener un control sobre el nivel actual del juego
-    private int nivelActual = 1;
+    private int nivelActual;
     // Para saber si ya cargamos el nivel indicado
     private boolean nivelCargado = false;
     // Variable para tener un control de turno durante el juego
@@ -95,9 +96,16 @@ public class jugarGolfScreen implements Screen {
     private ArrayList<Body> arrayListParedes = new ArrayList<Body>();
 
     // Constructor de la clase
-    public jugarGolfScreen(MiniGolfMain game, ArrayList<Jugador> jugadores) {
+    public jugarGolfScreen(MiniGolfMain game, ArrayList<Jugador> jugadores, int nivelActual) {
         this.game = game;
         this.jugadores = jugadores;
+        this.nivelActual = nivelActual;
+
+        // Cambiamos el estado de los jugadores a que no han terminado el hoyo
+        for (Jugador jugador : this.jugadores) {
+            jugador.setHoyoTerminado(false);
+            jugador.setPuedeGolpear(true);
+        }
         // Iniciamos las instancias de nuestros handlers
         this.eventos = new manejoEventos(jugadores, mundoBox2d);
         this.manejoColisiones = new manejoColisiones(jugadores, hashMapBodiesTemporales, mundoBox2d,
@@ -284,7 +292,7 @@ public class jugarGolfScreen implements Screen {
                         .scl(100f)); // Escalar x100 para metro -> pixel
 
         // Verificamos el nivel actual 
-        nivelActual(jugadoresTerminaron());
+        gestionarNivel(jugadoresTerminaron());
 
         // Bandera para saber si la pelota se esta moviendo, verificando si para empezar el jugador tiene bola
         boolean pelotaDetenida = false;
@@ -405,7 +413,6 @@ public class jugarGolfScreen implements Screen {
         Gdx.input.setInputProcessor(null);
         shapeRenderer.dispose();
 
-        jugadores.clear();
         hashMapBodiesTemporales.clear();
         arrayListParedes.clear();
     }
@@ -523,29 +530,20 @@ public class jugarGolfScreen implements Screen {
         pared4Shape.dispose();
     }
 
-    private void nivelActual(boolean jugadoresTerminaron) {
+    private void gestionarNivel(boolean todosTerminaron) {
 
-        // Si todos los jugadores ya terminaron
-        if (jugadoresTerminaron) {
-            System.out.println("Cambiando de nivel");
-
-            // Cambiamos el estado de la bandera
-            nivelCargado = !nivelCargado;
-            // Cambiamos de nivel
-            nivelActual++;
-            // Limpiamos los bodies 
-            limpiarBodiesMundo(false);
-
-            // Reiniciamos los estados 
-            turnoActual = 0;
-            eventos.setNivelActual(nivelActual);
-            for (Jugador jugador : jugadores) {
-                jugador.setHoyoTerminado(false);
-            }
+        // Si todos los jugadores ya terminaron el hoyo actual Y la pantalla de puntuaciones NO se está mostrando
+        // Esto evita que se muestre repetidamente si ya está activa.
+       if (todosTerminaron && !showingScoreBoard) {
+            System.out.println("Todos los jugadores terminaron el hoyo " + nivelActual + ". Mostrando tabla de puntuaciones.");
+            showScoreBoardScreen();
+            showingScoreBoard = true;
         }
 
-        // Si no se ha cargado el nivel aun, entonces lo hacemos
-        if (!nivelCargado) {
+        // Si no se ha cargado el nivel aun, entonces lo hacemos.
+        // Solo carga un nuevo nivel si la pantalla de puntuaciones NO se está mostrando,
+        // y si el nivel actual ha avanzado (lo que ocurre cuando ScoreBoardScreen te devuelve aquí).
+        if (!nivelCargado && !showingScoreBoard) { // Añadimos la condición !showingScoreBoard
             // Según el nivel en el que estemos
             switch (nivelActual) {
                 case 1:
@@ -561,6 +559,11 @@ public class jugarGolfScreen implements Screen {
                     hashMapBodiesTemporales = nivel2Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
                             hashMapBodiesTemporales);
                     nivelCargado = true;
+                    break;
+                // Puedes añadir más casos para más niveles
+                default:
+                    // Si no hay más niveles, el juego debería haber terminado y ScoreBoardScreen te llevaría al menú principal
+                    Gdx.app.log("jugarGolfScreen", "No hay más niveles definidos. Fin del juego.");
                     break;
             }
         }
@@ -647,5 +650,26 @@ public class jugarGolfScreen implements Screen {
             }
         }
         return true;
+    }
+
+    private void showScoreBoardScreen(){
+        // Primero, limpia los recursos de esta pantalla que no necesites después de la transición.
+        // Es importante liberar recursos del nivel anterior antes de pasar a la ScoreBoardScreen
+        // para evitar fugas de memoria.
+        // NOTA: No hacemos dispose() de toda la pantalla aquí porque queremos que los datos de jugadores
+        // persistan para la ScoreBoardScreen y posiblemente la próxima jugarGolfScreen.
+        
+        // Limpiamos los bodies del hoyo anterior (obstáculos, hoyo, etc.)
+        limpiarBodiesMundo(false); 
+        
+        // Detenemos la entrada de esta pantalla para que la ScoreBoardScreen pueda tomar el control
+        Gdx.input.setInputProcessor(null); 
+
+        // Creamos y establecemos la ScoreBoardScreen.
+        // Le pasamos el objeto 'game', la lista de jugadores y el nivel actual.
+        // La ScoreBoardScreen se encargará de decidir si avanza al siguiente nivel o al menú principal.
+        game.setScreen(new ScoreBoardScreen(game, jugadores, nivelActual));
+            
+        
     }
 }
