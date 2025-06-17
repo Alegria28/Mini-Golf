@@ -100,7 +100,8 @@ public class manejoEventos implements InputProcessor {
             jugadores.get(jugadorActual).incrementarStrokes();
 
             // Reiniciamos la fuerza y el angulo
-            this.fuerza = 0f; this.anguloDireccion = 0f;
+            this.fuerza = 0f;
+            this.anguloDireccion = 0f;
 
         }
         return false;
@@ -220,6 +221,10 @@ public class manejoEventos implements InputProcessor {
             case 2:
                 temporal = (screenX >= nivel2Golf.minX && screenX <= nivel2Golf.maxX)
                         && (screenY >= nivel2Golf.minY && screenY <= nivel2Golf.maxY);
+                break;
+            case 3:
+                temporal = (screenX >= nivel3Golf.minX && screenX <= nivel3Golf.maxX)
+                        && (screenY >= nivel3Golf.minY && screenY <= nivel3Golf.maxY);
                 break;
         }
 

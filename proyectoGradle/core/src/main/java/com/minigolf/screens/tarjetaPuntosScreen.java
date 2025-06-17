@@ -189,7 +189,7 @@ public class tarjetaPuntosScreen implements Screen {
 
         tablaPuntuaciones.add(new Label("Par", estiloEncabezado)).pad(5).height(40).center().width(120);
         // Array con los valores de par para cada hoyo
-        int[] pares = { 4, 3, 4, 5, 4, 4, 3, 5, 3, 5, 4, 4, 3, 5, 4, 4, 3, 4 };
+        int[] pares = { 2, 2, 4, 5, 4, 4, 3, 5, 3, 5, 4, 4, 3, 5, 4, 4, 3, 4 };
         int totalPar = 0;
         for (int i = 0; i < MAX_NIVELES_MOSTRADOS; i++) {
             if (i < pares.length) {
