@@ -556,6 +556,13 @@ public class jugarGolfScreen implements Screen {
                             hashMapBodiesTemporales);
                     nivelCargado = true;
                     break;
+                case 3:
+                    System.out.println("Creando el tercer nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel3Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
             }
         }
     }
