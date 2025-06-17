@@ -39,11 +39,10 @@ public class manejoEventos implements InputProcessor {
     // Atributos
     private ArrayList<Jugador> jugadores;
     private World mundoBox2d;
+    private int nivelActual;
 
     // Indice para saber con que jugador estamos trabajando
     private int jugadorActual = 0;
-    // Para tener un control sobre el nivel
-    private int nivelActual = 1;
 
     // Fuerza del golpe 
     public float fuerza = 0f;
@@ -51,9 +50,10 @@ public class manejoEventos implements InputProcessor {
     private float anguloDireccion = 0f;
 
     // Recibimos los jugadores y el mundo, estos por referencia
-    public manejoEventos(ArrayList<Jugador> jugadores, World mundoBox2d) {
+    public manejoEventos(ArrayList<Jugador> jugadores, World mundoBox2d, int nivelActual) {
         this.jugadores = jugadores;
         this.mundoBox2d = mundoBox2d;
+        this.nivelActual = nivelActual;
     }
 
     /** Called when a key was pressed
@@ -99,8 +99,8 @@ public class manejoEventos implements InputProcessor {
             // Aumentamos el numero de golpes de este jugador
             jugadores.get(jugadorActual).incrementarStrokes();
 
-            // Reiniciamos la fuerza
-            this.fuerza = 0f;
+            // Reiniciamos la fuerza y el angulo
+            this.fuerza = 0f; this.anguloDireccion = 0f;
 
         }
         return false;

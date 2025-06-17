@@ -1,5 +1,8 @@
 package com.minigolf.screens;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -27,14 +30,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minigolf.MiniGolfMain;
 import com.minigolf.models.Jugador;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-
 /*
  * Pantalla que muestra la tabla de puntuaciones al finalizar un nivel o el juego.
  * Permite ver los puntajes de todos los jugadores y navegar entre niveles.
  */
-public class ScoreBoardScreen implements Screen {
+public class tarjetaPuntosScreen implements Screen {
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
@@ -49,12 +49,11 @@ public class ScoreBoardScreen implements Screen {
 
     private final int MAX_NIVELES_MOSTRADOS = 18;
     private int nivelActualDelJuego;
-    
 
     private Texture backgroundTexture;
-    private Texture buttonTexture; 
+    private Texture buttonTexture;
 
-    public ScoreBoardScreen(MiniGolfMain game, ArrayList<Jugador> jugadores, int nivelActualDelJuego) {
+    public tarjetaPuntosScreen(MiniGolfMain game, ArrayList<Jugador> jugadores, int nivelActualDelJuego) {
         this.game = game;
         this.jugadores = jugadores;
         // Ordenamos los jugadores por puntaje total para mostrarlos en la tabla
@@ -91,25 +90,27 @@ public class ScoreBoardScreen implements Screen {
         Pixmap pixmapRounded = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
         pixmapRounded.setColor(Color.WHITE);
         int cornerRadius = 15;
-        pixmapRounded.fillRectangle(0, cornerRadius, pixmapRounded.getWidth(), pixmapRounded.getHeight() - 2 * cornerRadius);
-        pixmapRounded.fillRectangle(cornerRadius, 0, pixmapRounded.getWidth() - 2 * cornerRadius, pixmapRounded.getHeight());
+        pixmapRounded.fillRectangle(0, cornerRadius, pixmapRounded.getWidth(),
+                pixmapRounded.getHeight() - 2 * cornerRadius);
+        pixmapRounded.fillRectangle(cornerRadius, 0, pixmapRounded.getWidth() - 2 * cornerRadius,
+                pixmapRounded.getHeight());
         pixmapRounded.fillCircle(cornerRadius, cornerRadius, cornerRadius);
         pixmapRounded.fillCircle(pixmapRounded.getWidth() - cornerRadius, cornerRadius, cornerRadius);
         pixmapRounded.fillCircle(cornerRadius, pixmapRounded.getHeight() - cornerRadius, cornerRadius);
-        pixmapRounded.fillCircle(pixmapRounded.getWidth() - cornerRadius, pixmapRounded.getHeight() - cornerRadius, cornerRadius);
-        
+        pixmapRounded.fillCircle(pixmapRounded.getWidth() - cornerRadius, pixmapRounded.getHeight() - cornerRadius,
+                cornerRadius);
+
         backgroundTexture = new Texture(pixmapRounded);
         pixmapRounded.dispose();
         Drawable scoreContainerBackground = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
         // Diseño del botón
         Pixmap pixmapButton = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        pixmapButton.setColor(new Color(0.1f, 0.5f, 0.8f, 1f)); 
+        pixmapButton.setColor(new Color(0.1f, 0.5f, 0.8f, 1f));
         pixmapButton.fill();
         buttonTexture = new Texture(pixmapButton);
         pixmapButton.dispose();
         Drawable buttonDrawable = new TextureRegionDrawable(new TextureRegion(buttonTexture));
-
 
         // Estilos para Labels
         LabelStyle styleTitle = new LabelStyle(fontTitle, Color.WHITE);
@@ -120,17 +121,16 @@ public class ScoreBoardScreen implements Screen {
         TextButtonStyle buttonStyle = new TextButtonStyle();
         buttonStyle.font = fontHeader;
         buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.up = buttonDrawable; 
+        buttonStyle.up = buttonDrawable;
         buttonStyle.down = buttonDrawable;
         buttonStyle.over = buttonDrawable;
-
 
         // Crear la tabla principal para la pantalla 
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         mainTable.center();
         stage.addActor(mainTable);
- 
+
         // Contenedor de la tabla de puntuaciones (con fondo redondeado)
         Table scoreContainer = new Table();
         scoreContainer.setBackground(scoreContainerBackground);
@@ -143,7 +143,7 @@ public class ScoreBoardScreen implements Screen {
 
         // Tabla para las puntuaciones (dentro de scoreContainer)
         Table scoreTable = new Table();
-        
+
         // Encabezados
         scoreTable.add(new Label("Hoyo", styleHeader)).pad(5).height(40).center().width(120);
         for (int i = 1; i <= MAX_NIVELES_MOSTRADOS; i++) {
@@ -153,7 +153,7 @@ public class ScoreBoardScreen implements Screen {
 
         // Fila de Par
         scoreTable.add(new Label("Par", styleHeader)).pad(5).height(40).center().width(120);
-        int[] pars = {4, 3, 4, 5, 4, 4, 3, 5, 3, 5, 4, 4, 3, 5, 4, 4, 3, 4};
+        int[] pars = { 4, 3, 4, 5, 4, 4, 3, 5, 3, 5, 4, 4, 3, 5, 4, 4, 3, 4 };
         int totalPar = 0;
         for (int i = 0; i < MAX_NIVELES_MOSTRADOS; i++) {
             if (i < pars.length) {
@@ -179,15 +179,17 @@ public class ScoreBoardScreen implements Screen {
                     scoreTable.add(new Label("-", styleContent)).pad(5).height(40).center();
                 }
             }
-            scoreTable.add(new Label(String.valueOf(jugador.getPuntajeTotal()), styleContent)).pad(5).height(40).center().row();
+            scoreTable.add(new Label(String.valueOf(jugador.getPuntajeTotal()), styleContent)).pad(5).height(40)
+                    .center().row();
         }
 
         scoreContainer.add(scoreTable).expand().fill().row();
-        mainTable.add(scoreContainer).width(VIRTUAL_WIDTH * 0.95f).height(VIRTUAL_HEIGHT * 0.7f).center().padBottom(50).row();
-        
+        mainTable.add(scoreContainer).width(VIRTUAL_WIDTH * 0.95f).height(VIRTUAL_HEIGHT * 0.7f).center().padBottom(50)
+                .row();
+
         // Contenedor para los botones
         Table buttonTable = new Table();
-        
+
         // Comprobar si el juego ha terminado para decidir qué botones mostrar
         boolean esFinDelJuego = nivelActualDelJuego >= MAX_NIVELES_MOSTRADOS - 1;
 
@@ -218,13 +220,13 @@ public class ScoreBoardScreen implements Screen {
                     if (nivelActualDelJuego >= MAX_NIVELES_MOSTRADOS) {
                         nivelActualDelJuego = 0; // Reiniciar al primer nivel si se supera el
                         // máximo de niveles mostrados.
-                    }                  
-                    Gdx.app.log("ScoreBoardScreen", "Cargando el hoyo " + (nivelActualDelJuego + 1));
+                    }
+                    Gdx.app.log("ScoreBoardScreen", "Cargando el hoyo " + (nivelActualDelJuego));
 
                     game.setScreen(new jugarGolfScreen(game, jugadores, nivelActualDelJuego)); // Pasamos de nivel
                 }
             });
-            
+
             buttonTable.add(exitButton).width(250).height(70).padRight(20);
             buttonTable.add(continueButton).width(250).height(70).padLeft(20);
             mainTable.add(buttonTable).center();
@@ -233,9 +235,10 @@ public class ScoreBoardScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        // Limpiar pantalla
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        // Actualizar y dibujar stage
+        stage.act(delta);
         stage.draw();
     }
 
@@ -245,14 +248,15 @@ public class ScoreBoardScreen implements Screen {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
     public void hide() {
-        Gdx.input.setInputProcessor(null);
     }
 
     @Override
@@ -261,11 +265,11 @@ public class ScoreBoardScreen implements Screen {
         fontTitle.dispose();
         fontHeader.dispose();
         fontContent.dispose();
-        
+
         if (backgroundTexture != null) {
             backgroundTexture.dispose();
         }
-        if (buttonTexture != null) { // <-- AÑADIDO: Liberar la textura del botón
+        if (buttonTexture != null) {
             buttonTexture.dispose();
         }
     }

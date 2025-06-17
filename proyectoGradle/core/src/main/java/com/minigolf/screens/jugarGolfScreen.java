@@ -62,7 +62,6 @@ public class jugarGolfScreen implements Screen {
     private Label infoLabel;
     private Label informacionTurno;
     private BitmapFont font;
-    private boolean showingScoreBoard = false;
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
@@ -104,10 +103,9 @@ public class jugarGolfScreen implements Screen {
         // Cambiamos el estado de los jugadores a que no han terminado el hoyo
         for (Jugador jugador : this.jugadores) {
             jugador.setHoyoTerminado(false);
-            jugador.setPuedeGolpear(true);
         }
         // Iniciamos las instancias de nuestros handlers
-        this.eventos = new manejoEventos(jugadores, mundoBox2d);
+        this.eventos = new manejoEventos(jugadores, mundoBox2d, nivelActual);
         this.manejoColisiones = new manejoColisiones(jugadores, hashMapBodiesTemporales, mundoBox2d,
                 eventos);
 
@@ -532,18 +530,16 @@ public class jugarGolfScreen implements Screen {
 
     private void gestionarNivel(boolean todosTerminaron) {
 
-        // Si todos los jugadores ya terminaron el hoyo actual Y la pantalla de puntuaciones NO se está mostrando
-        // Esto evita que se muestre repetidamente si ya está activa.
-       if (todosTerminaron && !showingScoreBoard) {
-            System.out.println("Todos los jugadores terminaron el hoyo " + nivelActual + ". Mostrando tabla de puntuaciones.");
-            showScoreBoardScreen();
-            showingScoreBoard = true;
+        // Si todos los jugadores ya terminaron
+        if (todosTerminaron) {
+            System.out.println("Los jugadores han terminado el nivel, mostrando tarjeta de puntos");
+            game.setScreen(new tarjetaPuntosScreen(game, jugadores, nivelActual));
         }
 
         // Si no se ha cargado el nivel aun, entonces lo hacemos.
         // Solo carga un nuevo nivel si la pantalla de puntuaciones NO se está mostrando,
         // y si el nivel actual ha avanzado (lo que ocurre cuando ScoreBoardScreen te devuelve aquí).
-        if (!nivelCargado && !showingScoreBoard) { // Añadimos la condición !showingScoreBoard
+        if (!nivelCargado) {
             // Según el nivel en el que estemos
             switch (nivelActual) {
                 case 1:
@@ -559,11 +555,6 @@ public class jugarGolfScreen implements Screen {
                     hashMapBodiesTemporales = nivel2Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
                             hashMapBodiesTemporales);
                     nivelCargado = true;
-                    break;
-                // Puedes añadir más casos para más niveles
-                default:
-                    // Si no hay más niveles, el juego debería haber terminado y ScoreBoardScreen te llevaría al menú principal
-                    Gdx.app.log("jugarGolfScreen", "No hay más niveles definidos. Fin del juego.");
                     break;
             }
         }
@@ -650,26 +641,5 @@ public class jugarGolfScreen implements Screen {
             }
         }
         return true;
-    }
-
-    private void showScoreBoardScreen(){
-        // Primero, limpia los recursos de esta pantalla que no necesites después de la transición.
-        // Es importante liberar recursos del nivel anterior antes de pasar a la ScoreBoardScreen
-        // para evitar fugas de memoria.
-        // NOTA: No hacemos dispose() de toda la pantalla aquí porque queremos que los datos de jugadores
-        // persistan para la ScoreBoardScreen y posiblemente la próxima jugarGolfScreen.
-        
-        // Limpiamos los bodies del hoyo anterior (obstáculos, hoyo, etc.)
-        limpiarBodiesMundo(false); 
-        
-        // Detenemos la entrada de esta pantalla para que la ScoreBoardScreen pueda tomar el control
-        Gdx.input.setInputProcessor(null); 
-
-        // Creamos y establecemos la ScoreBoardScreen.
-        // Le pasamos el objeto 'game', la lista de jugadores y el nivel actual.
-        // La ScoreBoardScreen se encargará de decidir si avanza al siguiente nivel o al menú principal.
-        game.setScreen(new ScoreBoardScreen(game, jugadores, nivelActual));
-            
-        
     }
 }
