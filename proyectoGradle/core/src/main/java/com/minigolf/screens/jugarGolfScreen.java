@@ -543,7 +543,7 @@ public class jugarGolfScreen implements Screen {
             // Según el nivel en el que estemos
             switch (nivelActual) {
                 case 1:
-                    System.out.println("Creando primer nivel");
+                    System.out.println("Creando el primer nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel1Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
                             hashMapBodiesTemporales);
@@ -563,6 +563,114 @@ public class jugarGolfScreen implements Screen {
                             hashMapBodiesTemporales);
                     nivelCargado = true;
                     break;
+                case 4:
+                    System.out.println("Creando el cuarto nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel4Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 5:
+                    System.out.println("Creando el quinto nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel5Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 6:
+                    System.out.println("Creando el sexto nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel6Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 7:
+                    System.out.println("Creando el séptimo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel7Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 8:
+                    System.out.println("Creando el octavo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel8Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 9:
+                    System.out.println("Creando el noveno nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel9Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);   
+                    nivelCargado = true;
+                    break;
+                case 10:
+                    System.out.println("Creando el décimo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel10Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 11:
+                    System.out.println("Creando el undécimo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel11Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 12:
+                    System.out.println("Creando el duodécimo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel12Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 13:
+                    System.out.println("Creando el decimotercer nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel13Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 14:
+                    System.out.println("Creando el decimocuarto nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel14Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 15:
+                    System.out.println("Creando el decimoquinto nivel");   
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel15Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 16:
+                    System.out.println("Creando el decimosexto nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel16Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 17:
+                    System.out.println("Creando el decimoséptimo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel17Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                case 18:
+                    System.out.println("Creando el decimoctavo nivel");
+                    mostrarInformacionJugadores();
+                    hashMapBodiesTemporales = nivel18Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
+                            hashMapBodiesTemporales);
+                    nivelCargado = true;
+                    break;
+                default:
+                    System.out.println("Nivel no reconocido, no se cargará ningún nivel.");
+                    // Si el nivel no es reconocido, no hacemos nada
             }
         }
     }

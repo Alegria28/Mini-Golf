@@ -35,6 +35,10 @@ public class manejoEventos implements InputProcessor {
     public static final short CATEGORIA_BOLA = 0x0001; // 0000000000000001
     public static final short CATEGORIA_PARED = 0x0002; // 0000000000000010
     public static final short CATEGORIA_HOYO = 0x0004; // 0000000000000100
+    public static final short CATEGORIA_ACELERA_ARRIBA = 0x0010; // 0000000000010000
+    public static final short CATEGORIA_ACELERA_ABAJO = 0x0020; // 0000000000100000
+    public static final short CATEGORIA_ACELERA_IZQUIERDA = 0x0040; // 0000000001000000
+    public static final short CATEGORIA_ACELERA_DERECHA = 0x0080; // 000000001000
 
     // Atributos
     private ArrayList<Jugador> jugadores;
@@ -226,7 +230,71 @@ public class manejoEventos implements InputProcessor {
                 temporal = (screenX >= nivel3Golf.minX && screenX <= nivel3Golf.maxX)
                         && (screenY >= nivel3Golf.minY && screenY <= nivel3Golf.maxY);
                 break;
-        }
+            case 4:
+                temporal = (screenX >= nivel4Golf.minX && screenX <= nivel4Golf.maxX)
+                        && (screenY >= nivel4Golf.minY && screenY <= nivel4Golf.maxY);
+                break;
+            case 5:
+                temporal = (screenX >= nivel5Golf.minX && screenX <= nivel5Golf.maxX)
+                        && (screenY >= nivel5Golf.minY && screenY <= nivel5Golf.maxY);
+                break;
+            case 6:
+                temporal = (screenX >= nivel6Golf.minX && screenX <= nivel6Golf.maxX)
+                        && (screenY >= nivel6Golf.minY && screenY <= nivel6Golf.maxY);
+                break;
+            case 7:
+                temporal = (screenX >= nivel7Golf.minX && screenX <= nivel7Golf.maxX)
+                        && (screenY >= nivel7Golf.minY && screenY <= nivel7Golf.maxY);
+                break;
+            case 8:
+                temporal = (screenX >= nivel8Golf.minX && screenX <= nivel8Golf.maxX)
+                        && (screenY >= nivel8Golf.minY && screenY <= nivel8Golf.maxY);
+                break;
+            case 9:
+                temporal = (screenX >= nivel9Golf.minX && screenX <= nivel9Golf.maxX)
+                        && (screenY >= nivel9Golf.minY && screenY <= nivel9Golf.maxY);
+                break;
+            case 10:
+                temporal = (screenX >= nivel10Golf.minX && screenX <= nivel10Golf.maxX)
+                        && (screenY >= nivel10Golf.minY && screenY <= nivel10Golf.maxY);
+                break;
+            case 11:
+                temporal = (screenX >= nivel11Golf.minX && screenX <= nivel11Golf.maxX)
+                        && (screenY >= nivel11Golf.minY && screenY <= nivel11Golf.maxY);
+                break;
+            case 12:    
+                temporal = (screenX >= nivel12Golf.minX && screenX <= nivel12Golf.maxX)
+                        && (screenY >= nivel12Golf.minY && screenY <= nivel12Golf.maxY);
+                break;
+            case 13:
+                temporal = (screenX >= nivel13Golf.minX && screenX <= nivel13Golf.maxX)
+                        && (screenY >= nivel13Golf.minY && screenY <= nivel13Golf.maxY);
+                break;
+            case 14:
+                temporal = (screenX >= nivel14Golf.minX && screenX <= nivel14Golf.maxX)
+                        && (screenY >= nivel14Golf.minY && screenY <= nivel14Golf.maxY);
+                break;
+            case 15:
+                temporal = (screenX >= nivel15Golf.minX && screenX <= nivel15Golf.maxX)
+                        && (screenY >= nivel15Golf.minY && screenY <= nivel15Golf.maxY);
+                break;
+            case 16:
+                temporal = (screenX >= nivel16Golf.minX && screenX <= nivel16Golf.maxX)
+                        && (screenY >= nivel16Golf.minY && screenY <= nivel16Golf.maxY);
+                break;
+            case 17:
+                temporal = (screenX >= nivel17Golf.minX && screenX <= nivel17Golf.maxX)
+                        && (screenY >= nivel17Golf.minY && screenY <= nivel17Golf.maxY);
+                break;
+            case 18:
+                temporal = (screenX >= nivel18Golf.minX && screenX <= nivel18Golf.maxX)
+                        && (screenY >= nivel18Golf.minY && screenY <= nivel18Golf.maxY);
+                break;
+            default:
+                // Si no es un nivel valido, no es una posición valida
+                temporal = false;
+                break; 
+        }   
 
         return temporal;
     }
@@ -272,7 +340,8 @@ public class manejoEventos implements InputProcessor {
 
         // Configuración de colisiones
         bolaFixtureDef.filter.categoryBits = CATEGORIA_BOLA; // Las pelotas pertenecen a esta categoría
-        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED | CATEGORIA_HOYO; // Esta bola puede colisionar con otras bolas, paredes y el hoyo
+        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED | CATEGORIA_HOYO | CATEGORIA_ACELERA_ARRIBA | CATEGORIA_ACELERA_ABAJO | 
+                                         CATEGORIA_ACELERA_DERECHA | CATEGORIA_ACELERA_IZQUIERDA;  // Esta bola puede colisionar con otras bolas, paredes y el hoyo
 
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);
