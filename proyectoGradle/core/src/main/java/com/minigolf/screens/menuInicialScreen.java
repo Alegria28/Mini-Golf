@@ -65,7 +65,7 @@ public class menuInicialScreen implements Screen {
         stage = new Stage(viewport);
         Gdx.input.setInputProcessor(stage);
 
-        // Creamos nuestro table (actor)
+        // Creamos nuestro table 
         table = new Table();
 
         /* --------- Configuración font --------- */
@@ -145,6 +145,18 @@ public class menuInicialScreen implements Screen {
 
         // Creamos el botón con el texto y el estilo que hemos definido para este
         TextButton botonCreditos = new TextButton("Creditos", buttonStyle);
+        botonCreditos.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                // Cambiamos a la pantalla de créditos
+                game.setScreen(new creditosScreen(game));
+            }
+        });
 
         // Creamos el botón con el texto y el estilo que hemos definido para este
         TextButton botonSalir = new TextButton("Salir", buttonStyle);
