@@ -236,7 +236,7 @@ public class tarjetaPuntosScreen implements Screen {
         Table tablaBotones = new Table();
 
         // Verificamos si el juego ha terminado para decidir qué botones mostrar
-        boolean esFinDelJuego = nivelActualDelJuego >= MAX_NIVELES_MOSTRADOS - 1;
+        boolean esFinDelJuego = nivelActualDelJuego >= MAX_NIVELES_MOSTRADOS;
 
         /* --------- Botón "Salir al Menú" (siempre visible o solo al final) --------- */
 
