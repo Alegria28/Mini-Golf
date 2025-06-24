@@ -181,6 +181,40 @@ public class nivel9Golf {
         bodyParedIzquierda.createFixture(fixtureDefParedIzquierda);
         shapeParedIzquierda.dispose();
         
+        // PAREDES AL BORDE DE LAS PAREDES HORIZONTALES
+        BodyDef bodyDefParedBordeIzquierda = new BodyDef();
+        bodyDefParedBordeIzquierda.position.set(670 * PIXEL_A_METRO, 610* PIXEL_A_METRO);
+        Body bodyParedBordeIzquierda = mundoBox2d.createBody(bodyDefParedBordeIzquierda);
+        hashMapBodiesTemporales.put(bodyParedBordeIzquierda, false);
+        PolygonShape shapeParedBordeIzquierda = new PolygonShape();
+        shapeParedBordeIzquierda.setAsBox(20 * PIXEL_A_METRO, 90 * PIXEL_A_METRO); // Ancho y alto
+        FixtureDef fixtureDefParedBordeIzquierda = new FixtureDef();
+        fixtureDefParedBordeIzquierda.shape = shapeParedBordeIzquierda;
+        fixtureDefParedBordeIzquierda.restitution = 0f; // Sin rebote
+        fixtureDefParedBordeIzquierda.density = 0f; // 0 para bodies estáticos
+        fixtureDefParedBordeIzquierda.friction = 0.2f;
+        fixtureDefParedBordeIzquierda.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
+        fixtureDefParedBordeIzquierda.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
+        bodyParedBordeIzquierda.createFixture(fixtureDefParedBordeIzquierda);
+        shapeParedBordeIzquierda.dispose();
+
+        BodyDef bodyDefParedBordeDerecha = new BodyDef();
+        bodyDefParedBordeDerecha.position.set(230 * PIXEL_A_METRO, 220 * PIXEL_A_METRO);
+        Body bodyParedBordeDerecha = mundoBox2d.createBody(bodyDefParedBordeDerecha);
+        hashMapBodiesTemporales.put(bodyParedBordeDerecha, false);
+        PolygonShape shapeParedBordeDerecha = new PolygonShape();
+        shapeParedBordeDerecha.setAsBox(20 * PIXEL_A_METRO, 90 * PIXEL_A_METRO); // Ancho y alto
+        FixtureDef fixtureDefParedBordeDerecha = new FixtureDef();
+        fixtureDefParedBordeDerecha.shape = shapeParedBordeDerecha;
+        fixtureDefParedBordeDerecha.restitution = 0f; // Sin rebote
+        fixtureDefParedBordeDerecha.density = 0f; // 0 para bodies estáticos
+        fixtureDefParedBordeDerecha.friction = 0.2f;
+        fixtureDefParedBordeDerecha.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
+        fixtureDefParedBordeDerecha.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
+        bodyParedBordeDerecha.createFixture(fixtureDefParedBordeDerecha);
+        shapeParedBordeDerecha.dispose();
+
+
         return hashMapBodiesTemporales;
 
     }
