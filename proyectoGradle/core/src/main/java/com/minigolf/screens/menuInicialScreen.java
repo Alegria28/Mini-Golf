@@ -142,6 +142,18 @@ public class menuInicialScreen implements Screen {
 
         // Creamos el botón con el texto y el estilo que hemos definido para este
         TextButton botonInstrucciones = new TextButton("Instrucciones", buttonStyle);
+        botonInstrucciones.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                // Cambiamos a la pantalla de instrucciones
+                game.setScreen(new instruccionesScreen(game));
+            }
+        }); 
 
         // Creamos el botón con el texto y el estilo que hemos definido para este
         TextButton botonCreditos = new TextButton("Creditos", buttonStyle);
