@@ -64,6 +64,7 @@ public class jugarGolfScreen implements Screen {
     private Table tablePrincipal;
     private Label infoLabel;
     private Label informacionTurno;
+    private Label informacionHoyo;
     private BitmapFont font;
     private Texture texturePared;
     private Texture texturaHoyo;
@@ -231,8 +232,13 @@ public class jugarGolfScreen implements Screen {
         infoLabel = new Label("", labelPrincipalStyle);
         infoLabel.setAlignment(Align.center);
 
-        // Agregamos el label al table de arriba
-        tableArriba.add(infoLabel).center();
+        // Label para mostrar información del hoyo actual y par
+        informacionHoyo = new Label("", labelPrincipalStyle);
+        informacionHoyo.setAlignment(Align.center);
+
+        // Agregamos los labels al table de arriba en dos filas
+        tableArriba.add(informacionHoyo).center().row(); // Primera fila: información del hoyo
+        tableArriba.add(infoLabel).center(); // Segunda fila: información del turno
         tableArriba.center();
 
         // Finalmente, agregamos este actor con todas sus cosas al tablePrincipal
@@ -331,6 +337,11 @@ public class jugarGolfScreen implements Screen {
 
         // Actualizamos las posiciones de las pelotas visuales
         actualizarPosicionesPelotas();
+
+        // Actualizamos la información del hoyo actual
+        int numeroHoyo = nivelActual;
+        int parHoyo = getParDelHoyo(numeroHoyo);
+        informacionHoyo.setText("Hoyo " + numeroHoyo + " - Par " + parHoyo);
 
         // Aquí limpiamos las bolas (si es necesario)
         limpiarBodiesMundo(true);
@@ -967,5 +978,21 @@ public class jugarGolfScreen implements Screen {
     // Método getter para el stage
     public Stage getStage() {
         return stage;
+    }
+
+    // Método para obtener el par del hoyo actual
+    private int getParDelHoyo(int numeroHoyo) {
+        // Array con los valores de par para cada hoyo (índices 0-17 para niveles 1-18)
+        int[] pares = { 2, 2, 4, 5, 4, 5, 5, 9, 10, 12, 4, 7, 14, 14, 14, 9, 8, 4 };
+        
+        // Convertimos el número de nivel (1-18) a índice del array (0-17)
+        int indice = numeroHoyo - 1;
+        
+        if (indice >= 0 && indice < pares.length) {
+            return pares[indice];
+        }
+
+        // En caso de error, se devuelve un -1
+        return -1;
     }
 }
