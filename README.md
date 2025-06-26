@@ -4,8 +4,6 @@
 [![LibGDX](https://img.shields.io/badge/LibGDX-1.13.1-blue.svg)](https://libgdx.com/)
 [![Box2D](https://img.shields.io/badge/Box2D-Physics-green.svg)](https://box2d.org/)
 [![Gradle](https://img.shields.io/badge/Gradle-7.x-brightgreen.svg)](https://gradle.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Desktop-lightgrey.svg)]()
 
 Un juego de mini golf multijugador desarrollado en Java utilizando el framework LibGDX y el motor de física Box2D. Cuenta con física realista, múltiples niveles, sistema de turnos y efectos de audio inmersivos.
 
