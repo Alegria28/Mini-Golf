@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minigolf.models.Jugador;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -21,6 +23,12 @@ public class manejoColisiones implements ContactListener {
     private HashMap<Body, Boolean> hashMapBodiesTemporales;
     private World mundoBox2d;
     private manejoEventos eventos;
+    Sound sonidoPelotaEntra;
+    Sound sonidoPelotaPared;
+
+    // Control de tiempo para evitar spam de sonidos
+    private long ultimoSonidoPared = 0;
+    private static final long INTERVALO_MINIMO_SONIDO = 150; // 100ms entre sonidos
 
     // Puedes ajustar este umbral de velocidad según lo necesites
     private static final float UMBRAL_VELOCIDAD_ATRAVESAR = 4.5f; // Velocidad mínima para 'ignorar' la zona
@@ -34,6 +42,10 @@ public class manejoColisiones implements ContactListener {
         this.hashMapBodiesTemporales = hashMapBodiesTemporales;
         this.mundoBox2d = mundoBox2d;
         this.eventos = eventos;
+
+        // Cargamos el sonido de golpe
+        sonidoPelotaEntra = Gdx.audio.newSound(Gdx.files.internal("SonidoPelotaEntraHoyo.mp3"));
+        sonidoPelotaPared = Gdx.audio.newSound(Gdx.files.internal("SonidoGolpearPared.mp3"));
     }
 
     /** Called when two fixtures begin to touch. */
@@ -58,6 +70,9 @@ public class manejoColisiones implements ContactListener {
 
             System.out.println("Colisión bola-hoyo detectada");
 
+            // Al entrar la pelota, se reproducirá el sonido
+            sonidoPelotaEntra.play();
+
             // Identificamos cuál 'body' es la bola para marcarla para eliminación
             Body bolaHoyo = null;
             if (categoriaA.categoryBits == manejoEventos.CATEGORIA_BOLA) {
@@ -78,6 +93,22 @@ public class manejoColisiones implements ContactListener {
                 System.out.println("El jugador: " + jugadorTemporal.getNombre() + " ha terminado el hoyo");
             } else {
                 System.out.println("Una bola que no es la del jugador actual entró al hoyo, ignorando.");
+            }
+        }
+
+        // Verificamos si la colisión fue entre una bola y una pared o entre una pared y la bola
+        if ((categoriaA.categoryBits == manejoEventos.CATEGORIA_BOLA
+                && categoriaB.categoryBits == manejoEventos.CATEGORIA_PARED) ||
+                (categoriaA.categoryBits == manejoEventos.CATEGORIA_PARED
+                        && categoriaB.categoryBits == manejoEventos.CATEGORIA_BOLA)) {
+
+            // Verificamos si ha pasado suficiente tiempo desde el último sonido de pared
+            long tiempoActual = System.currentTimeMillis();
+            if (tiempoActual - ultimoSonidoPared >= INTERVALO_MINIMO_SONIDO) {
+                // Al detectar colisión entre estos 2 bodies, se reproducirá el sonido
+                sonidoPelotaPared.play();
+                // Actualizamos la ultima vez que se reprodujo el sonido
+                ultimoSonidoPared = tiempoActual;
             }
         }
 
@@ -229,6 +260,16 @@ public class manejoColisiones implements ContactListener {
     */
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
+    }
+
+    // Método para limpiar recursos (este lo agregamos nosotros, ya que la interfaz no lo tiene)
+    public void dispose() {
+        if (sonidoPelotaEntra != null) {
+            sonidoPelotaEntra.dispose();
+        }
+        if (sonidoPelotaPared != null) {
+            sonidoPelotaPared.dispose();
+        }
     }
 
 };

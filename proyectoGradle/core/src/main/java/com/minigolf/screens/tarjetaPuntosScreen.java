@@ -170,7 +170,7 @@ public class tarjetaPuntosScreen implements Screen {
 
         /* --------- Título de la pantalla --------- */
 
-        Label labelTitulo = new Label("El campo de golf Campestre", estiloTitulo);
+        Label labelTitulo = new Label("Campo de golf Campestre", estiloTitulo);
         tablaPrincipal.add(labelTitulo).padBottom(40).row();
 
         /* --------- Tabla para las puntuaciones (dentro de contenedorPuntuaciones) --------- */

@@ -8,17 +8,21 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-
-// Importamos la clase
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.minigolf.models.Jugador;
-// Importamos los niveles
+
+// Importamos las clases
 import com.minigolf.niveles.*;
+import com.minigolf.screens.jugarGolfScreen;
 
 public class manejoEventos implements InputProcessor {
 
@@ -27,7 +31,7 @@ public class manejoEventos implements InputProcessor {
 
     // Declaramos el radio de las bolas y el máximo de fuerza que se puede ejercer
     private final float RADIO = 10 * PIXEL_A_METRO; // La bola tiene un radio de 0.1m
-    private final float MAXIMO_FUERZA = 1.5f;
+    private final float MAXIMO_FUERZA = 0.6f;
 
     // Categorías para colisión, esto sirve para etiquetar cada objeto con una de estas categorías para
     // después decidir que objetos pueden colisionar entre si. Se utilizan bits para diferenciar entre estos,
@@ -44,6 +48,8 @@ public class manejoEventos implements InputProcessor {
     private ArrayList<Jugador> jugadores;
     private World mundoBox2d;
     private int nivelActual;
+    private jugarGolfScreen pantallaJuego;
+    Sound sonidoGolpe;
 
     // Indice para saber con que jugador estamos trabajando
     private int jugadorActual = 0;
@@ -54,10 +60,16 @@ public class manejoEventos implements InputProcessor {
     private float anguloDireccion = 0f;
 
     // Recibimos los jugadores y el mundo, estos por referencia
-    public manejoEventos(ArrayList<Jugador> jugadores, World mundoBox2d, int nivelActual) {
+    public manejoEventos(ArrayList<Jugador> jugadores, World mundoBox2d, int nivelActual,
+            jugarGolfScreen pantallaJuego) {
         this.jugadores = jugadores;
         this.mundoBox2d = mundoBox2d;
         this.nivelActual = nivelActual;
+        // Recibimos la referencia de la pantalla jugar
+        this.pantallaJuego = pantallaJuego;
+
+        // Cargamos el sonido de golpe
+        sonidoGolpe = Gdx.audio.newSound(Gdx.files.internal("SonidoGolpearPelota.mp3"));
     }
 
     /** Called when a key was pressed
@@ -69,6 +81,9 @@ public class manejoEventos implements InputProcessor {
 
         // Al presionar la tecla espacio, se ejecuta el golpe si este jugador tiene bola
         if (keycode == Input.Keys.SPACE && jugadores.get(jugadorActual).getBolaJugador() != null) {
+
+            // Al golpear, se reproducirá el sonido
+            sonidoGolpe.play();
 
             // El fector fuerza tiene una magnitud (fuerza) y una dirección (anguloDireccion) para cada uno
             //  de sus componentes
@@ -347,6 +362,28 @@ public class manejoEventos implements InputProcessor {
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);
 
+        /* ---------- Representación visual de la pelota ---------- */
+
+        // Obtenemos el color de bola del jugador
+        Color colorJugador = jugadores.get(jugadorActual).getColorBola();
+
+        // Obtenemos la textura según el color del jugador (llamando al método de pantallaJuego)
+        Texture texturaPelota = pantallaJuego.crearTexturaPelota(colorJugador);
+
+        // Creamos la imagen de la pelota
+        Image imagenPelota = new Image(texturaPelota);
+        imagenPelota.setSize(RADIO * 2 / PIXEL_A_METRO, RADIO * 2 / PIXEL_A_METRO); // Diámetro de la pelota
+        // Colocamos la imagen en la posición en la que se encuentra el body
+        imagenPelota.setPosition(
+                (bolaBody.getPosition().x / PIXEL_A_METRO) - imagenPelota.getWidth() / 2,
+                (bolaBody.getPosition().y / PIXEL_A_METRO) - imagenPelota.getHeight() / 2);
+
+        // Agregamos la imagen al stage
+        pantallaJuego.getStage().addActor(imagenPelota);
+
+        // Asociamos la imagen con el cuerpo para poder actualizarla
+        bolaBody.setUserData(imagenPelota);
+
         // Liberamos la memoria de la forma una vez que ya no se necesita
         bolaShape.dispose();
 
@@ -377,13 +414,13 @@ public class manejoEventos implements InputProcessor {
     // Método para actualizar la fuerza del golpe
     public void setFuerza(int direccion) {
 
-        // Calculamos la fuerza aplicada, asegurándonos que no pase de 10 y que no baje de 1
+        // Calculamos la fuerza aplicada, asegurándonos que no pase de 0.6 y que no baje de 0
         switch (direccion) {
             case 0:
-                this.fuerza = Math.max(0f, this.fuerza - 0.01f);
+                this.fuerza = Math.max(0f, this.fuerza - 0.004f);
                 break;
             case 1:
-                this.fuerza = Math.min(MAXIMO_FUERZA, this.fuerza + 0.01f);
+                this.fuerza = Math.min(MAXIMO_FUERZA, this.fuerza + 0.004f);
                 break;
         }
     }
@@ -413,5 +450,12 @@ public class manejoEventos implements InputProcessor {
 
     public int getJugadorActual() {
         return this.jugadorActual;
+    }
+
+    // Método para limpiar recursos (este lo agregamos nosotros, ya que la interfaz no lo tiene)
+    public void dispose() {
+        if (sonidoGolpe != null) {
+            sonidoGolpe.dispose();
+        }
     }
 }

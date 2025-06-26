@@ -12,6 +12,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -51,6 +52,7 @@ public class jugarGolfScreen implements Screen {
     // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
     private final float PIXEL_A_METRO = 0.01f;
     private final float Grosor_Muros_PX = 15f; // Grosor visual de las paredes en píxeles
+    private final int DIAMETRO_BOLA = 30;
 
     // Atributos
     private OrthographicCamera camera;
@@ -66,6 +68,8 @@ public class jugarGolfScreen implements Screen {
     private Texture texturePared;
     private Texture texturaHoyo;
     private Texture texturaBoost;
+    private Texture textureFondoJuego;
+    private Texture texturaFondoSolido;
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
@@ -73,6 +77,9 @@ public class jugarGolfScreen implements Screen {
     private manejoEventos eventos;
     // Instancia de la clase que va a manejar las colisiones
     private manejoColisiones manejoColisiones;
+
+    // Texture para los colores disponibles
+    private HashMap<Color, Texture> texturesPelotas = new HashMap<Color, Texture>();
 
     // Dimensiones virtuales
     private final float VIRTUAL_WIDTH = 900;
@@ -109,7 +116,7 @@ public class jugarGolfScreen implements Screen {
             jugador.setHoyoTerminado(false);
         }
         // Iniciamos las instancias de nuestros handlers
-        this.eventos = new manejoEventos(jugadores, mundoBox2d, nivelActual);
+        this.eventos = new manejoEventos(jugadores, mundoBox2d, nivelActual, this);
         this.manejoColisiones = new manejoColisiones(jugadores, hashMapBodiesTemporales, mundoBox2d,
                 eventos);
 
@@ -166,7 +173,7 @@ public class jugarGolfScreen implements Screen {
         // Creamos la imagen
         Image imagenFondo = new Image(textureFondo);
         // Aplicamos la opacidad a nuestra imagen de fondo
-        imagenFondo.setColor(new Color(1f, 1f, 1f, 0.5f));
+        imagenFondo.setColor(new Color(1f, 1f, 1f, 0.3f));
 
         /* --------- Configuración imagen punto de inicio --------- */
 
@@ -260,6 +267,28 @@ public class jugarGolfScreen implements Screen {
 
         /* --------- Preparación nivel --------- */
 
+        // Creamos un fondo sólido usando Pixmap para el área de juego
+        Pixmap pixmapFondoSolido = new Pixmap(720, 720, Pixmap.Format.RGBA8888);
+        pixmapFondoSolido.setColor(Color.GREEN); // Color verde como base del campo
+        pixmapFondoSolido.fill(); // Rellenamos todo el pixmap con ese color
+
+        // Convertimos el Pixmap a Texture
+        texturaFondoSolido = new Texture(pixmapFondoSolido);
+        pixmapFondoSolido.dispose(); // Liberamos el Pixmap ya que ya no lo necesitamos
+
+        // Creamos la imagen del fondo sólido
+        Image imagenFondoSolido = new Image(texturaFondoSolido);
+        imagenFondoSolido.setSize(720, 720);
+        imagenFondoSolido.setPosition(90, 90);
+        stage.addActor(imagenFondoSolido);
+
+        // Agregamos la imagen de fondo simulando el pasto para el campo de mini golf
+        textureFondoJuego = new Texture(Gdx.files.internal("FondoJuego.png"));
+        Image imageFondoJuego = new Image(textureFondoJuego);
+        imageFondoJuego.setSize(720, 720);
+        imageFondoJuego.setPosition(90, 90);
+        stage.addActor(imageFondoJuego);
+
         agregarParedes();
 
         /* --------- Configuración capas y fondo --------- */
@@ -300,12 +329,19 @@ public class jugarGolfScreen implements Screen {
         // de cuantas iteraciones para el calculo de velocidad y posición se hagan cada frame
         mundoBox2d.step(timeStep, 10, 10);
 
+        // Actualizamos las posiciones de las pelotas visuales
+        actualizarPosicionesPelotas();
+
         // Aquí limpiamos las bolas (si es necesario)
         limpiarBodiesMundo(true);
 
         // Actualizar y dibujar stage
         stage.act(delta);
         stage.draw();
+
+        // Comentamos lo siguiente para que no se vean los bodies que tiene el mundo Box2D, de esta manera
+        // solo se verán las textures que se crearon
+        /*
         // RENDERIZADO DEL DEBUG DE BOX2D CON ESCALADO (actualizar y dibujar con escalado)
         // Dibujamos las formas de colisión de Box2D para debug, .cpy() crea una copia de la matriz 
         // de la cámara para no modificar la original, .scl(100f) escala la matriz × 100 para convertir 
@@ -315,6 +351,7 @@ public class jugarGolfScreen implements Screen {
                 camera.combined // Matriz de transformación
                         .cpy() // Creamos una copia (no modifica la original)
                         .scl(100f)); // Escalar x100 para metro -> pixel
+        */
 
         // Verificamos el nivel actual 
         gestionarNivel(jugadoresTerminaron());
@@ -412,39 +449,106 @@ public class jugarGolfScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Limpiamos todas las pelotas de los jugadores
-        for (Jugador jugador : jugadores) {
-            mundoBox2d.destroyBody(jugador.getBolaJugador());
-            jugador.setBolaJugador(null);
-        }
+        // Verificamos que el mundo Box2D esté disponible antes de limpiar
+        if (mundoBox2d != null) {
+            // Limpiamos todas las pelotas de los jugadores
+            for (Jugador jugador : jugadores) {
+                Body pelota = jugador.getBolaJugador();
+                if (pelota != null) {
+                    // Removemos la imagen visual del stage antes de destruir el body
+                    Object userData = pelota.getUserData();
+                    if (userData instanceof Image) {
+                        ((Image) userData).remove(); // Remover del stage
+                    }
+                    mundoBox2d.destroyBody(pelota);
+                    jugador.setBolaJugador(null);
+                }
+            }
 
-        // Limpiamos los bodies temporales que uso el nivel
-        for (Map.Entry<Body, Boolean> e : hashMapBodiesTemporales.entrySet()) {
-            mundoBox2d.destroyBody(e.getKey());
-        }
+            // Limpiamos los bodies temporales que uso el nivel
+            for (Map.Entry<Body, Boolean> e : hashMapBodiesTemporales.entrySet()) {
+                Body body = e.getKey();
+                if (body != null) {
+                    // Removemos la imagen visual del stage antes de destruir el body
+                    Object userData = body.getUserData();
+                    if (userData instanceof Image) {
+                        ((Image) userData).remove(); // Remover del stage
+                    }
+                    mundoBox2d.destroyBody(body);
+                }
+            }
 
-        // Limpiamos todas las paredes
-        for (Body pared : arrayListParedes) {
-            mundoBox2d.destroyBody(pared);
+            // Limpiamos todas las paredes
+            for (Body pared : arrayListParedes) {
+                if (pared != null) {
+                    // Removemos la imagen visual del stage antes de destruir el body
+                    Object userData = pared.getUserData();
+                    if (userData instanceof Image) {
+                        ((Image) userData).remove(); // Remover del stage
+                    }
+                    mundoBox2d.destroyBody(pared);
+                }
+            }
         }
 
         // Liberar recursos
-        stage.dispose();
-        mundoBox2d.dispose();
-        debugRenderer.dispose();
-        textureFondo.dispose();
-        texturePuntoDeInicio.dispose();
-        font.dispose();
+        if (stage != null) {
+            stage.dispose();
+        }
+        if (mundoBox2d != null) {
+            mundoBox2d.dispose();
+        }
+        if (debugRenderer != null) {
+            debugRenderer.dispose();
+        }
+        if (textureFondo != null) {
+            textureFondo.dispose();
+        }
+        if (texturePuntoDeInicio != null) {
+            texturePuntoDeInicio.dispose();
+        }
+        if (font != null) {
+            font.dispose();
+        }
         if (texturePared != null) {
             texturePared.dispose();
         }
         if (texturaHoyo != null) {
             texturaHoyo.dispose();
         }
-        Gdx.input.setInputProcessor(null);
-        shapeRenderer.dispose();
+        if (texturaBoost != null) {
+            texturaBoost.dispose();
+        }
+        if (textureFondoJuego != null) {
+            textureFondoJuego.dispose();
+        }
+        if (texturaFondoSolido != null) {
+            texturaFondoSolido.dispose();
+        }
+
+        // Limpiar texturas de pelotas
+        for (Texture textura : texturesPelotas.values()) {
+            if (textura != null) {
+                textura.dispose();
+            }
+        }
+        texturesPelotas.clear();
+
+        // Limpiar handlers
+        if (eventos != null) {
+            eventos.dispose();
+        }
+        if (manejoColisiones != null) {
+            manejoColisiones.dispose();
+        }
+
+        if (shapeRenderer != null) {
+            Gdx.input.setInputProcessor(null);
+            shapeRenderer.dispose();
+        }
 
         hashMapBodiesTemporales.clear();
+
         arrayListParedes.clear();
     }
 
@@ -778,11 +882,19 @@ public class jugarGolfScreen implements Screen {
         Iterator<Map.Entry<Body, Boolean>> iterator = hashMapBodiesTemporales.entrySet().iterator();
         while (iterator.hasNext()) { // Mientras que haya elementos 
             // Obtenemos este elemento y avanzamos al siguiente
-            Map.Entry<Body, Boolean> temporal = iterator.next();
-
-            // Solo eliminamos los bodies que correspondan a la bandera
+            Map.Entry<Body, Boolean> temporal = iterator.next(); // Solo eliminamos los bodies que correspondan a la bandera
             if (temporal.getValue() == tipoBody) {
-                mundoBox2d.destroyBody(temporal.getKey()); // La eliminamos del mundo
+                Body body = temporal.getKey();
+
+                if (body != null) {
+                    // Si el body tiene userData (imagen visual), la removemos del stage
+                    Object userData = body.getUserData();
+                    if (userData instanceof Image) {
+                        ((Image) userData).remove(); // Remover del stage
+                    }
+
+                    mundoBox2d.destroyBody(body); // La eliminamos del mundo
+                }
                 iterator.remove(); // Lo eliminamos del hashMap de manera segura (para que de esta manera
                 // no obtengamos la excepción ConcurrentModificationException https://www.shorturl.at/shortener.php)
             }
@@ -797,5 +909,66 @@ public class jugarGolfScreen implements Screen {
             }
         }
         return true;
+    }
+
+    // Método para crear una textura de pelota de color sólido
+    public Texture crearTexturaPelota(Color colorBola) {
+
+        // Verificamos si ya tenemos esta textura creada
+        if (texturesPelotas.containsKey(colorBola)) {
+            // De ser asi, entonces simplemente la retornamos
+            return texturesPelotas.get(colorBola);
+        }
+
+        // Creamos un Pixmap circular para la pelota
+        Pixmap pixmapPelota = new Pixmap(DIAMETRO_BOLA, DIAMETRO_BOLA, Pixmap.Format.RGBA8888);
+
+        // Configuramos el color de la pelota
+        pixmapPelota.setColor(colorBola);
+
+        // Dibujamos un círculo relleno
+        int radio = DIAMETRO_BOLA / 2;
+        pixmapPelota.fillCircle(radio, radio, radio - 1); // -1 para que no se corte en los bordes
+
+        // Agregamos un borde negro, otro circulo alrededor del circulo anteriormente creado, pero sin llenar
+        pixmapPelota.setColor(Color.BLACK);
+        pixmapPelota.drawCircle(radio, radio, radio - 1);
+
+        // Convertimos a textura
+        Texture texturaPelota = new Texture(pixmapPelota);
+        // Liberamos el Pixmap
+        pixmapPelota.dispose();
+
+        // Guardamos la textura en nuestro HashMap para reutilizarla
+        texturesPelotas.put(colorBola, texturaPelota);
+
+        return texturaPelota;
+    }
+
+    // Método para actualizar las posiciones visuales de las pelotas
+    private void actualizarPosicionesPelotas() {
+
+        // Recorremos nuestros jugadores
+        for (Jugador jugador : jugadores) {
+            // Obtenemos la pelota del jugador
+            Body pelota = jugador.getBolaJugador();
+
+            // Si el jugador tiene pelota y la pelota tiene la información de tipo Image (tiene la textura del color correspondiente)
+            if (pelota != null && pelota.getUserData() instanceof Image) {
+                // Obtenemos la imagen haciendo cast para Imagen (ya que getUserData solo devuelve Object)
+                Image imagenPelota = (Image) pelota.getUserData();
+
+                // Actualizamos la posición de la imagen según la posición del cuerpo Box2D
+                Vector2 posicionPelota = pelota.getPosition();
+                imagenPelota.setPosition(
+                        (posicionPelota.x / PIXEL_A_METRO) - imagenPelota.getWidth() / 2,
+                        (posicionPelota.y / PIXEL_A_METRO) - imagenPelota.getHeight() / 2);
+            }
+        }
+    }
+
+    // Método getter para el stage
+    public Stage getStage() {
+        return stage;
     }
 }
