@@ -2,7 +2,7 @@ package com.minigolf.niveles;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.graphics.Texture; 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -21,17 +21,17 @@ public class nivel2Golf {
     private static final float PIXEL_A_METRO = 0.01f;
 
     // Atributos
-    public static final float coordenadaInicioX = 130; 
-    private static final float coordenadaInicioY = 700; 
-    private static final float coordenadaHoyoX = 750; 
-    private static final float coordenadaHoyoY = 750; 
+    public static final float coordenadaInicioX = 130;
+    private static final float coordenadaInicioY = 700;
+    private static final float coordenadaHoyoX = 750;
+    private static final float coordenadaHoyoY = 750;
 
     // Areas válidas para colocar la bola (en el mundo)
     public static final float minX = 130 * PIXEL_A_METRO, maxX = 200 * PIXEL_A_METRO; // Ajustamos el área válida
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO; // Ajustamos el área válida
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) { 
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) {
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
 
@@ -76,7 +76,7 @@ public class nivel2Golf {
         shapeHoyo.dispose();
 
         // --- Representación Visual del Hoyo (Image con textura) ---
-        Image imageHoyo= new Image(texturaHoyo);
+        Image imageHoyo = new Image(texturaHoyo);
         float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);

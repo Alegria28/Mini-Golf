@@ -153,7 +153,7 @@ public class menuInicialScreen implements Screen {
                 // Cambiamos a la pantalla de instrucciones
                 game.setScreen(new instruccionesScreen(game));
             }
-        }); 
+        });
 
         // Creamos el botón con el texto y el estilo que hemos definido para este
         TextButton botonCreditos = new TextButton("Creditos", buttonStyle);

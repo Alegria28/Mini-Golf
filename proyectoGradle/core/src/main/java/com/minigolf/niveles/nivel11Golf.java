@@ -20,12 +20,11 @@ public class nivel11Golf {
     // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
     private static final float PIXEL_A_METRO = 0.01f;
 
-
     // Atributos
-    public static final float coordenadaInicioX = 130; 
-    private static final float coordenadaInicioY = 700; 
+    public static final float coordenadaInicioX = 130;
+    private static final float coordenadaInicioY = 700;
     public static final float coordenadaHoyoX = 740;
-    public static final float coordenadaHoyoY = 160; 
+    public static final float coordenadaHoyoY = 160;
 
     // Areas válidas para colocar la bola (en el mundo)
     public static final float minX = 130 * PIXEL_A_METRO, maxX = 200 * PIXEL_A_METRO; // Ajustamos el área válida
@@ -78,7 +77,7 @@ public class nivel11Golf {
         shapeHoyo.dispose();
 
         // --- Representación Visual del Hoyo (Image con textura) ---
-        Image imageHoyo= new Image(texturaHoyo); 
+        Image imageHoyo = new Image(texturaHoyo);
         float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
@@ -108,7 +107,7 @@ public class nivel11Golf {
         fixtureDefParedDerecha.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
         fixtureDefParedDerecha.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedDerecha.createFixture(fixtureDefParedDerecha);
-        shapeParedDerecha.dispose();    
+        shapeParedDerecha.dispose();
 
         // --- Representación Visual de Pared Derecha (Image con textura) ---
         Image imageParedDerecha = new Image(textureParedes);
@@ -120,7 +119,6 @@ public class nivel11Golf {
         imageParedDerecha.setPosition(paredDerechaX_px, paredDerechaY_px);
         stage.addActor(imageParedDerecha);
         bodyParedDerecha.setUserData(imageParedDerecha);
-
 
         /* Obstáculo que cubre el hoyo parte izquierda */
         BodyDef bodyDefParedIzquierda = new BodyDef();
@@ -163,13 +161,13 @@ public class nivel11Golf {
         shapeParedDerecha2.setAsBox(mitadAnchoParedDerecha2_m, mitadAltoParedDerecha2_m); // Ancho y alto
         FixtureDef fixtureDefParedDerecha2 = new FixtureDef();
         fixtureDefParedDerecha2.shape = shapeParedDerecha2;
-        fixtureDefParedDerecha2.restitution =   0f; // Sin rebote
+        fixtureDefParedDerecha2.restitution = 0f; // Sin rebote
         fixtureDefParedDerecha2.density = 0f; // 0 para bodies estáticos
         fixtureDefParedDerecha2.friction = 0.2f;
         fixtureDefParedDerecha2.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
         fixtureDefParedDerecha2.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedDerecha2.createFixture(fixtureDefParedDerecha2);
-        shapeParedDerecha2.dispose();   
+        shapeParedDerecha2.dispose();
 
         // --- Representación Visual de Pared Derecha 2 (Image con textura) ---
         Image imageParedDerecha2 = new Image(textureParedes);
@@ -181,7 +179,6 @@ public class nivel11Golf {
         imageParedDerecha2.setPosition(paredDerecha2X_px, paredDerecha2Y_px);
         stage.addActor(imageParedDerecha2);
         bodyParedDerecha2.setUserData(imageParedDerecha2);
-
 
         /* SEGUNDA PARED ABAJO IZQUIERDA*/
 
@@ -202,7 +199,7 @@ public class nivel11Golf {
         fixtureDefParedIzquierda2.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedIzquierda2.createFixture(fixtureDefParedIzquierda2);
         shapeParedIzquierda2.dispose();
-        
+
         // --- Representación Visual de Pared Izquierda 2 (Image con textura) ---
         Image imageParedIzquierda2 = new Image(textureParedes);
         float paredIzquierda2AnchoPx = mitadAnchoParedIzquierda2_m * 2 / PIXEL_A_METRO;

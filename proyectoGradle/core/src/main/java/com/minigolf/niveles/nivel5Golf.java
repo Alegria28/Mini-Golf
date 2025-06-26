@@ -2,7 +2,7 @@ package com.minigolf.niveles;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.graphics.Texture; 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -20,19 +20,18 @@ public class nivel5Golf {
     // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
     private static final float PIXEL_A_METRO = 0.01f;
 
-
     // Atributos
-    public static final float coordenadaInicioX = 700; 
-    private static final float coordenadaInicioY = 700; 
+    public static final float coordenadaInicioX = 700;
+    private static final float coordenadaInicioY = 700;
     public static final float coordenadaHoyoX = 130;
-    public static final float coordenadaHoyoY = 130; 
+    public static final float coordenadaHoyoY = 130;
 
     // Areas válidas para colocar la bola (en el mundo)
     public static final float minX = 700 * PIXEL_A_METRO, maxX = 770 * PIXEL_A_METRO; // Ajustamos el área válida
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO; // Ajustamos el área válida
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) { 
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) {
 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
@@ -78,7 +77,7 @@ public class nivel5Golf {
         shapeHoyo.dispose();
 
         // --- Representación Visual del Hoyo (Image con textura) ---
-        Image imageHoyo= new Image(texturaHoyo); 
+        Image imageHoyo = new Image(texturaHoyo);
         float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
@@ -89,13 +88,13 @@ public class nivel5Golf {
         bodyHoyo.setUserData(imageHoyo);
 
         /* Obstáculos que protegen al hoyo */
-        
+
         /* PARTE DERECHA */
 
         // Definimos un Body para el obstáculo
         BodyDef bodyDefObstaculo3 = new BodyDef();
         // Establecemos su posicion en el mundo (lado derecho del hoyo)
-        bodyDefObstaculo3.position.set(230 * PIXEL_A_METRO, 190* PIXEL_A_METRO); // Ajustamos la posición
+        bodyDefObstaculo3.position.set(230 * PIXEL_A_METRO, 190 * PIXEL_A_METRO); // Ajustamos la posición
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body bodyObstaculo3 = mundoBox2d.createBody(bodyDefObstaculo3);
         // Agregamos esta pared a la cola para liberarlo después (al acabar el nivel)
@@ -132,15 +131,14 @@ public class nivel5Golf {
         stage.addActor(imageObstaculo3);
         bodyObstaculo3.setUserData(imageObstaculo3);
 
-
         /* PARTE SUPERIOR */
 
         // Definimos un Body para el obstáculo
         BodyDef bodyDefObstaculo4 = new BodyDef();
         // Establecemos su posicion en el mundo (lado derecho del hoyo)
-        bodyDefObstaculo4.position.set(190 * PIXEL_A_METRO, 230* PIXEL_A_METRO); // Ajustamos la posición
+        bodyDefObstaculo4.position.set(190 * PIXEL_A_METRO, 230 * PIXEL_A_METRO); // Ajustamos la posición
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
-        Body bodyObstaculo4= mundoBox2d.createBody(bodyDefObstaculo4);
+        Body bodyObstaculo4 = mundoBox2d.createBody(bodyDefObstaculo4);
         // Agregamos esta pared a la cola para liberarlo después (al acabar el nivel)
         hashMapBodiesTemporales.put(bodyObstaculo4, false);
         // Creamos un polígono en general
@@ -163,7 +161,7 @@ public class nivel5Golf {
         bodyObstaculo4.createFixture(fixtureDefObstaculo4);
         // Liberamos el polígono
         shapeObstaculo4.dispose();
-        
+
         // --- Representación Visual del Obstáculo 4 (Image con textura) ---
         Image imageObstaculo4 = new Image(textureParedes);
         float obstaculo4AnchoPx = mitadAnchoObstaculo4_m * 2 / PIXEL_A_METRO;
@@ -175,14 +173,13 @@ public class nivel5Golf {
         stage.addActor(imageObstaculo4);
         bodyObstaculo4.setUserData(imageObstaculo4);
 
-
         /* Obstáculos que protegen la posicion inicial */
         /* PARTE IZQUIERDA */
 
         // Definimos un Body para el obstáculo
         BodyDef bodyDefObstaculo1 = new BodyDef();
         // Establecemos su posicion en el mundo (lado izquierdo del hoyo)
-        bodyDefObstaculo1.position.set( 650 * PIXEL_A_METRO, 700* PIXEL_A_METRO); // Ajustamos la posición
+        bodyDefObstaculo1.position.set(650 * PIXEL_A_METRO, 700 * PIXEL_A_METRO); // Ajustamos la posición
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body bodyObstaculo1 = mundoBox2d.createBody(bodyDefObstaculo1);
         // Agregamos esta pared a la cola para liberarlo después (al acabar el nivel)
@@ -219,12 +216,11 @@ public class nivel5Golf {
         stage.addActor(imageObstaculo1);
         bodyObstaculo1.setUserData(imageObstaculo1);
 
-
         /* PARTE INFERIOR */
         // Definimos un Body para el obstáculo
         BodyDef bodyDefObstaculo2 = new BodyDef();
         // Establecemos su posicion en el mundo (lado izquierdo del hoyo)
-        bodyDefObstaculo2.position.set(700 * PIXEL_A_METRO, 650* PIXEL_A_METRO); // Ajustamos la posición
+        bodyDefObstaculo2.position.set(700 * PIXEL_A_METRO, 650 * PIXEL_A_METRO); // Ajustamos la posición
         // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
         Body bodyObstaculo2 = mundoBox2d.createBody(bodyDefObstaculo2);
         // Agregamos esta pared a la cola para liberarlo después (al acabar el nivel)

@@ -31,7 +31,8 @@ public class nivel18Golf {
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO;
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo, Texture texturaBoost) { // Agregado Texture textureParedes
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo,
+            Texture texturaBoost) { // Agregado Texture textureParedes
 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
@@ -77,7 +78,7 @@ public class nivel18Golf {
         shapeHoyo.dispose();
 
         // --- Representación Visual del Hoyo (Image con textura) ---
-        Image imageHoyo= new Image(texturaHoyo); 
+        Image imageHoyo = new Image(texturaHoyo);
         float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
@@ -86,10 +87,10 @@ public class nivel18Golf {
         imageHoyo.setPosition(hoyoX_px, hoyoY_px);
         stage.addActor(imageHoyo);
         bodyHoyo.setUserData(imageHoyo);
-        
+
         /* --- Zona de Aceleración --- */
         BodyDef aceleracionBodyDef1 = new BodyDef();
-        aceleracionBodyDef1.position.set(375 * PIXEL_A_METRO, 350* PIXEL_A_METRO);
+        aceleracionBodyDef1.position.set(375 * PIXEL_A_METRO, 350 * PIXEL_A_METRO);
         Body aceleracionBody1 = mundoBox2d.createBody(aceleracionBodyDef1);
         hashMapBodiesTemporales.put(aceleracionBody1, false); // No es una bola, es un elemento del nivel
 
@@ -97,7 +98,7 @@ public class nivel18Golf {
         // setAsBox toma la mitad del ancho y la mitad del alto
         float mitadAnchoAceleracion1_m = 55 * PIXEL_A_METRO;
         float mitadAltoAceleracion1_m = 40 * PIXEL_A_METRO;
-        aceleracionShape1.setAsBox(mitadAnchoAceleracion1_m, mitadAltoAceleracion1_m); 
+        aceleracionShape1.setAsBox(mitadAnchoAceleracion1_m, mitadAltoAceleracion1_m);
 
         FixtureDef aceleracionFixtureDef1 = new FixtureDef();
         aceleracionFixtureDef1.shape = aceleracionShape1;
@@ -119,7 +120,7 @@ public class nivel18Golf {
         imageAceleracion1.setPosition(aceleracionX_px, aceleracionY_px);
         stage.addActor(imageAceleracion1);
         aceleracionBody1.setUserData(imageAceleracion1); // Asociamos la imagen
-        
+
         /* --------- Obstáculo 1 --------- */
 
         // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático, 
@@ -169,7 +170,6 @@ public class nivel18Golf {
         stage.addActor(imageObstaculo1);
         bodyObstaculo1.setUserData(imageObstaculo1);
 
-
         /* --------- Obstáculo debajo del punto de inicio --------- */
 
         // Definimos un Body para el obstáculo
@@ -215,7 +215,6 @@ public class nivel18Golf {
         imageObstaculo2.setPosition(obstaculo2X_px, obstaculo2Y_px);
         stage.addActor(imageObstaculo2);
         bodyObstaculo2.setUserData(imageObstaculo2);
-
 
         /* --------- Obstáculo abajo a la izquierda, pegado a la pared inferior --------- */
 
@@ -263,7 +262,6 @@ public class nivel18Golf {
         stage.addActor(imageObstaculo3);
         bodyObstaculo3.setUserData(imageObstaculo3);
 
-
         /* --------- Obstáculo debajo del hoyo --------- */
 
         BodyDef bodyDefObstaculo4 = new BodyDef();
@@ -294,7 +292,6 @@ public class nivel18Golf {
         imageObstaculo4.setPosition(obstaculo4X_px, obstaculo4Y_px);
         stage.addActor(imageObstaculo4);
         bodyObstaculo4.setUserData(imageObstaculo4);
-
 
         /* --------- Obstáculo a la derecha del hoyo --------- */
         BodyDef bodyDefObstaculo5 = new BodyDef();

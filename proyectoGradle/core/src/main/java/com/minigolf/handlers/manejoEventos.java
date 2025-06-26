@@ -262,7 +262,7 @@ public class manejoEventos implements InputProcessor {
                 temporal = (screenX >= nivel11Golf.minX && screenX <= nivel11Golf.maxX)
                         && (screenY >= nivel11Golf.minY && screenY <= nivel11Golf.maxY);
                 break;
-            case 12:    
+            case 12:
                 temporal = (screenX >= nivel12Golf.minX && screenX <= nivel12Golf.maxX)
                         && (screenY >= nivel12Golf.minY && screenY <= nivel12Golf.maxY);
                 break;
@@ -293,8 +293,8 @@ public class manejoEventos implements InputProcessor {
             default:
                 // Si no es un nivel valido, no es una posición valida
                 temporal = false;
-                break; 
-        }   
+                break;
+        }
 
         return temporal;
     }
@@ -340,8 +340,9 @@ public class manejoEventos implements InputProcessor {
 
         // Configuración de colisiones
         bolaFixtureDef.filter.categoryBits = CATEGORIA_BOLA; // Las pelotas pertenecen a esta categoría
-        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED | CATEGORIA_HOYO | CATEGORIA_ACELERA_ARRIBA | CATEGORIA_ACELERA_ABAJO | 
-                                         CATEGORIA_ACELERA_DERECHA | CATEGORIA_ACELERA_IZQUIERDA;  // Esta bola puede colisionar con otras bolas, paredes y el hoyo
+        bolaFixtureDef.filter.maskBits = CATEGORIA_BOLA | CATEGORIA_PARED | CATEGORIA_HOYO | CATEGORIA_ACELERA_ARRIBA
+                | CATEGORIA_ACELERA_ABAJO |
+                CATEGORIA_ACELERA_DERECHA | CATEGORIA_ACELERA_IZQUIERDA; // Esta bola puede colisionar con otras bolas, paredes y el hoyo
 
         // Creamos la fixture y la unimos al cuerpo de la bola
         bolaBody.createFixture(bolaFixtureDef);

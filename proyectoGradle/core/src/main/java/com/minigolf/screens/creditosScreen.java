@@ -11,12 +11,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener; 
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label; 
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle; 
-import com.badlogic.gdx.scenes.scene2d.ui.Skin; 
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -35,13 +35,13 @@ import com.minigolf.MiniGolfMain;
 public class creditosScreen implements Screen {
 
     // Atributos de la clase
-    private final MiniGolfMain game; 
-    private Stage stage; 
-    private Viewport viewport; 
-    private Texture textureFondo; 
-    private BitmapFont fontTitulo; 
-    private BitmapFont fontContenido; 
-    private Skin buttonSkin; 
+    private final MiniGolfMain game;
+    private Stage stage;
+    private Viewport viewport;
+    private Texture textureFondo;
+    private BitmapFont fontTitulo;
+    private BitmapFont fontContenido;
+    private Skin buttonSkin;
 
     // Dimensiones virtuales (buena práctica para el diseño)
     private final float VIRTUAL_WIDTH = 900;

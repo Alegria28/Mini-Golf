@@ -31,7 +31,7 @@ public class nivel3Golf {
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO;
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) { 
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) {
 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
@@ -77,7 +77,7 @@ public class nivel3Golf {
         shapeHoyo.dispose();
 
         // --- Representación Visual del Hoyo (Image con textura) ---
-        Image imageHoyo= new Image(texturaHoyo); 
+        Image imageHoyo = new Image(texturaHoyo);
         float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
@@ -147,7 +147,6 @@ public class nivel3Golf {
         // para un acceso fácil en el futuro, si necesitas mover o eliminar la imagen junto con el cuerpo.
         bodyObstaculo1.setUserData(imageObstaculo1);
 
-
         /* --------- Obstáculo debajo del punto de inicio --------- */
 
         // Definimos un Body para el obstáculo
@@ -193,7 +192,6 @@ public class nivel3Golf {
         imageObstaculo2.setPosition(obstaculo2X_px, obstaculo2Y_px);
         stage.addActor(imageObstaculo2);
         bodyObstaculo2.setUserData(imageObstaculo2);
-
 
         /* --------- Obstáculo abajo a la izquierda, pegado a la pared inferior --------- */
 
@@ -241,7 +239,6 @@ public class nivel3Golf {
         stage.addActor(imageObstaculo3);
         bodyObstaculo3.setUserData(imageObstaculo3);
 
-
         /* --------- Obstáculo debajo del hoyo --------- */
 
         BodyDef bodyDefObstaculo4 = new BodyDef();
@@ -272,7 +269,6 @@ public class nivel3Golf {
         imageObstaculo4.setPosition(obstaculo4X_px, obstaculo4Y_px);
         stage.addActor(imageObstaculo4);
         bodyObstaculo4.setUserData(imageObstaculo4);
-
 
         /* --------- Obstáculo a la derecha del hoyo --------- */
         BodyDef bodyDefObstaculo5 = new BodyDef();

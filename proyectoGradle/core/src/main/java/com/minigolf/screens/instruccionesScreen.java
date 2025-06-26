@@ -137,9 +137,8 @@ public class instruccionesScreen implements Screen {
         mainTable.add(labelObjetivoTitulo).padBottom(10).row();
 
         Label labelObjetivoContenido = new Label(
-            "Tu meta es meter la pelota en el hoyo al final de cada uno de los 18 niveles (hoyos) con el menor número de golpes.",
-            estiloContenido
-        );
+                "Tu meta es meter la pelota en el hoyo al final de cada uno de los 18 niveles (hoyos) con el menor número de golpes.",
+                estiloContenido);
         labelObjetivoContenido.setWrap(true); // Permite que el texto se ajuste a múltiples líneas
         labelObjetivoContenido.setAlignment(Align.center);
         mainTable.add(labelObjetivoContenido).width(VIRTUAL_WIDTH * 0.8f).padBottom(30).row();
@@ -150,39 +149,38 @@ public class instruccionesScreen implements Screen {
         mainTable.add(labelComoJugarTitulo).padBottom(10).row();
 
         Label labelControles1 = new Label(
-            "1. Golpear la Pelota:\n" +
-            "   - Deberás aplicar una fuerza al palo de golf para golpear la pelota. La velocidad dependerá de esta fuerza.\n" +
-            "   - Para controlar la fuerza, usa las flechas de ARRIBA y ABAJO.",
-            estiloContenido
-        );
+                "1. Golpear la Pelota:\n" +
+                        "   - Deberás aplicar una fuerza al palo de golf para golpear la pelota. La velocidad dependerá de esta fuerza.\n"
+                        +
+                        "   - Para controlar la fuerza, usa las flechas de ARRIBA y ABAJO.",
+                estiloContenido);
         labelControles1.setWrap(true);
         labelControles1.setAlignment(Align.left); // Alineamos a la izquierda para listas
         mainTable.add(labelControles1).width(VIRTUAL_WIDTH * 0.8f).padBottom(10).row();
 
         Label labelControles2 = new Label(
-            "   - También deberás calcular el ángulo de tu golpe para dirigir la pelota correctamente hacia el hoyo.\n" +
-            "   - Para controlar la dirección, usa las flechas DERECHA e IZQUIERDA.",
-            estiloContenido
-        );
+                "   - También deberás calcular el ángulo de tu golpe para dirigir la pelota correctamente hacia el hoyo.\n"
+                        +
+                        "   - Para controlar la dirección, usa las flechas DERECHA e IZQUIERDA.",
+                estiloContenido);
         labelControles2.setWrap(true);
         labelControles2.setAlignment(Align.left);
         mainTable.add(labelControles2).width(VIRTUAL_WIDTH * 0.8f).padBottom(10).row();
 
         Label labelMovimiento = new Label(
-            "2. Movimiento de la Pelota:\n" +
-            "   - Una vez golpeada, la pelota se moverá por el área, rebotando en los bordes y obstáculos.\n" +
-            "   - La pelota perderá velocidad progresivamente debido a la fricción con las diferentes superficies del terreno.",
-            estiloContenido
-        );
+                "2. Movimiento de la Pelota:\n" +
+                        "   - Una vez golpeada, la pelota se moverá por el área, rebotando en los bordes y obstáculos.\n"
+                        +
+                        "   - La pelota perderá velocidad progresivamente debido a la fricción con las diferentes superficies del terreno.",
+                estiloContenido);
         labelMovimiento.setWrap(true);
         labelMovimiento.setAlignment(Align.left);
         mainTable.add(labelMovimiento).width(VIRTUAL_WIDTH * 0.8f).padBottom(10).row();
 
         Label labelObstaculos = new Label(
-            "3. Obstáculos:\n" +
-            "   - Cada hoyo cuenta con una variedad de obstáculos fijos. Estos elementos están diseñados para dificultar el camino hacia el hoyo.",
-            estiloContenido
-        );
+                "3. Obstáculos:\n" +
+                        "   - Cada hoyo cuenta con una variedad de obstáculos fijos. Estos elementos están diseñados para dificultar el camino hacia el hoyo.",
+                estiloContenido);
         labelObstaculos.setWrap(true);
         labelObstaculos.setAlignment(Align.left);
         mainTable.add(labelObstaculos).width(VIRTUAL_WIDTH * 0.8f).padBottom(30).row();
@@ -193,23 +191,20 @@ public class instruccionesScreen implements Screen {
         mainTable.add(labelDinamicaTitulo).padBottom(10).row();
 
         Label labelNivel = new Label(
-            "El juego consiste en recorrer un campo que contiene 18 hoyos. Completarás el juego al terminar todos los hoyos.",
-            estiloContenido
-        );
+                "El juego consiste en recorrer un campo que contiene 18 hoyos. Completarás el juego al terminar todos los hoyos.",
+                estiloContenido);
         labelNivel.setWrap(true);
         labelNivel.setAlignment(Align.left);
         mainTable.add(labelNivel).width(VIRTUAL_WIDTH * 0.8f).padBottom(10).row();
 
         Label labelMultijugador = new Label(
-            "Modo Multijugador:\n" +
-            "   - Si juegas con más de una persona, las jugadas se intercalarán.\n" +
-            "   - Un jugador golpeará la pelota. Si no logra meterla en el hoyo, será el turno del siguiente jugador hasta que alguien logre embocar. El juego registrará los golpes de cada jugador.",
-            estiloContenido
-        );
+                "Modo Multijugador:\n" +
+                        "   - Si juegas con más de una persona, las jugadas se intercalarán.\n" +
+                        "   - Un jugador golpeará la pelota. Si no logra meterla en el hoyo, será el turno del siguiente jugador hasta que alguien logre embocar. El juego registrará los golpes de cada jugador.",
+                estiloContenido);
         labelMultijugador.setWrap(true);
         labelMultijugador.setAlignment(Align.left);
         mainTable.add(labelMultijugador).width(VIRTUAL_WIDTH * 0.8f).padBottom(30).row();
-
 
         /* --------- Botón "Regresar al Menú Principal" --------- */
 

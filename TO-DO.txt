@@ -1,3 +1,0 @@
-- Terminar diseño de niveles
-- Corregir caso en el que una bola empuja a otra y esta hace que meta la otra (No estoy seguro si funciona como debería de ser)
-- Corregir rebote entre bola y pared

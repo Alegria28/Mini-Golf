@@ -20,12 +20,11 @@ public class nivel10Golf {
     // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
     private static final float PIXEL_A_METRO = 0.01f;
 
-
     // Atributos
-    public static final float coordenadaInicioX = 130; 
-    private static final float coordenadaInicioY = 700; 
+    public static final float coordenadaInicioX = 130;
+    private static final float coordenadaInicioY = 700;
     public static final float coordenadaHoyoX = 740;
-    public static final float coordenadaHoyoY = 160; 
+    public static final float coordenadaHoyoY = 160;
 
     // Areas válidas para colocar la bola (en el mundo)
     public static final float minX = 130 * PIXEL_A_METRO, maxX = 200 * PIXEL_A_METRO; // Ajustamos el área válida
@@ -78,7 +77,7 @@ public class nivel10Golf {
         shapeHoyo.dispose();
 
         // --- Representación Visual del Hoyo (Image con textura) ---
-        Image imageHoyo= new Image(texturaHoyo);
+        Image imageHoyo = new Image(texturaHoyo);
         float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
         imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
@@ -92,18 +91,18 @@ public class nivel10Golf {
 
         /* Obstáculo inferior del punto de inicio */
         BodyDef bodyDefParedInferior = new BodyDef();
-        bodyDefParedInferior.position.set(390* PIXEL_A_METRO, 500 * PIXEL_A_METRO);
+        bodyDefParedInferior.position.set(390 * PIXEL_A_METRO, 500 * PIXEL_A_METRO);
         Body bodyParedInferior = mundoBox2d.createBody(bodyDefParedInferior);
         hashMapBodiesTemporales.put(bodyParedInferior, false);
         PolygonShape shapeParedInferior = new PolygonShape();
         float mitadAnchoParedInferior_m = 300 * PIXEL_A_METRO; // Ancho y alto
         float mitadAltoParedInferior_m = 20 * PIXEL_A_METRO;
-        shapeParedInferior.setAsBox(mitadAnchoParedInferior_m, mitadAltoParedInferior_m); 
+        shapeParedInferior.setAsBox(mitadAnchoParedInferior_m, mitadAltoParedInferior_m);
         FixtureDef fixtureDefParedInferior = new FixtureDef();
         fixtureDefParedInferior.shape = shapeParedInferior;
         fixtureDefParedInferior.restitution = 0f; // Sin rebote
         fixtureDefParedInferior.density = 0f; // 0 para bodies estáticos
-        fixtureDefParedInferior.friction = 0.2f;        
+        fixtureDefParedInferior.friction = 0.2f;
         fixtureDefParedInferior.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
         fixtureDefParedInferior.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedInferior.createFixture(fixtureDefParedInferior);
@@ -114,12 +113,12 @@ public class nivel10Golf {
         float obstaculoInferiorAnchoPx = mitadAnchoParedInferior_m * 2 / PIXEL_A_METRO;
         float obstaculoInferiorAltoPx = mitadAltoParedInferior_m * 2 / PIXEL_A_METRO;
         imageParedInferior.setSize(obstaculoInferiorAnchoPx, obstaculoInferiorAltoPx);
-        float obstaculoInferiorX_px = (bodyDefParedInferior.position.x / PIXEL_A_METRO) - (obstaculoInferiorAnchoPx / 2);
+        float obstaculoInferiorX_px = (bodyDefParedInferior.position.x / PIXEL_A_METRO)
+                - (obstaculoInferiorAnchoPx / 2);
         float obstaculoInferiorY_px = (bodyDefParedInferior.position.y / PIXEL_A_METRO) - (obstaculoInferiorAltoPx / 2);
         imageParedInferior.setPosition(obstaculoInferiorX_px, obstaculoInferiorY_px);
         stage.addActor(imageParedInferior);
         bodyParedInferior.setUserData(imageParedInferior);
-
 
         /* Obstáculo superior al Hoyo */
         BodyDef bodyDefParedSuperior = new BodyDef();
@@ -138,14 +137,15 @@ public class nivel10Golf {
         fixtureDefParedSuperior.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
         fixtureDefParedSuperior.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedSuperior.createFixture(fixtureDefParedSuperior);
-        shapeParedSuperior.dispose();   
+        shapeParedSuperior.dispose();
 
         // --- Representación Visual del Obstáculo Superior (Image con textura) ---
         Image imageParedSuperior = new Image(textureParedes);
         float obstaculoSuperiorAnchoPx = mitadAnchoParedSuperior_m * 2 / PIXEL_A_METRO;
         float obstaculoSuperiorAltoPx = mitadAltoParedSuperior_m * 2 / PIXEL_A_METRO;
         imageParedSuperior.setSize(obstaculoSuperiorAnchoPx, obstaculoSuperiorAltoPx);
-        float obstaculoSuperiorX_px = (bodyDefParedSuperior.position.x / PIXEL_A_METRO) - (obstaculoSuperiorAnchoPx / 2);
+        float obstaculoSuperiorX_px = (bodyDefParedSuperior.position.x / PIXEL_A_METRO)
+                - (obstaculoSuperiorAnchoPx / 2);
         float obstaculoSuperiorY_px = (bodyDefParedSuperior.position.y / PIXEL_A_METRO) - (obstaculoSuperiorAltoPx / 2);
         imageParedSuperior.setPosition(obstaculoSuperiorX_px, obstaculoSuperiorY_px);
         stage.addActor(imageParedSuperior);
@@ -176,12 +176,13 @@ public class nivel10Golf {
         float paredIntermedia1AnchoPx = mitadAnchoParedIntermedia1_m * 2 / PIXEL_A_METRO;
         float paredIntermedia1AltoPx = mitadAltoParedIntermedia1_m * 2 / PIXEL_A_METRO;
         imageParedIntermedia1.setSize(paredIntermedia1AnchoPx, paredIntermedia1AltoPx);
-        float paredIntermedia1X_px = (bodyDefParedIntermedia1.position.x / PIXEL_A_METRO) - (paredIntermedia1AnchoPx / 2);
-        float paredIntermedia1Y_px = (bodyDefParedIntermedia1.position.y / PIXEL_A_METRO) - (paredIntermedia1AltoPx / 2);
+        float paredIntermedia1X_px = (bodyDefParedIntermedia1.position.x / PIXEL_A_METRO)
+                - (paredIntermedia1AnchoPx / 2);
+        float paredIntermedia1Y_px = (bodyDefParedIntermedia1.position.y / PIXEL_A_METRO)
+                - (paredIntermedia1AltoPx / 2);
         imageParedIntermedia1.setPosition(paredIntermedia1X_px, paredIntermedia1Y_px);
         stage.addActor(imageParedIntermedia1);
         bodyParedIntermedia1.setUserData(imageParedIntermedia1);
-
 
         BodyDef bodyDefParedIntermedia2 = new BodyDef();
         bodyDefParedIntermedia2.position.set(610 * PIXEL_A_METRO, 400 * PIXEL_A_METRO);
@@ -206,8 +207,10 @@ public class nivel10Golf {
         float paredIntermedia2AnchoPx = mitadAnchoParedIntermedia2_m * 2 / PIXEL_A_METRO;
         float paredIntermedia2AltoPx = mitadAltoParedIntermedia2_m * 2 / PIXEL_A_METRO;
         imageParedIntermedia2.setSize(paredIntermedia2AnchoPx, paredIntermedia2AltoPx);
-        float paredIntermedia2X_px = (bodyDefParedIntermedia2.position.x / PIXEL_A_METRO) - (paredIntermedia2AnchoPx / 2);
-        float paredIntermedia2Y_px = (bodyDefParedIntermedia2.position.y / PIXEL_A_METRO) - (paredIntermedia2AltoPx / 2);
+        float paredIntermedia2X_px = (bodyDefParedIntermedia2.position.x / PIXEL_A_METRO)
+                - (paredIntermedia2AnchoPx / 2);
+        float paredIntermedia2Y_px = (bodyDefParedIntermedia2.position.y / PIXEL_A_METRO)
+                - (paredIntermedia2AltoPx / 2);
         imageParedIntermedia2.setPosition(paredIntermedia2X_px, paredIntermedia2Y_px);
         stage.addActor(imageParedIntermedia2);
         bodyParedIntermedia2.setUserData(imageParedIntermedia2);
@@ -230,7 +233,7 @@ public class nivel10Golf {
         fixtureDefParedDerecha.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
         fixtureDefParedDerecha.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedDerecha.createFixture(fixtureDefParedDerecha);
-        shapeParedDerecha.dispose();    
+        shapeParedDerecha.dispose();
 
         // --- Representación Visual de Pared Derecha (Image con textura) ---
         Image imageParedDerecha = new Image(textureParedes);
@@ -242,7 +245,6 @@ public class nivel10Golf {
         imageParedDerecha.setPosition(paredDerechaX_px, paredDerechaY_px);
         stage.addActor(imageParedDerecha);
         bodyParedDerecha.setUserData(imageParedDerecha);
-
 
         /* Obstáculo que cubre el hoyo parte izquierda */
         BodyDef bodyDefParedIzquierda = new BodyDef();
@@ -273,7 +275,7 @@ public class nivel10Golf {
         imageParedIzquierda.setPosition(paredIzquierdaX_px, paredIzquierdaY_px);
         stage.addActor(imageParedIzquierda);
         bodyParedIzquierda.setUserData(imageParedIzquierda);
-        
+
         /* SEGUNDA PARED ARRIBA DERECHA*/
         BodyDef bodyDefParedDerecha2 = new BodyDef();
         bodyDefParedDerecha2.position.set(480 * PIXEL_A_METRO, 620 * PIXEL_A_METRO);
@@ -285,13 +287,13 @@ public class nivel10Golf {
         shapeParedDerecha2.setAsBox(mitadAnchoParedDerecha2_m, mitadAltoParedDerecha2_m); // Ancho y alto
         FixtureDef fixtureDefParedDerecha2 = new FixtureDef();
         fixtureDefParedDerecha2.shape = shapeParedDerecha2;
-        fixtureDefParedDerecha2.restitution =   0f; // Sin rebote
+        fixtureDefParedDerecha2.restitution = 0f; // Sin rebote
         fixtureDefParedDerecha2.density = 0f; // 0 para bodies estáticos
         fixtureDefParedDerecha2.friction = 0.2f;
         fixtureDefParedDerecha2.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
         fixtureDefParedDerecha2.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedDerecha2.createFixture(fixtureDefParedDerecha2);
-        shapeParedDerecha2.dispose();   
+        shapeParedDerecha2.dispose();
 
         // --- Representación Visual de Pared Derecha 2 (Image con textura) ---
         Image imageParedDerecha2 = new Image(textureParedes);
@@ -303,7 +305,6 @@ public class nivel10Golf {
         imageParedDerecha2.setPosition(paredDerecha2X_px, paredDerecha2Y_px);
         stage.addActor(imageParedDerecha2);
         bodyParedDerecha2.setUserData(imageParedDerecha2);
-
 
         /* SEGUNDA PARED ABAJO IZQUIERDA*/
 
@@ -324,7 +325,7 @@ public class nivel10Golf {
         fixtureDefParedIzquierda2.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedIzquierda2.createFixture(fixtureDefParedIzquierda2);
         shapeParedIzquierda2.dispose();
-        
+
         // --- Representación Visual de Pared Izquierda 2 (Image con textura) ---
         Image imageParedIzquierda2 = new Image(textureParedes);
         float paredIzquierda2AnchoPx = mitadAnchoParedIzquierda2_m * 2 / PIXEL_A_METRO;

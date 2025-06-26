@@ -435,10 +435,10 @@ public class jugarGolfScreen implements Screen {
         textureFondo.dispose();
         texturePuntoDeInicio.dispose();
         font.dispose();
-        if(texturePared != null) {
+        if (texturePared != null) {
             texturePared.dispose();
         }
-        if(texturaHoyo != null) {
+        if (texturaHoyo != null) {
             texturaHoyo.dispose();
         }
         Gdx.input.setInputProcessor(null);
@@ -464,8 +464,8 @@ public class jugarGolfScreen implements Screen {
         BodyDef pared1BodyDef = new BodyDef();
         // Posición central de la pared en el mundo Box2D (metros)
         pared1BodyDef.position.set(
-            centerX_px * PIXEL_A_METRO, // X-centro del campo
-            (90 * PIXEL_A_METRO) + halfWallThickness_m // Y-borde inferior del campo + medio grosor de pared
+                centerX_px * PIXEL_A_METRO, // X-centro del campo
+                (90 * PIXEL_A_METRO) + halfWallThickness_m // Y-borde inferior del campo + medio grosor de pared
         );
         Body pared1Body = mundoBox2d.createBody(pared1BodyDef);
         arrayListParedes.add(pared1Body);
@@ -473,7 +473,7 @@ public class jugarGolfScreen implements Screen {
         // Forma rectangular para la pared con un grosor
         PolygonShape pared1Shape = new PolygonShape();
         pared1Shape.setAsBox(halfFieldWidth_m, halfWallThickness_m); // Ancho total del campo, grosor de pared
-        
+
         FixtureDef paredFixtureDef = new FixtureDef();
         paredFixtureDef.shape = pared1Shape;
         paredFixtureDef.restitution = 1f;
@@ -488,8 +488,8 @@ public class jugarGolfScreen implements Screen {
         Image imagePared1 = new Image(texturePared);
         imagePared1.setSize(halfFieldWidth_m * 2 / PIXEL_A_METRO, halfWallThickness_m * 2 / PIXEL_A_METRO); // Ancho real, alto real
         imagePared1.setPosition(
-            (pared1Body.getPosition().x / PIXEL_A_METRO) - imagePared1.getWidth() / 2, // Posición X (ajuste de centro a esquina)
-            (pared1Body.getPosition().y / PIXEL_A_METRO) - imagePared1.getHeight() / 2 // Posición Y (ajuste de centro a esquina)
+                (pared1Body.getPosition().x / PIXEL_A_METRO) - imagePared1.getWidth() / 2, // Posición X (ajuste de centro a esquina)
+                (pared1Body.getPosition().y / PIXEL_A_METRO) - imagePared1.getHeight() / 2 // Posición Y (ajuste de centro a esquina)
         );
         stage.addActor(imagePared1);
         pared1Body.setUserData(imagePared1); // Asociar imagen con el cuerpo Box2D
@@ -498,8 +498,8 @@ public class jugarGolfScreen implements Screen {
 
         BodyDef pared2BodyDef = new BodyDef();
         pared2BodyDef.position.set(
-            centerX_px * PIXEL_A_METRO,
-            (810 * PIXEL_A_METRO) - halfWallThickness_m // Y-borde superior del campo - medio grosor de pared
+                centerX_px * PIXEL_A_METRO,
+                (810 * PIXEL_A_METRO) - halfWallThickness_m // Y-borde superior del campo - medio grosor de pared
         );
         Body pared2Body = mundoBox2d.createBody(pared2BodyDef);
         arrayListParedes.add(pared2Body);
@@ -514,9 +514,8 @@ public class jugarGolfScreen implements Screen {
         Image imagePared2 = new Image(texturePared);
         imagePared2.setSize(halfFieldWidth_m * 2 / PIXEL_A_METRO, halfWallThickness_m * 2 / PIXEL_A_METRO);
         imagePared2.setPosition(
-            (pared2Body.getPosition().x / PIXEL_A_METRO) - imagePared2.getWidth() / 2,
-            (pared2Body.getPosition().y / PIXEL_A_METRO) - imagePared2.getHeight() / 2
-        );
+                (pared2Body.getPosition().x / PIXEL_A_METRO) - imagePared2.getWidth() / 2,
+                (pared2Body.getPosition().y / PIXEL_A_METRO) - imagePared2.getHeight() / 2);
         stage.addActor(imagePared2);
         pared2Body.setUserData(imagePared2);
 
@@ -524,9 +523,8 @@ public class jugarGolfScreen implements Screen {
 
         BodyDef pared3BodyDef = new BodyDef();
         pared3BodyDef.position.set(
-            (90 * PIXEL_A_METRO) + halfWallThickness_m, // X-borde izquierdo del campo + medio grosor de pared
-            centerY_px * PIXEL_A_METRO
-        );
+                (90 * PIXEL_A_METRO) + halfWallThickness_m, // X-borde izquierdo del campo + medio grosor de pared
+                centerY_px * PIXEL_A_METRO);
         Body pared3Body = mundoBox2d.createBody(pared3BodyDef);
         arrayListParedes.add(pared3Body);
 
@@ -540,9 +538,8 @@ public class jugarGolfScreen implements Screen {
         Image imagePared3 = new Image(texturePared);
         imagePared3.setSize(halfWallThickness_m * 2 / PIXEL_A_METRO, halfFieldHeight_m * 2 / PIXEL_A_METRO);
         imagePared3.setPosition(
-            (pared3Body.getPosition().x / PIXEL_A_METRO) - imagePared3.getWidth() / 2,
-            (pared3Body.getPosition().y / PIXEL_A_METRO) - imagePared3.getHeight() / 2
-        );
+                (pared3Body.getPosition().x / PIXEL_A_METRO) - imagePared3.getWidth() / 2,
+                (pared3Body.getPosition().y / PIXEL_A_METRO) - imagePared3.getHeight() / 2);
         stage.addActor(imagePared3);
         pared3Body.setUserData(imagePared3);
 
@@ -550,9 +547,8 @@ public class jugarGolfScreen implements Screen {
 
         BodyDef pared4BodyDef = new BodyDef();
         pared4BodyDef.position.set(
-            (810 * PIXEL_A_METRO) - halfWallThickness_m, // X-borde derecho del campo - medio grosor de pared
-            centerY_px * PIXEL_A_METRO
-        );
+                (810 * PIXEL_A_METRO) - halfWallThickness_m, // X-borde derecho del campo - medio grosor de pared
+                centerY_px * PIXEL_A_METRO);
         Body pared4Body = mundoBox2d.createBody(pared4BodyDef);
         arrayListParedes.add(pared4Body);
 
@@ -566,12 +562,12 @@ public class jugarGolfScreen implements Screen {
         Image imagePared4 = new Image(texturePared);
         imagePared4.setSize(halfWallThickness_m * 2 / PIXEL_A_METRO, halfFieldHeight_m * 2 / PIXEL_A_METRO);
         imagePared4.setPosition(
-            (pared4Body.getPosition().x / PIXEL_A_METRO) - imagePared4.getWidth() / 2,
-            (pared4Body.getPosition().y / PIXEL_A_METRO) - imagePared4.getHeight() / 2
-        );
+                (pared4Body.getPosition().x / PIXEL_A_METRO) - imagePared4.getWidth() / 2,
+                (pared4Body.getPosition().y / PIXEL_A_METRO) - imagePared4.getHeight() / 2);
         stage.addActor(imagePared4);
         pared4Body.setUserData(imagePared4);
     }
+
     private void gestionarNivel(boolean todosTerminaron) {
 
         // Si todos los jugadores ya terminaron
@@ -607,7 +603,7 @@ public class jugarGolfScreen implements Screen {
                             hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
-                
+
                 case 4:
                     System.out.println("Creando el cuarto nivel");
                     mostrarInformacionJugadores();
@@ -647,7 +643,7 @@ public class jugarGolfScreen implements Screen {
                     System.out.println("Creando el noveno nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel9Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales, texturePared, texturaHoyo);   
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 10:
@@ -686,7 +682,7 @@ public class jugarGolfScreen implements Screen {
                     nivelCargado = true;
                     break;
                 case 15:
-                    System.out.println("Creando el decimoquinto nivel");   
+                    System.out.println("Creando el decimoquinto nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel15Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
                             hashMapBodiesTemporales, texturePared, texturaHoyo, texturaBoost);
