@@ -2,6 +2,7 @@ package com.minigolf.niveles;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.Texture; 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -30,8 +31,7 @@ public class nivel2Golf {
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO; // Ajustamos el área válida
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales) {
-
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) { 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
 
@@ -75,6 +75,16 @@ public class nivel2Golf {
         // Liberamos el polígono
         shapeHoyo.dispose();
 
+        // --- Representación Visual del Hoyo (Image con textura) ---
+        Image imageHoyo= new Image(texturaHoyo);
+        float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
+        float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
+        imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
+        float hoyoX_px = (bodyDefHoyo.position.x / PIXEL_A_METRO) - (hoyoAnchoPx / 2);
+        float hoyoY_px = (bodyDefHoyo.position.y / PIXEL_A_METRO) - (hoyoAltoPx / 2);
+        imageHoyo.setPosition(hoyoX_px, hoyoY_px);
+        stage.addActor(imageHoyo);
+        bodyHoyo.setUserData(imageHoyo);
         /* --------- Obstáculo 1 --------- */
 
         // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático, 
@@ -92,7 +102,9 @@ public class nivel2Golf {
         PolygonShape shapeObstaculo1 = new PolygonShape();
         // Establecemos el polígono con la forma de un rectángulo vertical (barrera de madera)
         // MITAD de un lado X 25 (ancho de 50px) y en Y 250 (altura de 500px), creando una barrera vertical
-        shapeObstaculo1.setAsBox(20 * PIXEL_A_METRO, 250 * PIXEL_A_METRO); // Ajustamos la altura del obstáculo
+        float mitadAnchoObstaculo1_m = 20 * PIXEL_A_METRO;
+        float mitadAltoObstaculo1_m = 250 * PIXEL_A_METRO;
+        shapeObstaculo1.setAsBox(mitadAnchoObstaculo1_m, mitadAltoObstaculo1_m); // Ajustamos la altura del obstáculo
 
         // Creamos una FixtureDef para definir las propiedades físicas de la pared
         FixtureDef fixtureDefObstaculo1 = new FixtureDef();
@@ -110,6 +122,29 @@ public class nivel2Golf {
         bodyObstaculo1.createFixture(fixtureDefObstaculo1);
         // Liberamos el polígono
         shapeObstaculo1.dispose();
+
+        // --- Representación Visual del Obstáculo 1 (Image con textura) ---
+        // Creamos una imagen usando la textura de paredes
+        Image imageObstaculo1 = new Image(textureParedes);
+
+        // Calculamos las dimensiones en píxeles
+        float obstaculo1AnchoPx = mitadAnchoObstaculo1_m * 2 / PIXEL_A_METRO; // Ancho total en píxeles
+        float obstaculo1AltoPx = mitadAltoObstaculo1_m * 2 / PIXEL_A_METRO; // Alto total en píxeles
+
+        // Calculamos la posición en píxeles (Box2D es centro, LibGDX es esquina inferior izquierda)
+        float obstaculo1X_px = (bodyDefObstaculo1.position.x / PIXEL_A_METRO) - (obstaculo1AnchoPx / 2);
+        float obstaculo1Y_px = (bodyDefObstaculo1.position.y / PIXEL_A_METRO) - (obstaculo1AltoPx / 2);
+
+        // Establecemos el tamaño y la posición de la imagen
+        imageObstaculo1.setSize(obstaculo1AnchoPx, obstaculo1AltoPx);
+        imageObstaculo1.setPosition(obstaculo1X_px, obstaculo1Y_px);
+
+        // Agregamos la imagen al Stage para que sea visible
+        stage.addActor(imageObstaculo1);
+
+        // Opcional: Puedes guardar la imagen en los datos de usuario del cuerpo de Box2D
+        // para un acceso fácil en el futuro, si necesitas mover o eliminar la imagen junto con el cuerpo.
+        bodyObstaculo1.setUserData(imageObstaculo1);
 
         return hashMapBodiesTemporales;
     }

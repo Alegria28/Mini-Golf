@@ -50,6 +50,7 @@ public class jugarGolfScreen implements Screen {
 
     // Factor de conversion para el mundo de Box2D, donde 100px = 1m 
     private final float PIXEL_A_METRO = 0.01f;
+    private final float Grosor_Muros_PX = 15f; // Grosor visual de las paredes en píxeles
 
     // Atributos
     private OrthographicCamera camera;
@@ -62,6 +63,9 @@ public class jugarGolfScreen implements Screen {
     private Label infoLabel;
     private Label informacionTurno;
     private BitmapFont font;
+    private Texture texturePared;
+    private Texture texturaHoyo;
+    private Texture texturaBoost;
 
     private final MiniGolfMain game;
     private ArrayList<Jugador> jugadores;
@@ -172,6 +176,29 @@ public class jugarGolfScreen implements Screen {
         imagePuntoDeInicio = new Image(texturePuntoDeInicio);
         imagePuntoDeInicio.setSize(70f, 70f);
 
+        /* --------- Carga de la textura para las paredes --------- */
+        try {
+            texturePared = new Texture(Gdx.files.internal("paredes.png")); // Carga la textura de las paredes
+        } catch (com.badlogic.gdx.utils.GdxRuntimeException e) {
+            Gdx.app.error("jugarGolfScreen", "Error al cargar paredes.png: " + e.getMessage());
+            // Puedes añadir un placeholder o manejar el error de otra forma si la imagen no se carga
+        }
+
+        /* --------- Carga de la textura para el hoyo --------- */
+        try {
+            texturaHoyo = new Texture(Gdx.files.internal("hoyo.png")); // Carga la textura del hoyo
+        } catch (com.badlogic.gdx.utils.GdxRuntimeException e) {
+            Gdx.app.error("jugarGolfScreen", "Error al cargar hoyo.png: " + e.getMessage());
+            // Puedes añadir un placeholder o manejar el error de otra forma si la imagen no se carga
+        }
+
+        /* --------- Carga de la textura para el boost --------- */
+        try {
+            texturaBoost = new Texture(Gdx.files.internal("aceleracion.png")); // Carga la textura del boost
+        } catch (com.badlogic.gdx.utils.GdxRuntimeException e) {
+            Gdx.app.error("jugarGolfScreen", "Error al cargar boost.png: " + e.getMessage());
+            // Puedes añadir un placeholder o manejar el error de otra forma si la imagen no se carga
+        }
         /* --------- Configuración tablePrincipal --------- */
 
         // Creamos nuestro table principal (actor)
@@ -408,6 +435,12 @@ public class jugarGolfScreen implements Screen {
         textureFondo.dispose();
         texturePuntoDeInicio.dispose();
         font.dispose();
+        if(texturePared != null) {
+            texturePared.dispose();
+        }
+        if(texturaHoyo != null) {
+            texturaHoyo.dispose();
+        }
         Gdx.input.setInputProcessor(null);
         shapeRenderer.dispose();
 
@@ -416,118 +449,129 @@ public class jugarGolfScreen implements Screen {
     }
 
     private void agregarParedes() {
-        /* --------- Pared 1 --------- */
+        // Half thickness in meters
+        float halfWallThickness_m = (Grosor_Muros_PX / 2) * PIXEL_A_METRO;
+        float halfFieldWidth_m = 360 * PIXEL_A_METRO; // Half width of the playable field
+        float halfFieldHeight_m = 360 * PIXEL_A_METRO; // Half height of the playable field
 
-        // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático, 
-        // significando que no se mueve 
+        // Central coordinates for the field relative to the screen (450, 450)
+        float centerX_px = 450;
+        float centerY_px = 450;
+
+        /* --------- Pared 1 (Inferior) --------- */
+
+        // Definimos un Body estático para la pared inferior
         BodyDef pared1BodyDef = new BodyDef();
-        // Establecemos su posición en el mundo (pared inferior), es importante recalcar que Box2D si 
-        // toma el centro del Body como posición, y no una esquina como LibGDX
-        pared1BodyDef.position.set(450 * PIXEL_A_METRO, 90 * PIXEL_A_METRO);
-        // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
+        // Posición central de la pared en el mundo Box2D (metros)
+        pared1BodyDef.position.set(
+            centerX_px * PIXEL_A_METRO, // X-centro del campo
+            (90 * PIXEL_A_METRO) + halfWallThickness_m // Y-borde inferior del campo + medio grosor de pared
+        );
         Body pared1Body = mundoBox2d.createBody(pared1BodyDef);
-        // Agregamos esta pared a la cola para liberarlo después
         arrayListParedes.add(pared1Body);
 
-        // Creamos un polígono en general
+        // Forma rectangular para la pared con un grosor
         PolygonShape pared1Shape = new PolygonShape();
-        // Establecemos el polígono con la forma de un rectángulo, el cual tiene como 
-        // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
-        pared1Shape.setAsBox(360 * PIXEL_A_METRO, 0);
-
-        // Creamos una FixtureDef para definir las propiedades físicas de la pared
+        pared1Shape.setAsBox(halfFieldWidth_m, halfWallThickness_m); // Ancho total del campo, grosor de pared
+        
         FixtureDef paredFixtureDef = new FixtureDef();
-        // Ponemos la forma creada 
         paredFixtureDef.shape = pared1Shape;
-        paredFixtureDef.restitution = 1f; // Rebote
-        paredFixtureDef.density = 0f; // 0 para bodies estáticos
+        paredFixtureDef.restitution = 1f;
+        paredFixtureDef.density = 0f;
         paredFixtureDef.friction = 0.2f;
-
-        // Configuración de colisiones
-        paredFixtureDef.filter.categoryBits = manejoEventos.CATEGORIA_PARED; // Pertenece a esta categoría
-        paredFixtureDef.filter.maskBits = manejoEventos.CATEGORIA_BOLA; // Puede colisionar con las bolas
-
-        // Creamos la fixture y la unimos al cuerpo de la pared
+        paredFixtureDef.filter.categoryBits = manejoEventos.CATEGORIA_PARED;
+        paredFixtureDef.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         pared1Body.createFixture(paredFixtureDef);
-        // Liberamos el polígono
         pared1Shape.dispose();
 
-        /* --------- Pared 2 --------- */
+        // Representación visual de la Pared 1
+        Image imagePared1 = new Image(texturePared);
+        imagePared1.setSize(halfFieldWidth_m * 2 / PIXEL_A_METRO, halfWallThickness_m * 2 / PIXEL_A_METRO); // Ancho real, alto real
+        imagePared1.setPosition(
+            (pared1Body.getPosition().x / PIXEL_A_METRO) - imagePared1.getWidth() / 2, // Posición X (ajuste de centro a esquina)
+            (pared1Body.getPosition().y / PIXEL_A_METRO) - imagePared1.getHeight() / 2 // Posición Y (ajuste de centro a esquina)
+        );
+        stage.addActor(imagePared1);
+        pared1Body.setUserData(imagePared1); // Asociar imagen con el cuerpo Box2D
 
-        // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático,
-        // significando que no se mueve
+        /* --------- Pared 2 (Superior) --------- */
+
         BodyDef pared2BodyDef = new BodyDef();
-        // Establecemos su posición en el mundo (pared superior), Box2D toma el centro del Body como posición
-        pared2BodyDef.position.set(450 * PIXEL_A_METRO, 810 * PIXEL_A_METRO);
-        // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
+        pared2BodyDef.position.set(
+            centerX_px * PIXEL_A_METRO,
+            (810 * PIXEL_A_METRO) - halfWallThickness_m // Y-borde superior del campo - medio grosor de pared
+        );
         Body pared2Body = mundoBox2d.createBody(pared2BodyDef);
-        // Agregamos esta pared a la cola para liberarlo después
         arrayListParedes.add(pared2Body);
 
-        // Creamos un polígono en general
         PolygonShape pared2Shape = new PolygonShape();
-        // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
-        // MITAD de un lado X 360 y en Y es nulo, por lo que es muy fino o invisible
-        pared2Shape.setAsBox(360 * PIXEL_A_METRO, 0);
-
-        // Ponemos la forma creada 
+        pared2Shape.setAsBox(halfFieldWidth_m, halfWallThickness_m);
         paredFixtureDef.shape = pared2Shape;
-        // Creamos la fixture y la unimos al cuerpo de la pared
         pared2Body.createFixture(paredFixtureDef);
-        // Liberamos el polígono
         pared2Shape.dispose();
 
-        /* --------- Pared 3 --------- */
+        // Representación visual de la Pared 2
+        Image imagePared2 = new Image(texturePared);
+        imagePared2.setSize(halfFieldWidth_m * 2 / PIXEL_A_METRO, halfWallThickness_m * 2 / PIXEL_A_METRO);
+        imagePared2.setPosition(
+            (pared2Body.getPosition().x / PIXEL_A_METRO) - imagePared2.getWidth() / 2,
+            (pared2Body.getPosition().y / PIXEL_A_METRO) - imagePared2.getHeight() / 2
+        );
+        stage.addActor(imagePared2);
+        pared2Body.setUserData(imagePared2);
 
-        // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático,
-        // significando que no se mueve
+        /* --------- Pared 3 (Izquierda) --------- */
+
         BodyDef pared3BodyDef = new BodyDef();
-        // Establecemos su posición en el mundo (pared izquierda), Box2D toma el centro del Body como posición
-        pared3BodyDef.position.set(90 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
-        // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
+        pared3BodyDef.position.set(
+            (90 * PIXEL_A_METRO) + halfWallThickness_m, // X-borde izquierdo del campo + medio grosor de pared
+            centerY_px * PIXEL_A_METRO
+        );
         Body pared3Body = mundoBox2d.createBody(pared3BodyDef);
-        // Agregamos esta pared a la cola para liberarlo después
         arrayListParedes.add(pared3Body);
 
-        // Creamos un polígono en general
         PolygonShape pared3Shape = new PolygonShape();
-        // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
-        // MITAD de un lado Y 360 y en X es nulo, por lo que es muy fino o invisible
-        pared3Shape.setAsBox(0, 360 * PIXEL_A_METRO);
-
-        // Ponemos la forma creada 
+        pared3Shape.setAsBox(halfWallThickness_m, halfFieldHeight_m); // Grosor de pared, alto total del campo
         paredFixtureDef.shape = pared3Shape;
-        // Creamos la fixture y la unimos al cuerpo de la pared
         pared3Body.createFixture(paredFixtureDef);
-        // Liberamos el polígono
         pared3Shape.dispose();
 
-        /* --------- Pared 4 --------- */
+        // Representación visual de la Pared 3
+        Image imagePared3 = new Image(texturePared);
+        imagePared3.setSize(halfWallThickness_m * 2 / PIXEL_A_METRO, halfFieldHeight_m * 2 / PIXEL_A_METRO);
+        imagePared3.setPosition(
+            (pared3Body.getPosition().x / PIXEL_A_METRO) - imagePared3.getWidth() / 2,
+            (pared3Body.getPosition().y / PIXEL_A_METRO) - imagePared3.getHeight() / 2
+        );
+        stage.addActor(imagePared3);
+        pared3Body.setUserData(imagePared3);
 
-        // Definimos un Body lo cual es un objeto dentro del mundo de Box2D, por defecto es estático,
-        // significando que no se mueve
+        /* --------- Pared 4 (Derecha) --------- */
+
         BodyDef pared4BodyDef = new BodyDef();
-        // Establecemos su posición en el mundo (pared derecha), Box2D toma el centro del Body como posición
-        pared4BodyDef.position.set(810 * PIXEL_A_METRO, 450 * PIXEL_A_METRO);
-        // Creamos un Body a partir de la definición y lo agregamos a nuestro mundo
+        pared4BodyDef.position.set(
+            (810 * PIXEL_A_METRO) - halfWallThickness_m, // X-borde derecho del campo - medio grosor de pared
+            centerY_px * PIXEL_A_METRO
+        );
         Body pared4Body = mundoBox2d.createBody(pared4BodyDef);
-        // Agregamos esta pared a la cola para liberarlo después
         arrayListParedes.add(pared4Body);
 
-        // Creamos un polígono en general
         PolygonShape pared4Shape = new PolygonShape();
-        // Establecemos el polígono con la forma de un rectángulo, el cual tiene como
-        // MITAD de un lado Y 360 y en X es nulo, por lo que es muy fino o invisible
-        pared4Shape.setAsBox(0, 360 * PIXEL_A_METRO);
-
-        // Ponemos la forma creada 
+        pared4Shape.setAsBox(halfWallThickness_m, halfFieldHeight_m);
         paredFixtureDef.shape = pared4Shape;
-        // Creamos la fixture y la unimos al cuerpo de la pared
         pared4Body.createFixture(paredFixtureDef);
-        // Liberamos el polígono
         pared4Shape.dispose();
-    }
 
+        // Representación visual de la Pared 4
+        Image imagePared4 = new Image(texturePared);
+        imagePared4.setSize(halfWallThickness_m * 2 / PIXEL_A_METRO, halfFieldHeight_m * 2 / PIXEL_A_METRO);
+        imagePared4.setPosition(
+            (pared4Body.getPosition().x / PIXEL_A_METRO) - imagePared4.getWidth() / 2,
+            (pared4Body.getPosition().y / PIXEL_A_METRO) - imagePared4.getHeight() / 2
+        );
+        stage.addActor(imagePared4);
+        pared4Body.setUserData(imagePared4);
+    }
     private void gestionarNivel(boolean todosTerminaron) {
 
         // Si todos los jugadores ya terminaron
@@ -546,126 +590,127 @@ public class jugarGolfScreen implements Screen {
                     System.out.println("Creando el primer nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel1Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 2:
                     System.out.println("Creando el segundo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel2Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 3:
                     System.out.println("Creando el tercer nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel3Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
+                
                 case 4:
                     System.out.println("Creando el cuarto nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel4Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 5:
                     System.out.println("Creando el quinto nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel5Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 6:
                     System.out.println("Creando el sexto nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel6Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 7:
                     System.out.println("Creando el séptimo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel7Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 8:
                     System.out.println("Creando el octavo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel8Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 9:
                     System.out.println("Creando el noveno nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel9Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);   
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);   
                     nivelCargado = true;
                     break;
                 case 10:
                     System.out.println("Creando el décimo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel10Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 11:
                     System.out.println("Creando el undécimo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel11Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 12:
                     System.out.println("Creando el duodécimo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel12Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 13:
                     System.out.println("Creando el decimotercer nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel13Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 14:
                     System.out.println("Creando el decimocuarto nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel14Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo);
                     nivelCargado = true;
                     break;
                 case 15:
                     System.out.println("Creando el decimoquinto nivel");   
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel15Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo, texturaBoost);
                     nivelCargado = true;
                     break;
                 case 16:
                     System.out.println("Creando el decimosexto nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel16Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo, texturaBoost);
                     nivelCargado = true;
                     break;
                 case 17:
                     System.out.println("Creando el decimoséptimo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel17Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo, texturaBoost);
                     nivelCargado = true;
                     break;
                 case 18:
                     System.out.println("Creando el decimoctavo nivel");
                     mostrarInformacionJugadores();
                     hashMapBodiesTemporales = nivel18Golf.crearNivel(stage, mundoBox2d, imagePuntoDeInicio,
-                            hashMapBodiesTemporales);
+                            hashMapBodiesTemporales, texturePared, texturaHoyo, texturaBoost);
                     nivelCargado = true;
                     break;
                 default:

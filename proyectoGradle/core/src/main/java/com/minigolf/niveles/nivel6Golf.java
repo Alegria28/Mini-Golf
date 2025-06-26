@@ -2,6 +2,7 @@ package com.minigolf.niveles;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -23,7 +24,7 @@ public class nivel6Golf {
     // Atributos
     public static final float coordenadaInicioX = 130; 
     private static final float coordenadaInicioY = 700; 
-    private static final float coordenadaHoyoX = 740;
+    public static final float coordenadaHoyoX = 740;
     private static final float coordenadaHoyoY = 160; 
 
     // Areas válidas para colocar la bola (en el mundo)
@@ -31,7 +32,7 @@ public class nivel6Golf {
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO; // Ajustamos el área válida
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales) {
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) {
 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
@@ -76,6 +77,17 @@ public class nivel6Golf {
         // Liberamos el polígono
         shapeHoyo.dispose();
 
+        // --- Representación Visual del Hoyo (Image con textura) ---
+        Image imageHoyo= new Image(texturaHoyo);
+        float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
+        float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
+        imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
+        float hoyoX_px = (bodyDefHoyo.position.x / PIXEL_A_METRO) - (hoyoAnchoPx / 2);
+        float hoyoY_px = (bodyDefHoyo.position.y / PIXEL_A_METRO) - (hoyoAltoPx / 2);
+        imageHoyo.setPosition(hoyoX_px, hoyoY_px);
+        stage.addActor(imageHoyo);
+        bodyHoyo.setUserData(imageHoyo);
+
         /* --------- Paredes --------- */
 
         /* Obstáculo inferior del punto de inicio */
@@ -84,7 +96,9 @@ public class nivel6Golf {
         Body bodyParedInferior = mundoBox2d.createBody(bodyDefParedInferior);
         hashMapBodiesTemporales.put(bodyParedInferior, false);
         PolygonShape shapeParedInferior = new PolygonShape();
-        shapeParedInferior.setAsBox(300 * PIXEL_A_METRO, 20 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedInferior_m = 300 * PIXEL_A_METRO; // Ancho y alto
+        float mitadAltoParedInferior_m = 20 * PIXEL_A_METRO;
+        shapeParedInferior.setAsBox(mitadAnchoParedInferior_m, mitadAltoParedInferior_m); 
         FixtureDef fixtureDefParedInferior = new FixtureDef();
         fixtureDefParedInferior.shape = shapeParedInferior;
         fixtureDefParedInferior.restitution = 0f; // Sin rebote
@@ -95,13 +109,27 @@ public class nivel6Golf {
         bodyParedInferior.createFixture(fixtureDefParedInferior);
         shapeParedInferior.dispose();
 
+        // --- Representación Visual del Obstáculo Inferior (Image con textura) ---
+        Image imageParedInferior = new Image(textureParedes);
+        float obstaculoInferiorAnchoPx = mitadAnchoParedInferior_m * 2 / PIXEL_A_METRO;
+        float obstaculoInferiorAltoPx = mitadAltoParedInferior_m * 2 / PIXEL_A_METRO;
+        imageParedInferior.setSize(obstaculoInferiorAnchoPx, obstaculoInferiorAltoPx);
+        float obstaculoInferiorX_px = (bodyDefParedInferior.position.x / PIXEL_A_METRO) - (obstaculoInferiorAnchoPx / 2);
+        float obstaculoInferiorY_px = (bodyDefParedInferior.position.y / PIXEL_A_METRO) - (obstaculoInferiorAltoPx / 2);
+        imageParedInferior.setPosition(obstaculoInferiorX_px, obstaculoInferiorY_px);
+        stage.addActor(imageParedInferior);
+        bodyParedInferior.setUserData(imageParedInferior);
+
+
         /* Obstáculo superior al Hoyo */
         BodyDef bodyDefParedSuperior = new BodyDef();
         bodyDefParedSuperior.position.set(510 * PIXEL_A_METRO, 330 * PIXEL_A_METRO);
         Body bodyParedSuperior = mundoBox2d.createBody(bodyDefParedSuperior);
         hashMapBodiesTemporales.put(bodyParedSuperior, false);
         PolygonShape shapeParedSuperior = new PolygonShape();
-        shapeParedSuperior.setAsBox(300 * PIXEL_A_METRO, 20  * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedSuperior_m = 300 * PIXEL_A_METRO;
+        float mitadAltoParedSuperior_m = 20 * PIXEL_A_METRO;
+        shapeParedSuperior.setAsBox(mitadAnchoParedSuperior_m, mitadAltoParedSuperior_m); // Ancho y alto
         FixtureDef fixtureDefParedSuperior = new FixtureDef();
         fixtureDefParedSuperior.shape = shapeParedSuperior;
         fixtureDefParedSuperior.restitution = 0f; // Sin rebote
@@ -112,7 +140,17 @@ public class nivel6Golf {
         bodyParedSuperior.createFixture(fixtureDefParedSuperior);
         shapeParedSuperior.dispose();   
 
-        return hashMapBodiesTemporales;
+        // --- Representación Visual del Obstáculo Superior (Image con textura) ---
+        Image imageParedSuperior = new Image(textureParedes);
+        float obstaculoSuperiorAnchoPx = mitadAnchoParedSuperior_m * 2 / PIXEL_A_METRO;
+        float obstaculoSuperiorAltoPx = mitadAltoParedSuperior_m * 2 / PIXEL_A_METRO;
+        imageParedSuperior.setSize(obstaculoSuperiorAnchoPx, obstaculoSuperiorAltoPx);
+        float obstaculoSuperiorX_px = (bodyDefParedSuperior.position.x / PIXEL_A_METRO) - (obstaculoSuperiorAnchoPx / 2);
+        float obstaculoSuperiorY_px = (bodyDefParedSuperior.position.y / PIXEL_A_METRO) - (obstaculoSuperiorAltoPx / 2);
+        imageParedSuperior.setPosition(obstaculoSuperiorX_px, obstaculoSuperiorY_px);
+        stage.addActor(imageParedSuperior);
+        bodyParedSuperior.setUserData(imageParedSuperior);
 
+        return hashMapBodiesTemporales;
     }
 }

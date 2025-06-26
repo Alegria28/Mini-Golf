@@ -2,6 +2,7 @@ package com.minigolf.niveles;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -23,15 +24,15 @@ public class nivel9Golf {
     // Atributos
     public static final float coordenadaInicioX = 130; 
     private static final float coordenadaInicioY = 700; 
-    private static final float coordenadaHoyoX = 740;
-    private static final float coordenadaHoyoY = 160; 
+    public static final float coordenadaHoyoX = 740;
+    public static final float coordenadaHoyoY = 160; 
 
     // Areas válidas para colocar la bola (en el mundo)
     public static final float minX = 130 * PIXEL_A_METRO, maxX = 200 * PIXEL_A_METRO; // Ajustamos el área válida
     public static final float minY = 700 * PIXEL_A_METRO, maxY = 770 * PIXEL_A_METRO; // Ajustamos el área válida
 
     public static HashMap<Body, Boolean> crearNivel(Stage stage, World mundoBox2d, Image imagePuntoDeInicio,
-            HashMap<Body, Boolean> hashMapBodiesTemporales) {
+            HashMap<Body, Boolean> hashMapBodiesTemporales, Texture textureParedes, Texture texturaHoyo) { // Agregado Texture textureParedes
 
         // Quitamos la imagen del stage (si es que estaba en el)
         imagePuntoDeInicio.remove();
@@ -76,6 +77,17 @@ public class nivel9Golf {
         // Liberamos el polígono
         shapeHoyo.dispose();
 
+        // --- Representación Visual del Hoyo (Image con textura) ---
+        Image imageHoyo= new Image(texturaHoyo); 
+        float hoyoAnchoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
+        float hoyoAltoPx = 2 * 13 * PIXEL_A_METRO / PIXEL_A_METRO; // Diámetro del hoyo
+        imageHoyo.setSize(hoyoAnchoPx, hoyoAltoPx);
+        float hoyoX_px = (bodyDefHoyo.position.x / PIXEL_A_METRO) - (hoyoAnchoPx / 2);
+        float hoyoY_px = (bodyDefHoyo.position.y / PIXEL_A_METRO) - (hoyoAltoPx / 2);
+        imageHoyo.setPosition(hoyoX_px, hoyoY_px);
+        stage.addActor(imageHoyo);
+        bodyHoyo.setUserData(imageHoyo);
+
         /* --------- Paredes --------- */
 
         /* Obstáculo inferior del punto de inicio */
@@ -84,7 +96,9 @@ public class nivel9Golf {
         Body bodyParedInferior = mundoBox2d.createBody(bodyDefParedInferior);
         hashMapBodiesTemporales.put(bodyParedInferior, false);
         PolygonShape shapeParedInferior = new PolygonShape();
-        shapeParedInferior.setAsBox(300 * PIXEL_A_METRO, 20 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedInferior_m = 300 * PIXEL_A_METRO; // Ancho y alto
+        float mitadAltoParedInferior_m = 20 * PIXEL_A_METRO;
+        shapeParedInferior.setAsBox(mitadAnchoParedInferior_m, mitadAltoParedInferior_m); 
         FixtureDef fixtureDefParedInferior = new FixtureDef();
         fixtureDefParedInferior.shape = shapeParedInferior;
         fixtureDefParedInferior.restitution = 0f; // Sin rebote
@@ -95,13 +109,27 @@ public class nivel9Golf {
         bodyParedInferior.createFixture(fixtureDefParedInferior);
         shapeParedInferior.dispose();
 
+        // --- Representación Visual del Obstáculo Inferior (Image con textura) ---
+        Image imageParedInferior = new Image(textureParedes);
+        float obstaculoInferiorAnchoPx = mitadAnchoParedInferior_m * 2 / PIXEL_A_METRO;
+        float obstaculoInferiorAltoPx = mitadAltoParedInferior_m * 2 / PIXEL_A_METRO;
+        imageParedInferior.setSize(obstaculoInferiorAnchoPx, obstaculoInferiorAltoPx);
+        float obstaculoInferiorX_px = (bodyDefParedInferior.position.x / PIXEL_A_METRO) - (obstaculoInferiorAnchoPx / 2);
+        float obstaculoInferiorY_px = (bodyDefParedInferior.position.y / PIXEL_A_METRO) - (obstaculoInferiorAltoPx / 2);
+        imageParedInferior.setPosition(obstaculoInferiorX_px, obstaculoInferiorY_px);
+        stage.addActor(imageParedInferior);
+        bodyParedInferior.setUserData(imageParedInferior);
+
+
         /* Obstáculo superior al Hoyo */
         BodyDef bodyDefParedSuperior = new BodyDef();
         bodyDefParedSuperior.position.set(510 * PIXEL_A_METRO, 330 * PIXEL_A_METRO);
         Body bodyParedSuperior = mundoBox2d.createBody(bodyDefParedSuperior);
         hashMapBodiesTemporales.put(bodyParedSuperior, false);
         PolygonShape shapeParedSuperior = new PolygonShape();
-        shapeParedSuperior.setAsBox(300 * PIXEL_A_METRO, 20  * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedSuperior_m = 300 * PIXEL_A_METRO;
+        float mitadAltoParedSuperior_m = 20 * PIXEL_A_METRO;
+        shapeParedSuperior.setAsBox(mitadAnchoParedSuperior_m, mitadAltoParedSuperior_m); // Ancho y alto
         FixtureDef fixtureDefParedSuperior = new FixtureDef();
         fixtureDefParedSuperior.shape = shapeParedSuperior;
         fixtureDefParedSuperior.restitution = 0f; // Sin rebote
@@ -112,6 +140,17 @@ public class nivel9Golf {
         bodyParedSuperior.createFixture(fixtureDefParedSuperior);
         shapeParedSuperior.dispose();   
 
+        // --- Representación Visual del Obstáculo Superior (Image con textura) ---
+        Image imageParedSuperior = new Image(textureParedes);
+        float obstaculoSuperiorAnchoPx = mitadAnchoParedSuperior_m * 2 / PIXEL_A_METRO;
+        float obstaculoSuperiorAltoPx = mitadAltoParedSuperior_m * 2 / PIXEL_A_METRO;
+        imageParedSuperior.setSize(obstaculoSuperiorAnchoPx, obstaculoSuperiorAltoPx);
+        float obstaculoSuperiorX_px = (bodyDefParedSuperior.position.x / PIXEL_A_METRO) - (obstaculoSuperiorAnchoPx / 2);
+        float obstaculoSuperiorY_px = (bodyDefParedSuperior.position.y / PIXEL_A_METRO) - (obstaculoSuperiorAltoPx / 2);
+        imageParedSuperior.setPosition(obstaculoSuperiorX_px, obstaculoSuperiorY_px);
+        stage.addActor(imageParedSuperior);
+        bodyParedSuperior.setUserData(imageParedSuperior);
+
         /* PAREDES INTERMEDIAS ENTRE LAS PAREDES ANTERIORES */
 
         BodyDef bodyDefParedIntermedia1 = new BodyDef();
@@ -119,7 +158,9 @@ public class nivel9Golf {
         Body bodyParedIntermedia1 = mundoBox2d.createBody(bodyDefParedIntermedia1);
         hashMapBodiesTemporales.put(bodyParedIntermedia1, false);
         PolygonShape shapeParedIntermedia1 = new PolygonShape();
-        shapeParedIntermedia1.setAsBox(20 * PIXEL_A_METRO, 50 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedIntermedia1_m = 20 * PIXEL_A_METRO;
+        float mitadAltoParedIntermedia1_m = 50 * PIXEL_A_METRO;
+        shapeParedIntermedia1.setAsBox(mitadAnchoParedIntermedia1_m, mitadAltoParedIntermedia1_m); // Ancho y alto
         FixtureDef fixtureDefParedIntermedia1 = new FixtureDef();
         fixtureDefParedIntermedia1.shape = shapeParedIntermedia1;
         fixtureDefParedIntermedia1.restitution = 0f; // Sin rebote
@@ -130,12 +171,26 @@ public class nivel9Golf {
         bodyParedIntermedia1.createFixture(fixtureDefParedIntermedia1);
         shapeParedIntermedia1.dispose();
 
+        // --- Representación Visual de Pared Intermedia 1 (Image con textura) ---
+        Image imageParedIntermedia1 = new Image(textureParedes);
+        float paredIntermedia1AnchoPx = mitadAnchoParedIntermedia1_m * 2 / PIXEL_A_METRO;
+        float paredIntermedia1AltoPx = mitadAltoParedIntermedia1_m * 2 / PIXEL_A_METRO;
+        imageParedIntermedia1.setSize(paredIntermedia1AnchoPx, paredIntermedia1AltoPx);
+        float paredIntermedia1X_px = (bodyDefParedIntermedia1.position.x / PIXEL_A_METRO) - (paredIntermedia1AnchoPx / 2);
+        float paredIntermedia1Y_px = (bodyDefParedIntermedia1.position.y / PIXEL_A_METRO) - (paredIntermedia1AltoPx / 2);
+        imageParedIntermedia1.setPosition(paredIntermedia1X_px, paredIntermedia1Y_px);
+        stage.addActor(imageParedIntermedia1);
+        bodyParedIntermedia1.setUserData(imageParedIntermedia1);
+
+
         BodyDef bodyDefParedIntermedia2 = new BodyDef();
         bodyDefParedIntermedia2.position.set(610 * PIXEL_A_METRO, 400 * PIXEL_A_METRO);
         Body bodyParedIntermedia2 = mundoBox2d.createBody(bodyDefParedIntermedia2);
         hashMapBodiesTemporales.put(bodyParedIntermedia2, false);
         PolygonShape shapeParedIntermedia2 = new PolygonShape();
-        shapeParedIntermedia2.setAsBox(20 * PIXEL_A_METRO, 50 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedIntermedia2_m = 20 * PIXEL_A_METRO;
+        float mitadAltoParedIntermedia2_m = 50 * PIXEL_A_METRO;
+        shapeParedIntermedia2.setAsBox(mitadAnchoParedIntermedia2_m, mitadAltoParedIntermedia2_m); // Ancho y alto
         FixtureDef fixtureDefParedIntermedia2 = new FixtureDef();
         fixtureDefParedIntermedia2.shape = shapeParedIntermedia2;
         fixtureDefParedIntermedia2.restitution = 0f; // Sin rebote
@@ -146,6 +201,17 @@ public class nivel9Golf {
         bodyParedIntermedia2.createFixture(fixtureDefParedIntermedia2);
         shapeParedIntermedia2.dispose();
 
+        // --- Representación Visual de Pared Intermedia 2 (Image con textura) ---
+        Image imageParedIntermedia2 = new Image(textureParedes);
+        float paredIntermedia2AnchoPx = mitadAnchoParedIntermedia2_m * 2 / PIXEL_A_METRO;
+        float paredIntermedia2AltoPx = mitadAltoParedIntermedia2_m * 2 / PIXEL_A_METRO;
+        imageParedIntermedia2.setSize(paredIntermedia2AnchoPx, paredIntermedia2AltoPx);
+        float paredIntermedia2X_px = (bodyDefParedIntermedia2.position.x / PIXEL_A_METRO) - (paredIntermedia2AnchoPx / 2);
+        float paredIntermedia2Y_px = (bodyDefParedIntermedia2.position.y / PIXEL_A_METRO) - (paredIntermedia2AltoPx / 2);
+        imageParedIntermedia2.setPosition(paredIntermedia2X_px, paredIntermedia2Y_px);
+        stage.addActor(imageParedIntermedia2);
+        bodyParedIntermedia2.setUserData(imageParedIntermedia2);
+
         /* Obstáculo que cubre al punto de inicio parte derecha */
 
         BodyDef bodyDefParedDerecha = new BodyDef();
@@ -153,7 +219,9 @@ public class nivel9Golf {
         Body bodyParedDerecha = mundoBox2d.createBody(bodyDefParedDerecha);
         hashMapBodiesTemporales.put(bodyParedDerecha, false);
         PolygonShape shapeParedDerecha = new PolygonShape();
-        shapeParedDerecha.setAsBox(20 * PIXEL_A_METRO, 100 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedDerecha_m = 20 * PIXEL_A_METRO;
+        float mitadAltoParedDerecha_m = 100 * PIXEL_A_METRO;
+        shapeParedDerecha.setAsBox(mitadAnchoParedDerecha_m, mitadAltoParedDerecha_m); // Ancho y alto
         FixtureDef fixtureDefParedDerecha = new FixtureDef();
         fixtureDefParedDerecha.shape = shapeParedDerecha;
         fixtureDefParedDerecha.restitution = 0f; // Sin rebote
@@ -164,13 +232,27 @@ public class nivel9Golf {
         bodyParedDerecha.createFixture(fixtureDefParedDerecha);
         shapeParedDerecha.dispose();    
 
+        // --- Representación Visual de Pared Derecha (Image con textura) ---
+        Image imageParedDerecha = new Image(textureParedes);
+        float paredDerechaAnchoPx = mitadAnchoParedDerecha_m * 2 / PIXEL_A_METRO;
+        float paredDerechaAltoPx = mitadAltoParedDerecha_m * 2 / PIXEL_A_METRO;
+        imageParedDerecha.setSize(paredDerechaAnchoPx, paredDerechaAltoPx);
+        float paredDerechaX_px = (bodyDefParedDerecha.position.x / PIXEL_A_METRO) - (paredDerechaAnchoPx / 2);
+        float paredDerechaY_px = (bodyDefParedDerecha.position.y / PIXEL_A_METRO) - (paredDerechaAltoPx / 2);
+        imageParedDerecha.setPosition(paredDerechaX_px, paredDerechaY_px);
+        stage.addActor(imageParedDerecha);
+        bodyParedDerecha.setUserData(imageParedDerecha);
+
+
         /* Obstáculo que cubre el hoyo parte izquierda */
         BodyDef bodyDefParedIzquierda = new BodyDef();
         bodyDefParedIzquierda.position.set(590 * PIXEL_A_METRO, 180 * PIXEL_A_METRO);
         Body bodyParedIzquierda = mundoBox2d.createBody(bodyDefParedIzquierda);
         hashMapBodiesTemporales.put(bodyParedIzquierda, false);
         PolygonShape shapeParedIzquierda = new PolygonShape();
-        shapeParedIzquierda.setAsBox(20 * PIXEL_A_METRO, 90 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedIzquierda_m = 20 * PIXEL_A_METRO;
+        float mitadAltoParedIzquierda_m = 90 * PIXEL_A_METRO;
+        shapeParedIzquierda.setAsBox(mitadAnchoParedIzquierda_m, mitadAltoParedIzquierda_m); // Ancho y alto
         FixtureDef fixtureDefParedIzquierda = new FixtureDef();
         fixtureDefParedIzquierda.shape = shapeParedIzquierda;
         fixtureDefParedIzquierda.restitution = 0f; // Sin rebote
@@ -180,6 +262,17 @@ public class nivel9Golf {
         fixtureDefParedIzquierda.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedIzquierda.createFixture(fixtureDefParedIzquierda);
         shapeParedIzquierda.dispose();
+
+        // --- Representación Visual de Pared Izquierda (Image con textura) ---
+        Image imageParedIzquierda = new Image(textureParedes);
+        float paredIzquierdaAnchoPx = mitadAnchoParedIzquierda_m * 2 / PIXEL_A_METRO;
+        float paredIzquierdaAltoPx = mitadAltoParedIzquierda_m * 2 / PIXEL_A_METRO;
+        imageParedIzquierda.setSize(paredIzquierdaAnchoPx, paredIzquierdaAltoPx);
+        float paredIzquierdaX_px = (bodyDefParedIzquierda.position.x / PIXEL_A_METRO) - (paredIzquierdaAnchoPx / 2);
+        float paredIzquierdaY_px = (bodyDefParedIzquierda.position.y / PIXEL_A_METRO) - (paredIzquierdaAltoPx / 2);
+        imageParedIzquierda.setPosition(paredIzquierdaX_px, paredIzquierdaY_px);
+        stage.addActor(imageParedIzquierda);
+        bodyParedIzquierda.setUserData(imageParedIzquierda);
         
         // PAREDES AL BORDE DE LAS PAREDES HORIZONTALES
         BodyDef bodyDefParedBordeIzquierda = new BodyDef();
@@ -187,7 +280,9 @@ public class nivel9Golf {
         Body bodyParedBordeIzquierda = mundoBox2d.createBody(bodyDefParedBordeIzquierda);
         hashMapBodiesTemporales.put(bodyParedBordeIzquierda, false);
         PolygonShape shapeParedBordeIzquierda = new PolygonShape();
-        shapeParedBordeIzquierda.setAsBox(20 * PIXEL_A_METRO, 90 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedBordeIzquierda_m = 20 * PIXEL_A_METRO;
+        float mitadAltoParedBordeIzquierda_m = 90 * PIXEL_A_METRO;
+        shapeParedBordeIzquierda.setAsBox(mitadAnchoParedBordeIzquierda_m, mitadAltoParedBordeIzquierda_m); // Ancho y alto
         FixtureDef fixtureDefParedBordeIzquierda = new FixtureDef();
         fixtureDefParedBordeIzquierda.shape = shapeParedBordeIzquierda;
         fixtureDefParedBordeIzquierda.restitution = 0f; // Sin rebote
@@ -198,12 +293,26 @@ public class nivel9Golf {
         bodyParedBordeIzquierda.createFixture(fixtureDefParedBordeIzquierda);
         shapeParedBordeIzquierda.dispose();
 
+        // --- Representación Visual de Pared Borde Izquierda (Image con textura) ---
+        Image imageParedBordeIzquierda = new Image(textureParedes);
+        float paredBordeIzquierdaAnchoPx = mitadAnchoParedBordeIzquierda_m * 2 / PIXEL_A_METRO;
+        float paredBordeIzquierdaAltoPx = mitadAltoParedBordeIzquierda_m * 2 / PIXEL_A_METRO;
+        imageParedBordeIzquierda.setSize(paredBordeIzquierdaAnchoPx, paredBordeIzquierdaAltoPx);
+        float paredBordeIzquierdaX_px = (bodyDefParedBordeIzquierda.position.x / PIXEL_A_METRO) - (paredBordeIzquierdaAnchoPx / 2);
+        float paredBordeIzquierdaY_px = (bodyDefParedBordeIzquierda.position.y / PIXEL_A_METRO) - (paredBordeIzquierdaAltoPx / 2);
+        imageParedBordeIzquierda.setPosition(paredBordeIzquierdaX_px, paredBordeIzquierdaY_px);
+        stage.addActor(imageParedBordeIzquierda);
+        bodyParedBordeIzquierda.setUserData(imageParedBordeIzquierda);
+
+
         BodyDef bodyDefParedBordeDerecha = new BodyDef();
         bodyDefParedBordeDerecha.position.set(230 * PIXEL_A_METRO, 220 * PIXEL_A_METRO);
         Body bodyParedBordeDerecha = mundoBox2d.createBody(bodyDefParedBordeDerecha);
         hashMapBodiesTemporales.put(bodyParedBordeDerecha, false);
         PolygonShape shapeParedBordeDerecha = new PolygonShape();
-        shapeParedBordeDerecha.setAsBox(20 * PIXEL_A_METRO, 90 * PIXEL_A_METRO); // Ancho y alto
+        float mitadAnchoParedBordeDerecha_m = 20 * PIXEL_A_METRO;
+        float mitadAltoParedBordeDerecha_m = 90 * PIXEL_A_METRO;
+        shapeParedBordeDerecha.setAsBox(mitadAnchoParedBordeDerecha_m, mitadAltoParedBordeDerecha_m); // Ancho y alto
         FixtureDef fixtureDefParedBordeDerecha = new FixtureDef();
         fixtureDefParedBordeDerecha.shape = shapeParedBordeDerecha;
         fixtureDefParedBordeDerecha.restitution = 0f; // Sin rebote
@@ -213,6 +322,17 @@ public class nivel9Golf {
         fixtureDefParedBordeDerecha.filter.maskBits = manejoEventos.CATEGORIA_BOLA;
         bodyParedBordeDerecha.createFixture(fixtureDefParedBordeDerecha);
         shapeParedBordeDerecha.dispose();
+
+        // --- Representación Visual de Pared Borde Derecha (Image con textura) ---
+        Image imageParedBordeDerecha = new Image(textureParedes);
+        float paredBordeDerechaAnchoPx = mitadAnchoParedBordeDerecha_m * 2 / PIXEL_A_METRO;
+        float paredBordeDerechaAltoPx = mitadAltoParedBordeDerecha_m * 2 / PIXEL_A_METRO;
+        imageParedBordeDerecha.setSize(paredBordeDerechaAnchoPx, paredBordeDerechaAltoPx);
+        float paredBordeDerechaX_px = (bodyDefParedBordeDerecha.position.x / PIXEL_A_METRO) - (paredBordeDerechaAnchoPx / 2);
+        float paredBordeDerechaY_px = (bodyDefParedBordeDerecha.position.y / PIXEL_A_METRO) - (paredBordeDerechaAltoPx / 2);
+        imageParedBordeDerecha.setPosition(paredBordeDerechaX_px, paredBordeDerechaY_px);
+        stage.addActor(imageParedBordeDerecha);
+        bodyParedBordeDerecha.setUserData(imageParedBordeDerecha);
 
 
         return hashMapBodiesTemporales;

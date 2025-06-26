@@ -101,7 +101,7 @@ public class manejoColisiones implements ContactListener {
             Filter otroCategoria = otroBody.getFixtureList().get(0).getFilterData(); 
 
             // Fuerza de aceleración común para todas las zonas direccionales
-            float fuerzaAceleracion = 3.0f; 
+            float fuerzaAceleracion = 1.0f; 
             Vector2 direccionAceleracion = null; // Dirección que la zona de aceleración intentaría aplicar
 
             // Determinar la dirección de la zona de aceleración basada en su categoría
