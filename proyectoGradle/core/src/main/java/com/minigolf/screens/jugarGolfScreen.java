@@ -813,9 +813,6 @@ public class jugarGolfScreen implements Screen {
                             hashMapBodiesTemporales, texturePared, texturaHoyo, texturaBoost);
                     nivelCargado = true;
                     break;
-                default:
-                    System.out.println("Nivel no reconocido, no se cargará ningún nivel.");
-                    // Si el nivel no es reconocido, no hacemos nada
             }
         }
     }

@@ -189,7 +189,7 @@ public class tarjetaPuntosScreen implements Screen {
 
         tablaPuntuaciones.add(new Label("Par", estiloEncabezado)).pad(5).height(40).center().width(120);
         // Array con los valores de par para cada hoyo
-        int[] pares = { 2, 2, 4, 5, 4, 4, 3, 5, 3, 5, 4, 4, 3, 5, 4, 4, 3, 4 };
+        int[] pares = { 2, 2, 4, 5, 4, 5, 5, 9, 10, 12, 4, 7, 14, 14, 14, 9, 8, 4 };
         int totalPar = 0;
         for (int i = 0; i < MAX_NIVELES_MOSTRADOS; i++) {
             if (i < pares.length) {
@@ -236,6 +236,7 @@ public class tarjetaPuntosScreen implements Screen {
         Table tablaBotones = new Table();
 
         // Verificamos si el juego ha terminado para decidir qué botones mostrar
+        // El juego termina después de completar TODOS los niveles (cuando nivelActual >= MAX_NIVELES_MOSTRADOS)
         boolean esFinDelJuego = nivelActualDelJuego >= MAX_NIVELES_MOSTRADOS;
 
         /* --------- Botón "Salir al Menú" (siempre visible o solo al final) --------- */
@@ -267,11 +268,7 @@ public class tarjetaPuntosScreen implements Screen {
                     // Registramos en el log que estamos cargando el siguiente nivel
                     Gdx.app.log("TarjetaPuntosScreen", "Cargando siguiente nivel.");
                     nivelActualDelJuego++;
-                    // Verificamos que no se supere el máximo de niveles
-                    if (nivelActualDelJuego >= MAX_NIVELES_MOSTRADOS) {
-                        nivelActualDelJuego = 0; // Reiniciar al primer nivel si se supera el máximo de niveles mostrados
-                    }
-                    Gdx.app.log("TarjetaPuntosScreen", "Cargando el hoyo " + (nivelActualDelJuego));
+                    Gdx.app.log("TarjetaPuntosScreen", "Cargando el hoyo " + (nivelActualDelJuego + 1));
 
                     // Pasamos al siguiente nivel
                     game.setScreen(new jugarGolfScreen(game, jugadores, nivelActualDelJuego));
