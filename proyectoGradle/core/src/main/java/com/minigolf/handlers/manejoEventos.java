@@ -79,8 +79,16 @@ public class manejoEventos implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
 
-        // Al presionar la tecla espacio, se ejecuta el golpe si este jugador tiene bola
+        // Al presionar la tecla espacio, se ejecuta el golpe si este jugador tiene bola y está detenida
         if (keycode == Input.Keys.SPACE && jugadores.get(jugadorActual).getBolaJugador() != null) {
+            
+            Body bolaTemporal = jugadores.get(jugadorActual).getBolaJugador();
+            
+            // Verificamos que la pelota esté detenida antes de permitir el golpe
+            if (!pelotaDetenida(bolaTemporal)) {
+                System.out.println("No se puede golpear: la pelota se está moviendo");
+                return false; // No procesamos el input si la pelota se está moviendo
+            }
 
             // Al golpear, se reproducirá el sonido
             sonidoGolpe.play();
@@ -91,8 +99,7 @@ public class manejoEventos implements InputProcessor {
                     MathUtils.cosDeg(anguloDireccion) * fuerza,
                     MathUtils.sinDeg(anguloDireccion) * fuerza);
 
-            // Obtenemos la bola del jugador y guardamos su posición
-            Body bolaTemporal = jugadores.get(jugadorActual).getBolaJugador();
+            // Obtenemos la posición de la bola
             Vector2 posicionBola = bolaTemporal.getPosition();
 
             // Calculamos el angulo opuesto para el punto de impacto
@@ -457,5 +464,19 @@ public class manejoEventos implements InputProcessor {
         if (sonidoGolpe != null) {
             sonidoGolpe.dispose();
         }
+    }
+
+    // Método para verificar si la pelota está detenida
+    private boolean pelotaDetenida(Body pelota) {
+        if (pelota == null) {
+            return true; // Si no hay pelota, consideramos que está "detenida"
+        }
+        
+        // Obtenemos la magnitud de la velocidad
+        Vector2 velocidad = pelota.getLinearVelocity();
+        float magnitudVelocidad = velocidad.len();
+
+        // Se detecta que está parada si la velocidad es menor a 0.01m/s
+        return magnitudVelocidad < 0.01f;
     }
 }
