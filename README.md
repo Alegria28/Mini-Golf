@@ -64,16 +64,29 @@ Mini Golf Game es un juego de golf en miniatura que permite a múltiples jugador
 - **FreeType**: Renderizado de fuentes TTF
 - **OpenGL**: Renderizado gráfico acelerado por hardware
 
-## 🎮 Cómo Jugar
+## 📖 Manual de Usuario
 
-### Controles
+### Inicio del Juego
+1. **Seleccionar Jugadores**: Elige el número de jugadores (1-4) y asigna colores únicos
+2. **Comenzar Partida**: El juego iniciará en el nivel 1 de 18 hoyos disponibles
+
+### Controles Básicos
 - **Click Izquierdo**: Colocar pelota en el punto de inicio
 - **Flechas Izquierda/Derecha**: Ajustar dirección del golpe
-- **Flechas Arriba/Abajo**: Ajustar fuerza del golpe
-- **Barra Espaciadora**: Ejecutar el golpe
+- **Flechas Arriba/Abajo**: Ajustar fuerza del golpe (indicador visual)
+- **Barra Espaciadora**: Ejecutar el golpe (solo cuando la pelota esté quieta)
 
-### Objetivo
-El objetivo es llevar la pelota desde el punto de inicio hasta el hoyo en el menor número de golpes posible. Cada jugador toma turnos y el jugador con menos golpes totales al final de todos los niveles gana.
+### Sistema de Juego
+- **Turnos**: Los jugadores alternan turnos hasta completar cada hoyo
+- **Objetivo**: Llevar la pelota al hoyo en el menor número de golpes posible
+- **Par**: Cada hoyo tiene un número de golpes sugerido (par)
+- **Progresión**: Completa los 18 niveles secuencialmente
+- **Puntuación**: El jugador con menos golpes totales gana
+
+### Elementos Especiales
+- **Zonas de Aceleración**: Aumentan la velocidad de la pelota
+- **Obstáculos**: Paredes y barreras que desvían la trayectoria
+- **Efectos de Sonido**: Feedback audio para colisiones y eventos
 
 ## 🚀 Inicio Rápido
 
