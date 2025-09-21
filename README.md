@@ -1,139 +1,94 @@
 # 🏌️ Mini Golf Game
 
-[![Java](https://img.shields.io/badge/Java-8%2B-orange.svg)](https://www.oracle.com/java/)
-[![LibGDX](https://img.shields.io/badge/LibGDX-1.13.1-blue.svg)](https://libgdx.com/)
-[![Box2D](https://img.shields.io/badge/Box2D-Physics-green.svg)](https://box2d.org/)
-[![Gradle](https://img.shields.io/badge/Gradle-7.x-brightgreen.svg)](https://gradle.org/)
-
-Un juego de mini golf multijugador desarrollado en Java utilizando el framework LibGDX y el motor de física Box2D. Cuenta con física realista, múltiples niveles, sistema de turnos y efectos de audio inmersivos.
+A multiplayer mini-golf game developed in Java using the LibGDX framework and the Box2D physics engine. It features realistic physics, multiple levels, a turn-based system, and immersive audio effects.
 
 <div align="center">
   <img src="proyectoGradle/assets/logoMiniGolf.png" alt="Mini Golf Logo" width="200"/>
 </div>
 
-## 📸 Capturas de Pantalla
+## 📸 Screenshots
 
 <div align="center">
   <table>
     <tr>
       <td align="center">
-        <img src="docs/images/menu_principal.png" alt="Menú Principal" width="300"/>
-        <br><b>Menú Principal</b>
+        <img src="docs/images/menu_principal.png" alt="Main Menu" width="300"/>
+        <br><b>Main Menu</b>
       </td>
       <td align="center">
         <img src="docs/images/gameplay.png" alt="Gameplay" width="300"/>
-        <br><b>Jugabilidad</b>
+        <br><b>Gameplay</b>
       </td>
     </tr>
     <tr>
       <td align="center">
-        <img src="docs/images/seleccion_jugadores.png" alt="Selección de Jugadores" width="300"/>
-        <br><b>Selección de Colores</b>
+        <img src="docs/images/seleccion_jugadores.png" alt="Player Selection" width="300"/>
+        <br><b>Color Selection</b>
       </td>
       <td align="center">
-        <img src="docs/images/tabla_puntuaciones.png" alt="Tabla de Puntuaciones" width="300"/>
-        <br><b>Tabla de Puntuaciones</b>
+        <img src="docs/images/tabla_puntuaciones.png" alt="Scoreboard" width="300"/>
+        <br><b>Scoreboard</b>
       </td>
     </tr>
   </table>
 </div>
 
-## 📋 Descripción
+## 📋 Description
 
-Mini Golf Game es un juego de golf en miniatura que permite a múltiples jugadores competir en diversos niveles con obstáculos únicos. El juego cuenta con física realista, efectos de sonido inmersivos y una interfaz de usuario intuitiva.
+Mini Golf Game is a miniature golf game that allows multiple players to compete on various levels with unique obstacles. The game features realistic physics, immersive sound effects, and an intuitive user interface.
 
-### ✨ Características Principales
+## 📖 User Guide
 
-- 🎮 **Multijugador**: Soporte para múltiples jugadores en turnos
-- 🎯 **18 Niveles**: Diversos campos de mini golf con dificultad progresiva
-- 🎨 **Colores Personalizados**: Cada jugador puede elegir el color de su pelota
-- 🔊 **Efectos de Sonido**: Audio inmersivo para colisiones y eventos del juego
-- ⚡ **Zonas Especiales**: Elementos de aceleración que modifican el movimiento de la pelota
-- 📊 **Sistema de Puntuación**: Conteo de golpes (strokes) por jugador y nivel
-- 🖼️ **Gráficos 2D**: Texturas y fondos personalizados para una experiencia visual atractiva
+### Starting the Game
+1. **Select Players**: Choose the number of players (1-4) and assign unique colors
+2. **Start Game**: The game will start on level 1 of 18 available holes
 
-## 🛠️ Tecnologías Utilizadas
+### Basic Controls
+- **Left Click**: Place the ball at the starting point
+- **Left/Right Arrows**: Adjust shot direction
+- **Up/Down Arrows**: Adjust shot power (visual indicator)
+- **Spacebar**: Execute the shot (only when the ball is stationary)
 
-### Framework Principal
-- **[LibGDX](https://libgdx.com/)**: Framework de desarrollo de juegos multiplataforma
-- **[Box2D](https://box2d.org/)**: Motor de física 2D para simulación realista
+### Gameplay System
+- **Turns**: Players alternate turns until completing each hole
+- **Objective**: Get the ball into the hole in the fewest possible strokes
+- **Par**: Each hole has a suggested number of strokes (par)
+- **Progression**: Complete the 18 levels sequentially
+- **Scoring**: The player with the lowest total strokes wins
 
-### Lenguaje y Herramientas
-- **Java**: Lenguaje de programación principal
-- **Gradle**: Sistema de construcción y gestión de dependencias
-- **FreeType**: Renderizado de fuentes TTF
-- **OpenGL**: Renderizado gráfico acelerado por hardware
+## 🚀 Quick Start
 
-## 📖 Manual de Usuario
+### 📋 System Requirements
+- **Java Development Kit (JDK)**: 8 or higher
+- **RAM**: Minimum 512MB, recommended 1GB
+- **Disk Space**: 100MB for installation
+- **Operating System**: Windows, Linux, macOS
+- **OpenGL**: Support for OpenGL 2.0+
 
-### Inicio del Juego
-1. **Seleccionar Jugadores**: Elige el número de jugadores (1-4) y asigna colores únicos
-2. **Comenzar Partida**: El juego iniciará en el nivel 1 de 18 hoyos disponibles
+### 🔧 Detailed Installation
 
-### Controles Básicos
-- **Click Izquierdo**: Colocar pelota en el punto de inicio
-- **Flechas Izquierda/Derecha**: Ajustar dirección del golpe
-- **Flechas Arriba/Abajo**: Ajustar fuerza del golpe (indicador visual)
-- **Barra Espaciadora**: Ejecutar el golpe (solo cuando la pelota esté quieta)
-
-### Sistema de Juego
-- **Turnos**: Los jugadores alternan turnos hasta completar cada hoyo
-- **Objetivo**: Llevar la pelota al hoyo en el menor número de golpes posible
-- **Par**: Cada hoyo tiene un número de golpes sugerido (par)
-- **Progresión**: Completa los 18 niveles secuencialmente
-- **Puntuación**: El jugador con menos golpes totales gana
-
-### Elementos Especiales
-- **Zonas de Aceleración**: Aumentan la velocidad de la pelota
-- **Obstáculos**: Paredes y barreras que desvían la trayectoria
-- **Efectos de Sonido**: Feedback audio para colisiones y eventos
-
-## 🚀 Inicio Rápido
-
-### 📋 Requisitos del Sistema
-- **Java Development Kit (JDK)**: 8 o superior
-- **Memoria RAM**: Mínimo 512MB, recomendado 1GB
-- **Espacio en Disco**: 100MB para instalación
-- **Sistema Operativo**: Windows, Linux, macOS
-- **OpenGL**: Soporte para OpenGL 2.0+
-
-### 🔧 Instalación Detallada
-
-1. **Clonar el repositorio**
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/tu-usuario/Mini-Golf.git
-   cd Mini-Golf
+   git clone https://github.com/Alegria28/Mini-Golf.git
    ```
 
-2. **Navegar al directorio del proyecto**
-   ```bash
-   cd proyectoGradle
-   ```
+2. **Run the application**
+   - **Using VS Code Task**: For an easier setup, you can run the predefined task. Open the Command Palette (`Ctrl+Shift+P`), select `Tasks: Run Task`, and choose `gradle: Run LWJGL3`.
+   - **Manual Execution**: If you don't have the task configured, you can run the project from the terminal. First, navigate into the project folder and then into the `proyectoGradle` directory:
+     ```bash
+     cd Mini-Golf/proyectoGradle
+     ```
+     Then, run the appropriate command for your operating system:
+     - On **Windows**:
+       ```bash
+       gradlew.bat lwjgl3:run
+       ```
+     - On **Linux/macOS**:
+       ```bash
+       ./gradlew lwjgl3:run
+       ```
 
-3. **Ejecutar el juego**
-   ```bash
-   # Linux/Mac
-   ./gradlew lwjgl3:run
-   
-   # Windows
-   gradlew.bat lwjgl3:run
-   ```
+## 🙏 Acknowledgments
 
-## 📁 Estructura del Proyecto
-
-```
-proyectoGradle/
-├── assets/                     # Recursos del juego
-│   ├── *.png                  # Texturas e imágenes
-│   ├── *.mp3                  # Efectos de sonido
-│   ├── fonts/                 # Fuentes TTF
-│   └── ui/                    # Elementos de interfaz
-├── core/                      # Lógica principal del juego
-│   └── src/main/java/com/minigolf/
-│       ├── screens/           # Pantallas del juego
-│       ├── models/            # Modelos de datos
-│       ├── handlers/          # Manejadores de eventos y colisiones
-│       └── niveles/           # Definiciones de niveles
-├── lwjgl3/                    # Configuración de desktop
-└── gradle/                    # Configuración de Gradle
-```
+- To the **LibGDX** and **Box2D** development teams for their excellent tools.
+- To the open-source community for their constant inspiration.
